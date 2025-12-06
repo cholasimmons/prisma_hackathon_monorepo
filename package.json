@@ -1,0 +1,32 @@
+{
+  "name": "prisma_hackathon",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "concurrently \"bun:dev:api\" \"bun:dev:web\"",
+    "dev:api": "bun --filter api run dev",
+    "dev:web": "bun --filter web run dev --open",
+
+    "build": "concurrently \"bun:build:api\" \"bun:build:web\"",
+    "build:api": "bun --filter api run build",
+    "build:web": "bun --filter web run build",
+
+    "start": "concurrently \"bun:start:api\" \"bun:start:web\"",
+    "start:api": "bun --filter api run start",
+    "start:web": "bun --filter web run start",
+
+    "prisma:generate": "bun --filter api run prisma:generate",
+    "prisma:migrate": "bun --filter api run prisma:migrate",
+
+    "lint": "concurrently \"bun:lint:api\" \"bun:lint:web\"",
+    "lint:api": "bun --filter api run lint",
+    "lint:web": "bun --filter web run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

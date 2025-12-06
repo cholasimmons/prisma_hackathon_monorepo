@@ -1,0 +1,31 @@
+{
+  "name": "api",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/cron": "^1.4.1",
+    "@elysiajs/openapi": "^1.4.11",
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "better-auth": "^1.4.5",
+    "blockhash": "^0.2.0",
+    "elysia": "latest",
+    "elysia-helmet": "^3.0.0",
+    "elysia-ip": "^1.0.10",
+    "elysia-rate-limit": "^4.4.2",
+    "elysia-xss": "^1.0.3",
+    "image-hash": "^7.0.1",
+    "logestic": "^1.2.4",
+    "prismabox": "^1.1.25",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "prisma": "^7.1.0"
+  },
+  "module": "src/index.js"
+}

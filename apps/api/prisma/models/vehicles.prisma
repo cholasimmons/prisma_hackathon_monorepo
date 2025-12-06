@@ -1,0 +1,67 @@
+model Vehicle {
+  /// @prismabox.input.hide
+  id             String   @id @default(cuid())
+  plate          String   @unique
+  make           String
+  model          String?
+  photo          String?
+  color          String
+  year           Int?
+  /// @prismabox.input.hide
+  isActive       Boolean  @default(true)
+  /// @prismabox.input.hide
+  updatedAt      DateTime @updatedAt
+
+  @@schema("vehicles")
+  @@map("vehicles")
+}
+
+model VehicleSubmission {
+  /// @prismabox.input.hide
+  id             String   @id @default(cuid())
+  plate          String
+  make           String?
+  model          String?
+  photos          VehiclePhoto[]
+  /// @prismabox.input.hide
+  pHash          String?
+  /// @prismabox.input.hide
+  width          Int?
+  /// @prismabox.input.hide
+  height         Int?
+  color          String?
+  year           Int?
+  /// @prismabox.input.hide
+  submittedById    String
+  submittedBy      User?    @relation(fields: [submittedById], references: [id])
+  /// @prismabox.input.hide
+  createdAt      DateTime @default(now())
+  /// @prismabox.input.hide
+  updatedAt      DateTime @updatedAt
+
+  @@schema("vehicles")
+  @@map("vehicle_submissions")
+  @@unique([plate, submittedById]) // user can only submit once per plate
+}
+
+model VehiclePhoto {
+  /// @prismabox.input.hide
+  id             String   @id @default(cuid())
+  photo          String?
+  /// @prismabox.input.hide
+  isPrimary      Boolean  @default(false)
+  /// @prismabox.input.hide
+  verifiedById   String?
+  verifiedBy     User?    @relation("VehiclePhotoVerifiedBy",fields: [verifiedById], references: [id])
+  verifiedAt     DateTime?
+  /// @prismabox.input.hide
+  vehicleId      String
+  vehicle        VehicleSubmission @relation(fields: [vehicleId], references: [id])
+  /// @prismabox.input.hide
+  createdAt      DateTime @default(now())
+  /// @prismabox.input.hide
+  updatedAt      DateTime @updatedAt
+
+  @@schema("vehicles")
+  @@map("vehicle_photos")
+}

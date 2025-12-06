@@ -1,0 +1,63 @@
+# -------------------------
+# CORE / MONOREPO
+# -------------------------
+node_modules/
+bun.lockb
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+*.bun
+*.log
+*.trace
+
+# Build artifacts (all apps)
+build/
+dist/
+out/
+
+# Temporary archives
+*.zip
+*.tar.gz
+*.tgz
+
+# OS / EDITOR NOISE
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# -------------------------
+# ENV & SECRETS
+# -------------------------
+.env
+.env.*
+!.env.example
+
+# -------------------------
+# SVELTEKIT (apps/web)
+# -------------------------
+apps/web/.svelte-kit/
+apps/web/.vite/
+apps/web/.vercel/
+apps/web/build/
+apps/web/coverage/
+
+# -------------------------
+# ELYSIAJS (apps/api)
+# -------------------------
+apps/api/.pnp
+apps/api/.pnp.js
+apps/api/.vercel/
+apps/api/build/
+apps/api/coverage/
+apps/api/src/generated/
+
+# -------------------------
+# TESTING
+# -------------------------
+coverage/
+
+# -------------------------
+# MISC
+# -------------------------
+*.pem

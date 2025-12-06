@@ -1,0 +1,11 @@
+model AuditEvent {
+  id        String   @id @default(cuid())
+  actorId   String?             // user performing the action (null for system)
+  eventType String              // e.g. "vehicle.submit", "vehicle.revoke"
+  entity    String?             // e.g. "plate:ABC123"
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@schema("logs")
+  @@map("audit_events")
+}

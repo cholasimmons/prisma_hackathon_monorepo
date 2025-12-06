@@ -1,0 +1,31 @@
+export const CacheKeys = {
+  user: {
+    byId: (id: string | number) => `user:${id}`,
+    permissions: (id: string | number) => `user:${id}:permissions`,
+    profile: (id: string | number) => `user:${id}:profile`,
+  },
+
+  session: {
+    byToken: (token: string) => `session:${token}`,
+    active: "session:active",
+  },
+
+  vehicles: {
+    all: "vehicles:all",
+    byId: (id: string | number) => `vehicle:${id}`,
+    byPlate: (plate: string) => `vehicle:plate:${plate}`,
+    byMake: (make: string) => `vehicles:make:${make}`,
+    submissionById: (id: string) => `vehicleSubmission:${id}`,
+    submissionByPlate: (plate: string) => `vehicleSubmission:plate:${plate}`,
+  },
+
+  auth: {
+    emailOtp: (email: string) => `auth:otp:${email}`,
+    rateLimit: (ip: string) => `auth:rl:${ip}`,
+  },
+
+  misc: {
+    health: "misc:health",
+    version: "misc:version",
+  },
+} as const;
