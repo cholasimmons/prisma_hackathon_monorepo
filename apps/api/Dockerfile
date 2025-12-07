@@ -1,9 +1,12 @@
 FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
-# install dependencies into temp directory
-# this will cache them and speed up future builds
+# --------------------------------------
+# Install dependencies (dev + prod)
+# --------------------------------------
 FROM base AS install
+
+# Dev dependencies
 RUN mkdir -p /temp/dev
 COPY package.json bun.lock /temp/dev/
 RUN cd /temp/dev && bun install #--frozen-lockfile
@@ -13,28 +16,37 @@ RUN mkdir -p /temp/prod
 COPY package.json bun.lock /temp/prod/
 RUN cd /temp/prod && bun install --production #--frozen-lockfile
 
-# copy node_modules from temp directory
-# then copy all (non-ignored) project files into the image
+# --------------------------------------
+# Build stage (with dev dependencies)
+# --------------------------------------
 FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # [optional] tests & build
-ENV NODE_ENV=production
+# # Generate Prisma client
+RUN bun run generate
 # RUN bun test
-# RUN bun run generate
+
+# Build your app (TypeScript, SvelteKit, etc.)
 RUN bun run build
 
-# copy production dependencies and source code into final image
+# --------------------------------------
+# Production stage (only runtime dependencies + build output)
+# --------------------------------------
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/build ./build
-# COPY --from=prerelease /usr/src/app .
+# Optionally copy static assets if needed:
+# COPY --from=prerelease /usr/src/app/public ./public
 
+ENV NODE_ENV=production
 ENV PORT=3000
+
 # run the app
 USER bun
 EXPOSE 3000/tcp
+
 ENTRYPOINT [ "bun", "run", "start" ]
 
 # COPY package.json bun.lock ./
