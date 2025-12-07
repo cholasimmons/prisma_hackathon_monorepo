@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 COPY . .
 RUN bun install # --frozen-lockfile
-RUN bun run build
+RUN bun --bun run build
 
 FROM oven/bun:1 AS production
 WORKDIR /app
@@ -18,4 +18,4 @@ RUN bun install --production # --frozen-lockfile
 ENV PORT=3001
 EXPOSE 3001
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "--bun", "run", "start"]
