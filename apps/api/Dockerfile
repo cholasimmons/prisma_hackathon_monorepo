@@ -30,6 +30,7 @@ COPY --from=install /temp/prod/node_modules node_modules
 # COPY --from=prerelease /usr/src/app/build ./build
 COPY --from=prerelease /usr/src/app .
 
+ENV PORT=3000
 # run the app
 USER bun
 EXPOSE 3000/tcp
