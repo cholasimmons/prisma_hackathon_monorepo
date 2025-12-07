@@ -2,6 +2,7 @@
   "name": "prisma_hackathon",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/api",
     "apps/web"
