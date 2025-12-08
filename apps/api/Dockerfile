@@ -31,7 +31,7 @@ RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
 # RUN bun run prisma:generate
 
 # Try to see the actual error
-RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
+# RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
 
 RUN bun run build
 
