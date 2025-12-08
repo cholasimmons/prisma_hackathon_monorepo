@@ -4,7 +4,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "build": "prisma generate && bun build src/index.ts --outdir build",
+    "old-build": "prisma generate && bun build src/index.ts --outdir build",
+    "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/index.ts",
     "generate": "prisma generate",
     "migrate": "prisma migrate deploy",
     "start": "bun run src/index.ts"

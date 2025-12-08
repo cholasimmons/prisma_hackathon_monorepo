@@ -10,13 +10,15 @@ FROM base AS install
 
 # Dev dependencies
 RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
+COPY package.json /temp/dev/
+COPY bun.lock /temp/dev/
 RUN cd /temp/dev && bun install # --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
 RUN chown -R bun:bun /temp/prod
-COPY package.json bun.lock /temp/prod/
+COPY package.json /temp/prod/
+COPY bun.lock /temp/prod/
 RUN cd /temp/prod && bun install # --production #--frozen-lockfile
 
 # --------------------------------------
@@ -32,25 +34,29 @@ RUN bun run generate
 # RUN bun test
 
 # Build your app (TypeScript, SvelteKit, etc.)
-# RUN bun run build
+RUN bun run build
+RUN chmod +x /app/server
+
+FROM gcr.io/distroless/base
 
 # --------------------------------------
 # Production stage (only runtime dependencies + build output)
 # --------------------------------------
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
-# COPY --from=prerelease /app/build ./build
+COPY --from=prerelease /app/server server
 # Optionally copy static assets if needed:
 # COPY --from=prerelease /usr/src/app/public ./public
 
-# ENV NODE_ENV=production
+ENV NODE_ENV=production
 ENV PORT=3000
 
 # run the app
 USER bun
 EXPOSE 3000/tcp
 
-ENTRYPOINT [ "bun", "run", "start" ]
+CMD [ "./server" ]
+# ENTRYPOINT [ "bun", "run", "server" ]
 
 # COPY package.json bun.lock ./
 # COPY . .
