@@ -1,5 +1,5 @@
 FROM oven/bun:1.3.4 AS base
-# RUN apk add --no-cache git wget
+RUN apk add --no-cache git wget
 WORKDIR /app
 
 # --------------------------------------
@@ -7,6 +7,7 @@ WORKDIR /app
 # --------------------------------------
 FROM base AS install
 COPY package.json bun.lock ./
+COPY prisma ./prisma/
 RUN bun install
 # --frozen-lockfile
 
@@ -28,7 +29,7 @@ RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
 # RUN bun run prisma:generate
 
 # Try to see the actual error
-RUN bun run prisma:generate || (echo "Prisma generate failed" && exit 1)
+RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
 
 RUN bun run build
 
