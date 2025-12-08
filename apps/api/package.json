@@ -9,7 +9,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "start": "bun run src/index.ts",
-    "postinstall": "prisma generate && prisma migrate deploy"
+    "_post_install": "prisma generate && prisma migrate deploy"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
