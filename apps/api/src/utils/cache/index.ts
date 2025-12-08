@@ -130,6 +130,33 @@ export class CacheService {
   }
 
   /**
+   * Close Redis connection
+   */
+  connect(): boolean {
+    if (!this.enabled || !this.redis) return false;
+
+    try {
+      return this.redis.connected;
+    } catch (err) {
+      console.warn(`Redis connection failed to start`, err);
+      return false
+    }
+  }
+
+  /**
+   * Close Redis connection
+   */
+  close(): void {
+    if (!this.enabled || !this.redis) return;
+
+    try {
+      this.redis.close();
+    } catch (err) {
+      console.warn(`Redis connection unable to close`, err);
+    }
+  }
+
+  /**
    * Simple metrics (manual counters recommended for real analytics)
    */
   async keys(pattern = "*"): Promise<string[]> {

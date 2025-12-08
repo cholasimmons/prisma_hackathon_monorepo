@@ -16,6 +16,8 @@ import {
   fileController,
 } from "~/modules/index";
 
+const PORT = Number(process.env.PORT);
+
 const root = new Elysia({
   websocket: {
     idleTimeout: 30,
@@ -104,10 +106,14 @@ const root = new Elysia({
     return { data: info, success: true, message: "Root service is healthy" };
   })
 
-  .onStart(systemBoot)
-  .onStop(systemOff)
-  .listen(3000);
+  // .onStart(systemBoot)
+  .onStop(systemOff);
 
-console.log(
-  `🦊 Backend running at ${root.server?.hostname}:${root.server?.port}`,
-);
+systemBoot()
+  .then(() => {
+    root.listen(PORT, () => {
+      console.log(
+        `🦊 Backend running at ${root.server?.hostname}:${root.server?.port}`,
+      );
+    })
+  });

@@ -276,65 +276,65 @@ abstract class VehicleService {
     return result;
   }
 
-  private static getMode(list: string[]) {
-    if (!list || list.length === 0) return null;
+  // private static getMode(list: string[]) {
+  //   if (!list || list.length === 0) return null;
 
-    const counts = new Map();
-    list.forEach((item) => {
-      if (!item) return;
-      counts.set(item, (counts.get(item) || 0) + 1);
-    });
+  //   const counts = new Map();
+  //   list.forEach((item) => {
+  //     if (!item) return;
+  //     counts.set(item, (counts.get(item) || 0) + 1);
+  //   });
 
-    // find max
-    let max = 0;
-    let result = null;
-    for (const [value, count] of counts.entries()) {
-      if (count > max) {
-        max = count;
-        result = value;
-      }
-    }
+  //   // find max
+  //   let max = 0;
+  //   let result = null;
+  //   for (const [value, count] of counts.entries()) {
+  //     if (count > max) {
+  //       max = count;
+  //       result = value;
+  //     }
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  private static findConsensusPhoto(
-    photos: { photo: string; pHash: string }[],
-  ): string | null {
-    if (photos.length === 1) return photos[0].photo;
+  // private static findConsensusPhoto(
+  //   photos: { photo: string; pHash: string }[],
+  //   ): string | null {
+  //   if (photos.length === 1) return photos[0].photo;
 
-    // pick the photo that has the lowest average hamming distance to others
-    let bestPhoto = photos[0].photo;
-    let bestScore = Infinity;
+  //   // pick the photo that has the lowest average hamming distance to others
+  //   let bestPhoto = photos[0].photo;
+  //   let bestScore = Infinity;
 
-    for (const p of photos) {
-      let total = 0;
+  //   for (const p of photos) {
+  //     let total = 0;
 
-      for (const q of photos) {
-        if (p === q) continue;
-        total += hammingDistance(p.pHash, q.pHash);
-      }
+  //     for (const q of photos) {
+  //       if (p === q) continue;
+  //       total += hammingDistance(p.pHash, q.pHash);
+  //     }
 
-      const avg = total / (photos.length - 1);
-      if (avg < bestScore) {
-        bestScore = avg;
-        bestPhoto = p.photo;
-      }
-    }
+  //     const avg = total / (photos.length - 1);
+  //     if (avg < bestScore) {
+  //       bestScore = avg;
+  //       bestPhoto = p.photo;
+  //     }
+  //   }
 
-    return bestPhoto;
-  }
+  //   return bestPhoto;
+  // }
 
-  private async saveConsensus(plate: string) {
-    const data = await VehicleService.computeConsensus(plate);
-    if (!data) return null;
+  // private async saveConsensus(plate: string) {
+  //   const data = await VehicleService.computeConsensus(plate);
+  //   if (!data) return null;
 
-    return prisma.vehicle.upsert({
-      where: { plate },
-      update: data,
-      create: data,
-    });
-  }
+  //   return prisma.vehicle.upsert({
+  //     where: { plate },
+  //     update: data,
+  //     create: data,
+  //   });
+  // }
 }
 
 export default VehicleService;

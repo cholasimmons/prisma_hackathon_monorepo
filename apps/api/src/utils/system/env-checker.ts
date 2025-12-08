@@ -13,5 +13,5 @@ export function checkEnvVariables(requiredVars: string[]): void {
     process.exit(1); // Exit with error code
   }
 
-  console.log("✅ All required environment variables are present");
+  console.log("| ✅");
 }

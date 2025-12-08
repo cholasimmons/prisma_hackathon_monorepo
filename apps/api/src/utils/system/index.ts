@@ -1,6 +1,6 @@
 import { checkEnvVariables } from "~/utils/system/env-checker";
 import prisma from "../prisma";
-import cache from "~/utils/cache/redis";
+import { cache } from "~/utils/cache/index";
 
 const requiredEnvVars = [
   // Database Variables
@@ -30,20 +30,29 @@ const systemBoot = async () => {
 
   try {
     // List all required environment variables
-    await new Promise((resolve) => {
-      console.info("| Checking environment variables...");
+    await new Promise<void>((resolve) => {
+      console.info(`| Checking environment variables (${process.env.NODE_ENV})...`);
       checkEnvVariables(requiredEnvVars);
       setTimeout(() => {
-        return resolve;
+        return resolve();
       }, 1000);
     });
 
     console.info("| Checking database connection (Postgres)...");
     await prisma.$connect();
+    console.log("| ✅");
 
-    console.log("System booted.");
+    console.info("| Checking cache connection (Redis)...");
+    const redisConnected = cache.connect(); // ("system:booted", "true");
+    if(redisConnected === true) {
+      console.log("| ✅");
+    } else {
+      console.error("| ✖️");
+    }
+
+    // console.log("👍🏼 System booted.");
   } catch (e) {
-    console.error("System failed to boot.", e);
+    console.error("⚠️ System failed to boot.", e);
     process.exit(1);
   }
 };

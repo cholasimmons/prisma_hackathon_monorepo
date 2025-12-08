@@ -8,26 +8,22 @@
     "apps/web"
   ],
   "scripts": {
-    "dev": "concurrently \"bun:dev:api\" \"bun:dev:web\"",
-    "dev:api": "bun --filter api run dev",
-    "dev:web": "bun --filter web run dev --open",
-
+    "dev": "bunx concurrently \"bun:dev:api\" \"bun:dev:web\"",
+    "dev:api": "bun --filter='./apps/api' run dev",
+    "dev:web": "bun --filter='./apps/web' run dev --open",
     "build": "concurrently \"bun:build:api\" \"bun:build:web\"",
-    "build:api": "bun --filter api run build",
-    "build:web": "bun --filter web run build",
-
+    "build:api": "bun --filter='./apps/api' run build",
+    "build:web": "bun --filter='./apps/web' run build",
     "start": "concurrently \"bun:start:api\" \"bun:start:web\"",
-    "start:api": "bun --filter api run start",
-    "start:web": "bun --filter web run start",
-
-    "prisma:generate": "bun --filter api run prisma:generate",
-    "prisma:migrate": "bun --filter api run prisma:migrate",
-
+    "start:api": "bun --filter='./apps/api' run start",
+    "start:web": "bun --filter='./apps/web' run start",
+    "prisma:generate": "bun --filter='./apps/api' run generate",
+    "prisma:migrate": "bun --filter='./apps/api' bun run migrate",
     "lint": "concurrently \"bun:lint:api\" \"bun:lint:web\"",
-    "lint:api": "bun --filter api run lint",
-    "lint:web": "bun --filter web run lint"
+    "lint:api": "bun --filter='./apps/api' run lint",
+    "lint:web": "bun --filter='./apps/web' run lint"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0"
+    "concurrently": "^9.2.1"
   }
 }
