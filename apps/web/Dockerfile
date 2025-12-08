@@ -15,7 +15,7 @@ COPY --from=build /app/build ./build
 COPY package.json bun.lock ./
 
 # Install only prod deps for runtime
-RUN bun install --production # --frozen-lockfile
+RUN bun install #--production # --frozen-lockfile
 
 ENV PORT=3001
 # run the app
