@@ -1,9 +1,9 @@
 services:
   api:
     build:
-     context: ./apps/api
-     dockerfile: Dockerfile
-    image: prisma-hackathon-api:latest   # tag the image
+      context: ./apps/api
+      dockerfile: Dockerfile
+    # image: prisma-hackathon-api:latest   # tag the image
     container_name: elysia-api
     ports:
       - "3000:3000"
