@@ -6,8 +6,7 @@ WORKDIR /app
 # Install dependencies (dev + prod)
 # --------------------------------------
 FROM base AS install
-COPY package.json bun.lock ./
-COPY prisma ./prisma/
+COPY package.json bun.lock prisma tsconfig.json prisma.config.ts ./
 RUN bun install
 # --frozen-lockfile
 
