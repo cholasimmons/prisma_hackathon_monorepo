@@ -1,5 +1,5 @@
 FROM oven/bun:1 AS build
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json bun.lock ./
 COPY . .
@@ -8,10 +8,10 @@ RUN bun run build
 
 # Production stage
 FROM oven/bun:1 AS production
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy built files
-COPY --from=build /usr/src/app/build ./build
+COPY --from=build /app/build ./build
 COPY package.json bun.lock ./
 
 # Install only prod deps for runtime
