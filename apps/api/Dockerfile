@@ -8,7 +8,8 @@ WORKDIR /app
 FROM base AS install
 WORKDIR /app
 COPY package.json bun.lock ./
-RUN bun install # --frozen-lockfile
+RUN bun install
+# --frozen-lockfile
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma

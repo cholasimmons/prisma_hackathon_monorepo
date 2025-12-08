@@ -1,6 +1,8 @@
 services:
   api:
-    build: ./apps/api
+    build:
+     context: ./apps/api
+     dockerfile: Dockerfile
     image: prisma-hackathon-api:latest   # tag the image
     container_name: elysia-api
     ports:
@@ -10,7 +12,9 @@ services:
     restart: unless-stopped
 
   web:
-    build: ./apps/web
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
     container_name: sveltekit-web
     ports:
       - "3001:3001"
