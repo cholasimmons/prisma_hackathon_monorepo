@@ -28,14 +28,15 @@ RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
 # RUN bun run prisma:generate
 
 # Try to see the actual error
-RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
+RUN bun run prisma:generate || (echo "Prisma generate failed" && exit 1)
 
 RUN bun run build
 
 # -----------------------------
 # Production (pure binary)
 # -----------------------------
-FROM alpine:3.19 AS release
+# FROM alpine:3.19 AS release
+FROM oven/bun:1.3.4-alpine AS release
 WORKDIR /app
 
 # Copy binary
