@@ -10,7 +10,8 @@ COPY package.json bun.lock prisma ./
 COPY tsconfig.json prisma.config.ts ./
 # Skip running postinstall scripts for now
 ENV npm_config_ignore_scripts=true
-RUN bun install --frozen-lockfile
+RUN bun install
+# --frozen-lockfile
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
