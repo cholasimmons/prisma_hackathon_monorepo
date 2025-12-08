@@ -28,10 +28,14 @@ RUN echo "Prisma CLI version:" && bunx prisma --version || echo "Prisma CLI not 
 RUN cat prisma/schema.prisma || echo "No schema.prisma file"
 
 RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
-# RUN bun run prisma:generate
+RUN bun run prisma:generate
+
+# # Create non-root user (Alpine way)
+RUN addgroup -g 1000 bun && adduser -u 1000 -G bun -s /bin/sh -D bun
+RUN chown -R bun:bun /app
 
 # Try to see the actual error
-# RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
+RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
 
 RUN bun run build
 
@@ -54,9 +58,6 @@ RUN chmod +x ./server
 ENV PORT=3000
 
 # run the app
-# # Create non-root user (Alpine way)
-RUN addgroup -g 1000 bun && adduser -u 1000 -G bun -s /bin/sh -D bun
-RUN chown -R bun:bun /app
 USER bun
 EXPOSE 3000/tcp
 
