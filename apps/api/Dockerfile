@@ -1,5 +1,5 @@
 FROM oven/bun:1.3.4-alpine AS base
-RUN apk add --no-cache git wget
+RUN apk add --no-cache git wget netcat-openbsd
 WORKDIR /app
 
 # --------------------------------------
@@ -47,7 +47,12 @@ COPY --from=build /app/server ./server
 # If Prisma is used, copy generated client runtime files
 # (Prisma requires the query engine, even with a compiled server)
 COPY --from=build /app/src/generated ./src/generated
+
+# Copy Prisma schema (optional but recommended)
 COPY --from=build /app/prisma ./prisma
+
+# Copy start script
+COPY --from=install /app/start.sh ./start.sh
 RUN chmod +x ./server
 RUN chmod +x ./start.sh
 
