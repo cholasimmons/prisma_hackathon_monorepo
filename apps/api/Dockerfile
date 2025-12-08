@@ -49,6 +49,7 @@ COPY --from=build /app/server ./server
 COPY --from=build /app/src/generated ./src/generated
 COPY --from=build /app/prisma ./prisma
 RUN chmod +x ./server
+RUN chmod +x ./start.sh
 
 # ENV NODE_ENV=production
 ENV PORT=3000
@@ -58,4 +59,4 @@ ENV PORT=3000
 USER bun
 EXPOSE 3000/tcp
 
-CMD [ "./server" ]
+CMD [ "./start.sh" ]
