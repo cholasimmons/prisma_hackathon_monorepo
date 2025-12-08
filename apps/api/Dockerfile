@@ -15,8 +15,9 @@ RUN cd /temp/dev && bun install # --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
+RUN chown -R bun:bun /temp/prod
 COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --production #--frozen-lockfile
+RUN cd /temp/prod && bun install # --production #--frozen-lockfile
 
 # --------------------------------------
 # Build stage (with dev dependencies)
