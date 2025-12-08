@@ -12,7 +12,7 @@ FROM base AS install
 RUN mkdir -p /temp/dev
 COPY package.json /temp/dev/
 COPY bun.lock /temp/dev/
-RUN cd /temp/dev && bun install && bun run generate # --frozen-lockfile
+RUN cd /temp/dev && bun install # --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 RUN mkdir -p /temp/prod
