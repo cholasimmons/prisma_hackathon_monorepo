@@ -8,7 +8,7 @@ WORKDIR /app
 FROM base AS install
 WORKDIR /app
 COPY package.json bun.lock ./
-RUN bun install # --frozen-lockfile
+RUN bun install --frozen-lockfile
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
@@ -17,7 +17,18 @@ FROM base AS build
 WORKDIR /app
 COPY --from=install /app/node_modules ./node_modules
 COPY . .
-RUN bun run prisma:generate
+
+# Debug: Check what we have
+RUN ls -la
+RUN ls -la prisma || echo "No prisma directory"
+RUN cat prisma/schema.prisma || echo "No schema.prisma file"
+
+# Check if prisma CLI exists
+RUN bun prisma --version || echo "Prisma CLI not found"
+
+# Try to see the actual error
+RUN bunx prisma generate || (echo "Prisma generate failed" && exit 1)
+
 RUN bun run build
 
 # -----------------------------

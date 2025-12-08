@@ -25,12 +25,12 @@
     "elysia-xss": "^1.0.3",
     "image-hash": "^7.0.1",
     "logestic": "^1.2.4",
+    "prisma": "^7.1.0",
     "prismabox": "^1.1.25",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "bun-types": "latest",
-    "prisma": "^7.1.0"
+    "bun-types": "latest"
   },
   "module": "src/index.js"
 }
