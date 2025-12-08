@@ -24,6 +24,7 @@
     "lint:web": "bun --filter='./apps/web' run lint"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.4",
     "concurrently": "^9.2.1"
   }
 }
