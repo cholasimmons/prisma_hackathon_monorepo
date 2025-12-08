@@ -31,12 +31,16 @@ COPY --from=build /app/server ./server
 # If Prisma is used, copy generated client runtime files
 # (Prisma requires the query engine, even with a compiled server)
 COPY --from=build /app/src/generated ./src/generated
+COPY --from=build /app/prisma ./prisma
 RUN chmod +x ./server
 
 # ENV NODE_ENV=production
 ENV PORT=3000
 
 # run the app
+# # Create non-root user (Alpine way)
+RUN addgroup -g 1000 bun && adduser -u 1000 -G bun -s /bin/sh -D bun
+RUN chown -R bun:bun /app
 USER bun
 EXPOSE 3000/tcp
 
