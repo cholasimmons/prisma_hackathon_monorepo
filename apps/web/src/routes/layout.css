@@ -1,3 +1,29 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+body {
+	font-family: 'Montserrat Variable', sans-serif;
+}
+
+.plates {
+	font-family: 'Jersey 25', ui-monospace, monospace, 'Courier New', Courier;
+	/* font-family: 'Rubik Mono One', ui-monospace, monospace, 'Courier New', Courier; */
+	font-weight: 400;
+	font-style: normal;
+}
+
+.plate-input {
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	font-weight: 400;
+	/* optional: simulate embossed plate */
+	text-shadow: 6px 6px 6px rgba(0, 0, 0, 0.1);
+}
+.plate-input--reflective {
+	background: linear-gradient(to bottom, #fff, #ededed);
+	border-width: 2px;
+	box-shadow:
+		inset 0 1px 3px rgba(255, 255, 255, 0.8),
+		0 2px 4px rgba(0, 0, 0, 0.1);
+}

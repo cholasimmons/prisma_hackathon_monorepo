@@ -1,12 +1,11 @@
 import { Prisma, Vehicle, VehicleSubmission } from "@/generated/prisma/client";
 import { cache } from "~/utils/cache";
-import prisma from "~/utils/prisma";
+import db from "~/utils/database/client";
 import s3 from "~/utils/s3";
 import { strip } from "~/utils/strip";
 import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import type { PublicVehicle, PublicVehicleSubmission } from "./model";
 import { CacheKeys } from "~/utils/cache/keys";
-import { hammingDistance } from "~/utils/image/hashing";
 import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
 
 abstract class VehicleService {
@@ -23,18 +22,21 @@ abstract class VehicleService {
     if (year) where.year = year;
     if (color) where.color = color;
 
-    return await prisma.vehicle.findMany({
+    return await db.vehicle.findMany({
       where,
-      take: limit
+      take: limit,
     });
   }
 
-  static async searchSubmittedVehicles(params: {
-    make?: string;
-    year?: number;
-    limit?: number;
-    color?: string;
-  }, userId: string): Promise<VehicleSubmission[]> {
+  static async searchSubmittedVehicles(
+    params: {
+      make?: string;
+      year?: number;
+      limit?: number;
+      color?: string;
+    },
+    userId: string,
+  ): Promise<VehicleSubmission[]> {
     const { make, year, limit, color } = params;
     const where: Prisma.VehicleSubmissionWhereInput = {};
 
@@ -43,7 +45,7 @@ abstract class VehicleService {
     if (color) where.color = color;
     where.submittedById = userId;
 
-    return await prisma.vehicleSubmission.findMany({
+    return await db.vehicleSubmission.findMany({
       where,
       take: limit,
     });
@@ -62,7 +64,7 @@ abstract class VehicleService {
 
     console.log(`❌ Cache MISS for vehicle ${id}`);
 
-    const vehicle = await prisma.vehicle.findUnique({
+    const vehicle = await db.vehicle.findUnique({
       where: { id, isActive },
     });
 
@@ -115,9 +117,9 @@ abstract class VehicleService {
   static async updateVehicle(
     id: string,
     updates: Partial<Vehicle> & { image?: File },
-    ): Promise<PublicVehicle | null> {
+  ): Promise<PublicVehicle | null> {
     // 1. Update in database
-    const updatedVehicle: Vehicle | null = await prisma.vehicle.update({
+    const updatedVehicle: Vehicle | null = await db.vehicle.update({
       where: { id, isActive: true },
       data: updates,
     });
@@ -152,11 +154,13 @@ abstract class VehicleService {
   static async submitVehicle(
     body: VehicleSubmissionCreateInput & { image?: File },
     userId: string,
-    ): Promise<PublicVehicleSubmission | null> {
+  ): Promise<PublicVehicleSubmission | null> {
     // 1. Update in database
     const submission: VehicleSubmission | null =
-      await prisma.vehicleSubmission.upsert({
-        where: { plate_submittedById: { plate: body.plate, submittedById: userId } },
+      await db.vehicleSubmission.upsert({
+        where: {
+          plate_submittedById: { plate: body.plate, submittedById: userId },
+        },
         update: {
           ...body,
         },
@@ -164,8 +168,8 @@ abstract class VehicleService {
           ...body,
           submittedBy: {
             connect: {
-              id: userId
-            }
+              id: userId,
+            },
           },
         },
       });
@@ -184,7 +188,9 @@ abstract class VehicleService {
       delete (submission as any).photos;
     }
 
-    console.log(`🔄 Submitted vehicle ${submission.plate} and invalidated cache`);
+    console.log(
+      `🔄 Submitted vehicle ${submission.plate} and invalidated cache`,
+    );
     const updatedStripped: PublicVehicleSubmission = strip(
       submission,
       PublicVehicleSubmissionFields,
@@ -203,7 +209,7 @@ abstract class VehicleService {
   private static async handleVehicleImage(
     vehicleId: string,
     imageFile: File,
-    ): Promise<void> {
+  ): Promise<void> {
     try {
       // Create unique filename
       const extension = imageFile.name.split(".").pop() || "jpg";
@@ -224,7 +230,7 @@ abstract class VehicleService {
       );
 
       // Update vehicle with image key
-      await prisma.vehicle.update({
+      await db.vehicle.update({
         where: { id: vehicleId },
         data: { photo: fileName },
       });
@@ -235,10 +241,10 @@ abstract class VehicleService {
   }
 
   static async computeConsensus(plate: string) {
-    const submissions = await prisma.vehicleSubmission.findMany({
+    const submissions = await db.vehicleSubmission.findMany({
       where: { plate },
       orderBy: { createdAt: "asc" },
-      include: { photos: true }
+      include: { photos: true },
     });
 
     if (!submissions.length) return null;
@@ -270,7 +276,7 @@ abstract class VehicleService {
       result.photos = null;
     } else {
       // TODO: Fix this
-      result.photos = null // this.findConsensusPhoto(photos[0]);
+      result.photos = null; // this.findConsensusPhoto(photos[0]);
     }
 
     return result;

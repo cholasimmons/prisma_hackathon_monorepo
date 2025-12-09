@@ -1,5 +1,5 @@
 import { checkEnvVariables } from "~/utils/system/env-checker";
-import prisma from "../prisma";
+import db from "~/utils/database/client";
 import { cache } from "~/utils/cache/index";
 
 const requiredEnvVars = [
@@ -31,7 +31,9 @@ const systemBoot = async () => {
   try {
     // List all required environment variables
     await new Promise<void>((resolve) => {
-      console.info(`| Checking environment variables (${process.env.NODE_ENV})...`);
+      console.info(
+        `| Checking environment variables (${process.env.NODE_ENV})...`,
+      );
       checkEnvVariables(requiredEnvVars);
       setTimeout(() => {
         return resolve();
@@ -39,15 +41,15 @@ const systemBoot = async () => {
     });
 
     console.info("| Checking database connection (Postgres)...");
-    await prisma.$connect();
+    await db.$connect();
     console.log("| ✅");
 
     console.info("| Checking cache connection (Redis)...");
     const redisConnected = cache.connect(); // ("system:booted", "true");
-    if(redisConnected === true) {
+    if (redisConnected === true) {
       console.log("| ✅");
     } else {
-      console.error("| ✖️");
+      console.error("| ✖️ Redis");
     }
 
     // console.log("👍🏼 System booted.");
@@ -65,7 +67,7 @@ const systemOff = async () => {
     // await s3
     // console.info("| Bucket storage offline.");
 
-    await prisma.$disconnect();
+    await db.$disconnect();
     console.info("| Database offline.");
 
     cache.close();

@@ -1,4 +1,4 @@
-import prisma from "~/utils/prisma";
+import db from "~/utils/database/client";
 
 class AuditService {
   async log(opts: {
@@ -7,7 +7,7 @@ class AuditService {
     entity?: string;
     metadata?: any;
   }) {
-    return prisma.auditEvent.create({
+    return db.auditEvent.create({
       data: {
         actorId: opts.actorId ?? null,
         eventType: opts.eventType,

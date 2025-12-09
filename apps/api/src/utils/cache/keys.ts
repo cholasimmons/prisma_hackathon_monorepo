@@ -19,6 +19,11 @@ export const CacheKeys = {
     submissionByPlate: (plate: string) => `vehicleSubmission:plate:${plate}`,
   },
 
+  logos: {
+    all: "logos:all",
+    byName: (name: string) => `logos:${name}`,
+  },
+
   auth: {
     emailOtp: (email: string) => `auth:otp:${email}`,
     rateLimit: (ip: string) => `auth:rl:${ip}`,

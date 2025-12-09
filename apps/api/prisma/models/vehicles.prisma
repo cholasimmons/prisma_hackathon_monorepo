@@ -7,6 +7,7 @@ model Vehicle {
   photo          String?
   color          String
   year           Int?
+  forSale        Boolean?
   /// @prismabox.input.hide
   isActive       Boolean  @default(true)
   /// @prismabox.input.hide
@@ -31,6 +32,7 @@ model VehicleSubmission {
   height         Int?
   color          String?
   year           Int?
+  forSale        Boolean?
   /// @prismabox.input.hide
   submittedById    String
   submittedBy      User?    @relation(fields: [submittedById], references: [id])

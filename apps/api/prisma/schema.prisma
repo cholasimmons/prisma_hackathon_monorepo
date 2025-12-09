@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["auth", "vehicles", "logs"]
+  schemas  = ["auth", "vehicles", "logos", "logs"]
 }
 
 generator prismabox {
