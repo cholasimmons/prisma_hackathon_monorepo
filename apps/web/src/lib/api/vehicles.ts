@@ -1,8 +1,5 @@
-import { PUBLIC_API_BASE_URL } from '$lib/env';
 import type { Vehicle, VehicleSearchResult } from '$lib/models/vehicle.model';
 import { api } from './client';
-
-const API_BASE = PUBLIC_API_BASE_URL; // ElysiaJS backend assumed at /api
 
 export async function searchVehicles(plate: string): Promise<Vehicle[]> {
 	// Normalize on client — but backend should also normalize!

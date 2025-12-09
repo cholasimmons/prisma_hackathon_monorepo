@@ -34,7 +34,10 @@ const root = new Elysia({
   )
   .use(
     cors({
-      origin: ["http://localhost:5173", "https://ploice.simmons.studio"],
+      origin:
+        process.env.NODE_ENV === "production"
+          ? [process.env.ORIGIN_URL ?? "https://plates.simmons.studio"]
+          : ["http://localhost:5173"],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -47,7 +50,7 @@ const root = new Elysia({
   .use(
     rateLimit({
       scoping: "global",
-      max: 60,
+      max: process.env.NODE_ENV === "production" ? 60 : 10,
       duration: 60 * 1000,
       errorResponse: "Server rate limit exceeded",
     }),
@@ -109,11 +112,10 @@ const root = new Elysia({
   // .onStart(systemBoot)
   .onStop(systemOff);
 
-systemBoot()
-  .then(() => {
-    root.listen(PORT, () => {
-      console.log(
-        `🦊 Backend running at ${root.server?.hostname}:${root.server?.port}`,
-      );
-    })
+systemBoot().then(() => {
+  root.listen(PORT, () => {
+    console.log(
+      `🦊 Backend running at ${root.server?.hostname}:${root.server?.port}`,
+    );
   });
+});

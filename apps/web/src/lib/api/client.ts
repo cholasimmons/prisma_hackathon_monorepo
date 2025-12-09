@@ -1,4 +1,4 @@
-import { PUBLIC_API_BASE_URL } from '$lib/env';
+import { API_BASE_URL } from '$lib/env';
 
 // Response shape expected from *all* Elysia endpoints
 interface ApiResponse<T = unknown> {
@@ -45,7 +45,7 @@ async function request<T>(
 ): Promise<T> {
 	const { timeout = 10_000, retries = 2, headers = {}, body } = options;
 
-	const url = new URL(path, PUBLIC_API_BASE_URL).href;
+	const url = new URL(path, API_BASE_URL).href;
 
 	const baseHeaders: HeadersInit = {
 		'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ async function raw(input: string | URL | Request, init?: RequestInit): Promise<R
 			? input.url
 			: input instanceof URL
 				? input.href
-				: new URL(input, PUBLIC_API_BASE_URL).href;
+				: new URL(input, API_BASE_URL).href;
 
 	const baseInit: RequestInit = {
 		headers: {

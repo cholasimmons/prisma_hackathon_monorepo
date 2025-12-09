@@ -1,20 +1,24 @@
+import type { VehiclePhoto } from './photo.model';
+
 interface Vehicle {
 	id: string;
 	plate: string;
 	make: string;
 	model?: string | null;
-	photo?: string | null;
+	photos?: string[] | null;
+	color: string;
 	year?: number | null;
-	color: string | null;
 	forSale: boolean | null;
+	updateAt?: Date;
 }
 
 interface VehicleSubmission {
 	id: string;
 	plate: string;
-	make: string | null;
+	make: string;
 	model?: string | null;
-	color: string | null;
+	photo?: VehiclePhoto | null;
+	color: string;
 	year?: number | null;
 	forSale?: boolean | null;
 }

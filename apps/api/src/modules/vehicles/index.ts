@@ -11,7 +11,7 @@ const vehiclesController = new Elysia({
 })
   .use(betterAuth)
 
-  // Search final vehicles
+  // Get final vehicles
   .get(
     "/",
     async ({ status, query }) => {
@@ -30,7 +30,7 @@ const vehiclesController = new Elysia({
         year: t.Optional(t.Numeric()),
         limit: t.Optional(t.Numeric()),
         color: t.Optional(t.String()),
-      })
+      }),
     },
   )
 
@@ -38,11 +38,14 @@ const vehiclesController = new Elysia({
   .get(
     "/submissions",
     async ({ status, query, session }) => {
-      const vehicles = await VehicleService.searchSubmittedVehicles({
-        make: query.make,
-        year: query.year ? query.year : undefined,
-        limit: query.limit ? query.limit : 10,
-      }, session.userId);
+      const vehicles = await VehicleService.searchSubmittedVehicles(
+        {
+          make: query.make,
+          year: query.year ? query.year : undefined,
+          limit: query.limit ? query.limit : 10,
+        },
+        session.userId,
+      );
 
       status(200);
       return { data: vehicles };
@@ -54,7 +57,7 @@ const vehiclesController = new Elysia({
         limit: t.Optional(t.Numeric()),
         color: t.Optional(t.String()),
       }),
-      auth: true
+      auth: true,
     },
   )
 
@@ -79,7 +82,33 @@ const vehiclesController = new Elysia({
     },
   )
 
-  .post( "/",
+  // Search final vehicles
+  .get(
+    "/search",
+    async ({ status, query }) => {
+      const vehicles = await VehicleService.searchVehicles({
+        make: query.make,
+        year: query.year ? query.year : undefined,
+        limit: query.limit ? query.limit : 10,
+      });
+
+      status(200);
+      return { data: vehicles };
+    },
+    {
+      query: t.Object({
+        make: t.Optional(t.String()),
+        year: t.Optional(t.Numeric()),
+        limit: t.Optional(t.Numeric()),
+        color: t.Optional(t.String()),
+      }),
+    },
+  )
+
+  // POST
+
+  .post(
+    "/",
     async ({ body, status, session }) => {
       const submission = await VehicleService.submitVehicle(
         body,

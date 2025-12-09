@@ -4,7 +4,7 @@ model Vehicle {
   plate          String   @unique
   make           String
   model          String?
-  photo          String?
+  photos         VehiclePhoto[]   @relation("vehiclePhotos")
   color          String
   year           Int?
   forSale        Boolean?
@@ -23,7 +23,7 @@ model VehicleSubmission {
   plate          String
   make           String?
   model          String?
-  photos          VehiclePhoto[]
+  photos         VehiclePhoto[] @relation("vehicleSubmissionPhotos")
   /// @prismabox.input.hide
   pHash          String?
   /// @prismabox.input.hide
@@ -49,7 +49,7 @@ model VehicleSubmission {
 model VehiclePhoto {
   /// @prismabox.input.hide
   id             String   @id @default(cuid())
-  photo          String?
+  photo          String
   /// @prismabox.input.hide
   isPrimary      Boolean  @default(false)
   /// @prismabox.input.hide
@@ -57,8 +57,9 @@ model VehiclePhoto {
   verifiedBy     User?    @relation("VehiclePhotoVerifiedBy",fields: [verifiedById], references: [id])
   verifiedAt     DateTime?
   /// @prismabox.input.hide
-  vehicleId      String
-  vehicle        VehicleSubmission @relation(fields: [vehicleId], references: [id])
+  submittedVehicleId      String
+  submittedVehicle        VehicleSubmission @relation("vehicleSubmissionPhotos", fields: [submittedVehicleId], references: [id])
+  vehicles       Vehicle[] @relation("vehiclePhotos")
   /// @prismabox.input.hide
   createdAt      DateTime @default(now())
   /// @prismabox.input.hide

@@ -209,10 +209,10 @@
 						<div class="p-4 sm:p-5">
 							<div class="flex flex-col sm:flex-row gap-4">
 								<!-- Photo (if exists) -->
-								{#if vehicle.photo}
+								{#if vehicle.photos}
 									<div class="shrink-0 w-20 h-20 rounded overflow-hidden bg-gray-100">
 										<img
-											src={vehicle.photo}
+											src={vehicle.photos[0]}
 											alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
 											class="w-full h-full object-cover"
 											loading="lazy"

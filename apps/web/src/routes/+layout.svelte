@@ -8,7 +8,7 @@
 	import '@fontsource/rubik-mono-one';
 
 	import { onMount } from 'svelte';
-	import { fetchLogos } from '$lib/state/logos.svelte';
+	import { logos, fetchLogos } from '$lib/state/logos.svelte';
 
 	let { children } = $props();
 
@@ -29,7 +29,10 @@
 	onMount(() => {
 		try {
 			fetchLogos()
-				.then(() => resolveLogos())
+				.then(() => {
+					resolveLogos();
+					console.log(logos.length + ' logos found');
+				})
 				.catch(() => rejectLogos());
 			// toast('Welcome!', { icon: '👋' });
 		} catch (err) {
