@@ -34,14 +34,21 @@ const root = new Elysia({
   )
   .use(
     cors({
-      origin:
-        process.env.NODE_ENV === "production"
-          ? [process.env.ORIGIN_URL ?? "https://plates.simmons.studio"]
-          : ["http://localhost:5173"],
+      origin: (req) => {
+        const origin = req.headers.get("origin");
+        if (!origin) return false; // server-to-server requests
+
+        if (process.env.NODE_ENV === "production") {
+          return /https:\/\/(.*\.)?simmons\.studio$/.test(origin);
+        } else {
+          // allow localhost dev
+          return origin === "http://localhost:5173";
+        }
+      },
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
-    }),
+    }).as("global"),
   )
   .use(helmet())
   .use(elysiaXSS({}))
