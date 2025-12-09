@@ -118,7 +118,7 @@
 	<title>Vehicle Registration Search</title>
 </svelte:head>
 
-<main class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6">
+<main class="min-h-full py-12 px-4 sm:px-6">
 	<div class="max-w-xl m-auto text-center">
 		<div class="mb-6">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />

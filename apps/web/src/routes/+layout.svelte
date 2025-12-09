@@ -88,6 +88,13 @@
 	<title>Vehicle Directory</title>
 </svelte:head>
 
-{@render children()}
+<main class="flex flex-col justify-center min-h-screen w-full bg-gray-100">
+	<div class="grow flex justify-center w-full pt-12">{@render children()}</div>
+	<footer class="py-4 text-center">
+		<small class="text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300">
+			<a href="https://simmons.studio">Simmons Studio</a>
+		</small>
+	</footer>
+</main>
 
 <Toaster position="bottom-center" />
