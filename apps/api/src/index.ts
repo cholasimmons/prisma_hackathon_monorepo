@@ -45,7 +45,8 @@ const root = new Elysia({
           return origin === "http://localhost:5173";
         }
       },
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      aot: false,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
     }).as("global"),
