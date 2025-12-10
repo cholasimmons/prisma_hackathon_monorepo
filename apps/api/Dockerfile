@@ -6,10 +6,17 @@ WORKDIR /app
 # Install dependencies (dev + prod)
 # --------------------------------------
 FROM base AS install
-COPY package.json bun.lock prisma start.sh ./
+COPY package.json prisma start.sh ./
 COPY tsconfig.json prisma.config.ts ./
+
+# if bun.lock exists, good; if not, it won't break
+RUN if [ -f bun.lock ]; then echo "Lockfile found"; else echo "No lockfile"; fi
+# This won't break the build
+COPY bun.lock bun.lock 2>/dev/null || true
+
 # Skip running postinstall scripts for now
 ENV npm_config_ignore_scripts=true
+
 RUN bun install
 # --frozen-lockfile
 

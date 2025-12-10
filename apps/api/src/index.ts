@@ -117,6 +117,14 @@ const root = new Elysia({
     return { data: info, success: true, message: "Root service is healthy" };
   })
 
+  .onAfterHandle(({ request, set }) => {
+    const origin = request.headers.get("origin");
+
+    if (origin === (process.env.ORIGIN_URL || "http://localhost:3000")) {
+      set.headers["Access-Control-Allow-Origin"] = origin;
+    }
+  })
+
   // .onStart(systemBoot)
   .onStop(systemOff);
 
