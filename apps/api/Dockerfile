@@ -6,8 +6,7 @@ WORKDIR /app
 # Install dependencies (dev + prod)
 # --------------------------------------
 FROM base AS install
-COPY package.json prisma start.sh ./
-COPY tsconfig.json prisma.config.ts ./
+COPY package.json prisma start.sh tsconfig.json prisma.config.ts ./
 COPY bun.lock* ./
 
 # if bun.lock exists, good; if not, it won't break
@@ -19,7 +18,8 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 ENV npm_config_ignore_scripts=true
 
 RUN bun install
-# --frozen-lockfile
+# Try frozen first, fallback to regular install
+# RUN bun install --frozen-lockfile 2>/dev/null || bun install
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
@@ -72,4 +72,4 @@ ENV PORT=3000
 USER bun
 EXPOSE 3000/tcp
 
-CMD [ "./start.sh" ]
+ENTRYPOINT [ "./start.sh" ]

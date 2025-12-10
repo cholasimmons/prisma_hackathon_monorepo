@@ -2,19 +2,22 @@
 
 # Fail fast
 set -e
-
-echo "Waiting for database..."
+set -x
 
 # Replace with your actual DB host + port
-DB_HOST="${DATABASE_HOST}"
+DB_HOST="${DATABASE_HOST:-tkgcg48cg8w0wk4sw8gw8wcc}"
 DB_PORT="${DATABASE_PORT:-5432}"
 
+echo "Waiting for database at $DB_HOST:$DB_PORT..."
+
 while ! nc -z "$DB_HOST" "$DB_PORT"; do
-  sleep 1
+    echo "DB not ready, retrying in 3s..."
+    sleep 3
 done
 
 echo "Database ready."
 
+# Apply Prisma migrations
 echo "Applying Prisma migrations..."
 bunx prisma migrate deploy
 
@@ -26,5 +29,5 @@ else
   echo "No seed file found, skipping..."
 fi
 
-echo "Starting Elysia app..."
-exec ./server # bun run ./dist/index.js
+echo "Loading Elysia app..."
+exec ./server # bun run ./dist/index.ts

@@ -8,6 +8,7 @@
     "build": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/index.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "prisma db seed",
     "start": "bun run src/index.ts",
     "_post_install": "prisma generate && prisma migrate deploy"
   },
