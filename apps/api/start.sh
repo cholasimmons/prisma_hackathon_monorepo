@@ -10,12 +10,12 @@ DB_PORT="${DATABASE_PORT:-5432}"
 
 echo "Waiting for database at $DB_HOST:$DB_PORT..."
 
-while ! nc -z "$DB_HOST" "$DB_PORT"; do
-    echo "DB not ready, retrying in 3s..."
-    sleep 3
-done
+# while ! nc -z "$DB_HOST" "$DB_PORT"; do
+#     echo "DB not ready, retrying in 3s..."
+#     sleep 3
+# done
 
-echo "Database ready."
+# echo "Database ready."
 
 # Apply Prisma migrations
 echo "Applying Prisma migrations..."
