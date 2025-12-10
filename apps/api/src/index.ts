@@ -117,11 +117,17 @@ const root = new Elysia({
     return { data: info, success: true, message: "Root service is healthy" };
   })
 
+  // doing CORS' job! 🤦‍♂️
   .onAfterHandle(({ request, set }) => {
     const origin = request.headers.get("origin");
 
     if (origin === (process.env.ORIGIN_URL || "http://localhost:3000")) {
       set.headers["Access-Control-Allow-Origin"] = origin;
+      set.headers["Access-Control-Allow-Methods"] =
+        "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+      set.headers["Access-Control-Allow-Headers"] =
+        "Content-Type, Authorization";
+      set.headers["x-powered-by"] = "Simmons Multimedia";
     }
   })
 

@@ -8,11 +8,12 @@ WORKDIR /app
 FROM base AS install
 COPY package.json prisma start.sh ./
 COPY tsconfig.json prisma.config.ts ./
+COPY bun.lock* ./
 
 # if bun.lock exists, good; if not, it won't break
-RUN if [ -f bun.lock ]; then echo "Lockfile found"; else echo "No lockfile"; fi
-# This won't break the build
-COPY bun.lock bun.lock 2>/dev/null || true
+RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No lockfile present"; fi
+# This won't break the build either
+# RUN cp bun.lock bun.lock 2>/dev/null || true
 
 # Skip running postinstall scripts for now
 ENV npm_config_ignore_scripts=true
