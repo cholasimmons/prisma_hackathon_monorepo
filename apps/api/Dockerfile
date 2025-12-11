@@ -36,7 +36,7 @@ RUN echo "Prisma CLI version:" && bunx prisma --version || echo "Prisma CLI not 
 RUN cat prisma/schema.prisma || echo "No schema.prisma file"
 
 RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
-RUN bun run prisma:generate || (echo "Prisma generate failed" && exit 1)
+RUN bun run prisma:generate
 
 RUN bun run build
 
