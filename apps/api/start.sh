@@ -5,8 +5,8 @@ set -e
 set -x
 
 # Replace with your actual DB host + port
-DB_HOST="${DATABASE_HOST:-'prisma-postgres-db'}"
-DB_PORT="${DATABASE_PORT:-5432}"
+DB_HOST="${DATABASE_HOST:-109.199.117.240}"
+DB_PORT="${DATABASE_PORT:-32781}"
 
 echo "Waiting for database at $DB_HOST:$DB_PORT..."
 

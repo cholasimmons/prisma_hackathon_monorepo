@@ -3,6 +3,7 @@
 	import { searchVehicles } from '$lib/api/vehicles';
 	import type { Vehicle } from '$lib/models/vehicle.model';
 	import { toast } from 'svelte-french-toast';
+	import { goto } from '$app/navigation';
 
 	let loadingLogos = getContext('loading');
 
@@ -93,6 +94,11 @@
 		}
 	}
 
+	function submitVehicle() {
+		// Implement logic to submit a new vehicle
+		goto('/submit');
+	}
+
 	function handleInput(e: any) {
 		clearTimeout(debounceTimer);
 		debounceTimer = window.setTimeout(search, 600);
@@ -124,7 +130,9 @@
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />
 		</div>
 
-		<h1 class="text-2xl font-normal text-center text-gray-900 mb-4">Vehicle Registration Search</h1>
+		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-4">
+			Vehicle Registration Search
+		</h1>
 		<small></small>
 
 		<!-- Search Bar -->
@@ -137,8 +145,8 @@
 				onblur={handleBlur}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full px-5 py-3 rounded-full shadow-md
-				border-gray-300
+				class="w-full px-5 py-3 rounded-2xl shadow-md
+				border-gray-300 bg-gray-100 dark:bg-gray-600
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
 				plates plate-input--reflective text-7xl text-center text-gray-700"
@@ -201,6 +209,12 @@
 				</svg>
 				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
 				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
+				<button
+					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
+					onclick={() => submitVehicle()}
+				>
+					Add a Vehicle
+				</button>
 			</div>
 		{:else if vehicles.length > 0}
 			<div class="space-y-4">

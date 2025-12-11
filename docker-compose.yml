@@ -35,3 +35,7 @@ services:
   #   restart: "no"
   #   environment:
   #     DATABASE_URL: ${DATABASE_URL}
+networks:
+  coolify:
+    external: true # ← crucial: don't create, just attach
+    name: coolify # ← exact name from `docker network ls`
