@@ -5,8 +5,8 @@ set -e
 set -x
 
 # Replace with your actual DB host + port
-DB_HOST="${DATABASE_HOST:-109.199.117.240}"
-DB_PORT="${DATABASE_PORT:-32781}"
+DB_HOST="${DATABASE_HOST:-vcso884sgwsggw0004ogss0k}"
+DB_PORT="${DATABASE_PORT:-5432}"
 
 echo "Waiting for database at $DB_HOST:$DB_PORT..."
 
@@ -19,7 +19,7 @@ echo "Database ready."
 
 # Apply Prisma migrations
 echo "Applying Prisma migrations..."
-bunx prisma migrate deploy
+bun run prisma:migrate
 
 # Run Prisma seed
 if [ -f ./prisma/seed.ts ] || [ -f ./prisma/seed.js ]; then

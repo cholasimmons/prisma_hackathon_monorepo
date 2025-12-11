@@ -124,9 +124,9 @@
 	<title>Vehicle Registration Search</title>
 </svelte:head>
 
-<main class="min-h-full py-12 px-4 sm:px-6">
+<main class="min-h-full py-12 px-8 sm:px-6">
 	<div class="max-w-xl m-auto text-center">
-		<div class="mb-6">
+		<div class="mb-10">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />
 		</div>
 
@@ -145,11 +145,11 @@
 				onblur={handleBlur}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full px-5 py-3 rounded-2xl shadow-md
+				class="w-full px-6 py-2 rounded-2xl shadow-md
 				border-gray-300 bg-gray-100 dark:bg-gray-600
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
-				plates plate-input--reflective text-7xl text-center text-gray-700"
+				plates plate-input--reflective text-7xl text-center text-gray-800"
 				autocomplete="off"
 				autoCapitalize="characters"
 				inputmode="text"
@@ -186,7 +186,7 @@
 							/>
 						</svg>
 					</div>
-					<div class="ml-3">
+					<div class="ml-3 text-start">
 						<p class="text-sm text-red-700 font-medium">Error:</p>
 						<p class="text-sm text-red-600">{error}</p>
 					</div>
@@ -272,7 +272,7 @@
 		{:else}
 			<!-- Initial state: no search yet -->
 			<div class="text-center py-12 text-gray-500">
-				Enter a registration number above to begin searching.
+				Enter a registration number to begin searching.
 			</div>
 		{/if}
 	</div>
