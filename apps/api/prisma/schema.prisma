@@ -13,7 +13,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   schemas  = ["auth", "vehicles", "logos", "logs"]
-  // url      = env("DATABASE_URL") // You can safely ignore the error on this line.
+  // url      = env('DATABASE_URL') // You can safely ignore the error on this line.
 }
 
 generator prismabox {
