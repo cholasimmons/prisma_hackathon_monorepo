@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e # stop entire script on first error (Fail-fast)
+# set -e # stop entire script on first error (Fail-fast)
 # set -x # print every command before executing it
 
 # Replace with your actual DB host + port
