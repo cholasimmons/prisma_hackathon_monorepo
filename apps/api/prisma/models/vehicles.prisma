@@ -59,7 +59,9 @@ model VehiclePhoto {
   /// @prismabox.input.hide
   submittedVehicleId      String
   submittedVehicle        VehicleSubmission @relation("vehicleSubmissionPhotos", fields: [submittedVehicleId], references: [id])
-  vehicles       Vehicle[] @relation("vehiclePhotos")
+
+  vehicleId      String
+  vehicle        Vehicle @relation("vehiclePhotos", fields: [vehicleId], references: [id], onDelete: Cascade)
   /// @prismabox.input.hide
   createdAt      DateTime @default(now())
   /// @prismabox.input.hide
