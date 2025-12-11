@@ -19,7 +19,7 @@ echo "Database ready."
 
 # Apply Prisma migrations
 echo "Applying Prisma migrations..."
-bun run prisma:migrate
+bunx prisma migrate deploy
 
 # Run Prisma seed
 if [ -f ./prisma/seed.ts ] || [ -f ./prisma/seed.js ]; then
