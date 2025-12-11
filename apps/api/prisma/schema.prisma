@@ -7,12 +7,13 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  engineType = "client" // enable Prisma ORM without Rust
 }
 
 datasource db {
   provider = "postgresql"
   schemas  = ["auth", "vehicles", "logos", "logs"]
-  url      = env("DATABASE_URL") // You can safely ignore the error on this line.
+  // url      = env("DATABASE_URL") // You can safely ignore the error on this line.
 }
 
 generator prismabox {
