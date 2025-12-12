@@ -261,7 +261,9 @@ abstract class VehicleService {
 
     // 1. Majority vote for each attribute
     for (const field of fields) {
-      const votes = submissions.map((s) => s[field]).filter(Boolean);
+      const votes = submissions
+        .map((s: VehicleSubmission) => s[field])
+        .filter(Boolean);
 
       if (votes.length === 0) {
         result[field] = null;
@@ -276,14 +278,14 @@ abstract class VehicleService {
     }
 
     // 2. Determine the best photo by clustering pHashes
-    const photos = submissions.filter((s) => s.photos && s.pHash);
+    // const photos = submissions.filter((s: VehicleSubmission) => s.photos && s.pHash);
 
-    if (!photos.length) {
-      result.photos = null;
-    } else {
-      // TODO: Fix this
-      result.photos = null; // this.findConsensusPhoto(photos[0]);
-    }
+    // if (!photos.length) {
+    //   result.photos = null;
+    // } else {
+    //   // TODO: Fix this
+    //   result.photos = null; // this.findConsensusPhoto(photos[0]);
+    // }
 
     return result;
   }

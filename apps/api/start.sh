@@ -21,12 +21,6 @@ ls -la prisma/ 2>/dev/null || echo "⚠️ prisma/ not found"
 echo "📂 src/ directory:"
 ls -la src/ 2>/dev/null || echo "⚠️ src/ not found"
 
-echo "📂 src/generated/ directory:"
-ls -la src/generated/ 2>/dev/null || echo "⚠️ src/generated/ not found"
-
-echo "📂 src/generated/prisma/ directory:"
-ls -la src/generated/prisma/ 2>/dev/null || echo "⚠️ src/generated/prisma/ not found"
-
 # echo "📄 prisma/schema.prisma (if exists):"
 # cat prisma/schema.prisma 2>/dev/null || echo "⚠️ schema.prisma not found"
 
@@ -64,7 +58,7 @@ bunx prisma migrate deploy
 # Run Prisma seed
 if [ -f ./prisma/seed.ts ] || [ -f ./prisma/seed.js ]; then
     echo "🌱 Seeding database..."
-    bunx prisma db seed
+    bun ./prisma/seed.ts
 else
     echo "⏩ No seed file found, skipping..."
 fi
