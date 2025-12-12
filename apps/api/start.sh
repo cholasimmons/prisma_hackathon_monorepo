@@ -18,13 +18,22 @@ ls -la
 echo "📂 prisma/ directory:"
 ls -la prisma/ 2>/dev/null || echo "⚠️ prisma/ not found"
 
+echo "📂 src/ directory:"
+ls -la src/ 2>/dev/null || echo "⚠️ src/ not found"
+
+echo "📂 src/generated/ directory:"
+ls -la src/generated/ 2>/dev/null || echo "⚠️ src/generated/ not found"
+
+echo "📂 src/generated/prisma/ directory:"
+ls -la src/generated/prisma/ 2>/dev/null || echo "⚠️ src/generated/prisma/ not found"
+
 # echo "📄 prisma/schema.prisma (if exists):"
 # cat prisma/schema.prisma 2>/dev/null || echo "⚠️ schema.prisma not found"
 
 echo "📄 prisma.config.ts (if exists):"
 cat prisma.config.ts 2>/dev/null || cat prisma/prisma.config.ts 2>/dev/null || echo "⚠️ prisma.config.ts not found in either locations"
 
-echo "📦 node_modules/.prisma/client (if exists):"
+echo "📦 prisma/client (if exists):"
 ls -la src/generated/prisma/client 2>/dev/null || echo "⚠️ Prisma Client not generated (yet)"
 
 # Replace with your actual DB host + port

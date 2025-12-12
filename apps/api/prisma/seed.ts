@@ -1,4 +1,4 @@
-import db from "~/utils/database/client";
+import db from "../src/utils/database/client";
 
 async function main() {
   console.log("🌱 Seeding database...");
