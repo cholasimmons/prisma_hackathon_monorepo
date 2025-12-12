@@ -57,7 +57,7 @@ const logosController = new Elysia({
             id: t.String(),
           }),
           body: t.Object({
-            name: t.Optional(t.String()),
+            name: t.String(),
             image: t.Optional(
               t.File({
                 type: "image/*",
@@ -67,9 +67,8 @@ const logosController = new Elysia({
               }),
             ),
           }),
-        },
-        auth: true
-      ),
+          auth: true
+        }),
   )
 
   // Get all logos
@@ -96,8 +95,8 @@ const logosController = new Elysia({
   )
 
   .get("/health", ({ status }) => {
-    status(200);
-    return { success: true, message: "Logo service is healthy" };
+    return status(200, { success: true, message: "Logo service is healthy" });
+    // return { success: true, message: "Logo service is healthy" };
   });
 
 export default logosController;

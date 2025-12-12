@@ -1,4 +1,4 @@
-import { Logo, Vehicle, VehicleSubmission } from "@/generated/prisma/client";
+import { Logo } from "@/generated/prisma/client";
 
 const PublicLogoFields = ["id", "name", "url", "uploadSizeKb"] as const;
 

@@ -105,40 +105,53 @@ abstract class LogoService {
 
   static async updateLogo(
     id: string,
-    body: { name: string; image: File },
+    body: { name: string; image?: File },
     userId: string,
   ) {
     const { name, image } = body;
+    // const fname = name ?? Date.now().toLocaleString();
 
     try {
-      const buffer = await image.arrayBuffer();
-      const s = await sharp(buffer)
-        .rotate()
-        .resize({ width: 1280 })
-        .toFormat("webp")
-        .toBuffer();
-      const uploadSizeKb = (await s3.write(name, s)) * 1024;
-      const fileName = nameFile(name, BucketNames.logos);
+      if (image) {
+        const buffer = await image.arrayBuffer();
+        const s = await sharp(buffer)
+          .rotate()
+          .resize({ width: 1280 })
+          .toFormat("webp")
+          .toBuffer();
+        const uploadSizeKb = (await s3.write(name, s)) * 1024;
+        const fileName = nameFile(name, BucketNames.logos);
 
-      console.log(`Re-Uploaded ${uploadSizeKb}KB to ${fileName}`);
+        console.log(`Re-Uploaded ${uploadSizeKb}KB to ${fileName}`);
 
-      const updated = await db.logo.update({
-        where: {
-          id,
-        },
-        data: {
-          name,
-          url: fileName,
-          uploadSizeKb,
-          submitedById: userId,
-        },
-      });
+        const updated: Logo | null = await db.logo.upsert({
+          where: {
+            id,
+          },
+          create: {
+            name: name,
+            url: fileName,
+            uploadSizeKb,
+            submitedById: userId,
+          },
+          update: {
+            name: name,
+            url: fileName,
+            uploadSizeKb,
+            submitedById: userId,
+          },
+        });
 
-      const logo = strip(updated, PublicLogoFields);
+        if(!updated) {
+          throw new Error('Logo not found');
+        }
 
-      await cache.set<PublicLogo>(CacheKeys.logos.byName(name), logo, 4000);
+        const logo = strip(updated, PublicLogoFields);
 
-      return { success: true, logo };
+        await cache.set<PublicLogo>(CacheKeys.logos.byName(name), logo, 4000);
+
+        return { logo, success: true };
+      }
     } catch (error) {
       console.error(`Error updating logo: ${error}`);
       if (error instanceof Error) {
