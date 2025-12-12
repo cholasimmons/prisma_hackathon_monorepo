@@ -6,9 +6,6 @@
 echo "📦 Bun version:"
 bun --version
 
-echo "🔍 Prisma CLI version (via bunx):"
-bunx prisma --version
-
 echo "🔍 Prisma Engine versions:"
 bunx prisma version
 
@@ -21,8 +18,8 @@ ls -la
 echo "📂 prisma/ directory:"
 ls -la prisma/ 2>/dev/null || echo "⚠️ prisma/ not found"
 
-echo "📄 prisma/schema.prisma (if exists):"
-cat prisma/schema.prisma 2>/dev/null || echo "⚠️ schema.prisma not found"
+# echo "📄 prisma/schema.prisma (if exists):"
+# cat prisma/schema.prisma 2>/dev/null || echo "⚠️ schema.prisma not found"
 
 echo "📄 prisma.config.ts (if exists):"
 cat prisma.config.ts 2>/dev/null || cat prisma/prisma.config.ts 2>/dev/null || echo "⚠️ prisma.config.ts not found in either locations"

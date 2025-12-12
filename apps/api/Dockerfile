@@ -57,6 +57,10 @@ COPY --from=build /app/prisma ./prisma
 
 # Copy start script
 COPY --from=install /app/start.sh ./start.sh
+
+# Copy prisma.config script
+COPY --from=install /app/prisma.config.ts ./prisma.config.ts
+
 RUN chmod +x ./server
 RUN chmod +x ./start.sh
 
