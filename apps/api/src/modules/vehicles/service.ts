@@ -54,9 +54,9 @@ abstract class VehicleService {
   static async getVehicleById(
     id: string,
     isActive: boolean = true,
-  ): Promise<Vehicle | null> {
+  ): Promise<PublicVehicle | null> {
     // 1. Try cache first
-    const cached = await cache.get<Vehicle>(CacheKeys.vehicles.byId(id));
+    const cached = await cache.get<PublicVehicle>(CacheKeys.vehicles.byId(id));
     if (cached) {
       console.log(`✅ Cache HIT for vehicle ${id}`);
       return cached;
@@ -72,7 +72,13 @@ abstract class VehicleService {
       return null;
     }
 
-    await cache.set<Vehicle>(CacheKeys.vehicles.byId(id), vehicle, 600);
+    const cleanVehicle = strip(vehicle, PublicVehicleFields);
+
+    await cache.set<PublicVehicle>(
+      CacheKeys.vehicles.byId(id),
+      cleanVehicle,
+      600,
+    );
     return vehicle;
   }
 
@@ -81,7 +87,7 @@ abstract class VehicleService {
    */
   static async getVehicleWithImage(
     id: string,
-  ): Promise<(Vehicle & { imageUrl?: string }) | null> {
+  ): Promise<(PublicVehicle & { imageUrl?: string }) | null> {
     const vehicle = await this.getVehicleById(id);
 
     if (!vehicle) {
@@ -89,24 +95,24 @@ abstract class VehicleService {
     }
 
     // Generate presigned URL for the image if it exists in S3
-    if (vehicle.photo) {
-      try {
-        // Generate a URL valid for 1 hour
-        const imageUrl = s3.presign(vehicle.photo, {
-          expiresIn: 3600,
-          method: "GET",
-        });
+    // if (vehicle.photos) {
+    //   try {
+    //     // Generate a URL valid for 1 hour
+    //     const imageUrl = s3.presign(vehicle.photo, {
+    //       expiresIn: 3600,
+    //       method: "GET",
+    //     });
 
-        return {
-          ...vehicle,
-          photo: imageUrl,
-        };
-      } catch (error) {
-        console.warn(`Failed to generate image URL for vehicle ${id}:`, error);
-        // Return vehicle without image URL if S3 fails
-        return vehicle;
-      }
-    }
+    //     return {
+    //       ...vehicle,
+    //       photo: imageUrl,
+    //     };
+    //   } catch (error) {
+    //     console.warn(`Failed to generate image URL for vehicle ${id}:`, error);
+    //     // Return vehicle without image URL if S3 fails
+    //     return vehicle;
+    //   }
+    // }
 
     return vehicle;
   }
@@ -132,11 +138,11 @@ abstract class VehicleService {
     await cache.invalidate([CacheKeys.vehicles.byId(id)]);
 
     // 3. If there's an image upload, handle it
-    if (updates.image) {
-      await VehicleService.handleVehicleImage(id, updates.image);
-      // Remove the temporary imageFile property
-      delete (updatedVehicle as any).photo;
-    }
+    // if (updates.image) {
+    //   await VehicleService.handleVehicleImage(id, updates.image);
+    //   // Remove the temporary imageFile property
+    //   delete (updatedVehicle as any).photo;
+    // }
 
     console.log(`🔄 Updated vehicle ${id} and invalidated cache`);
     const updatedStripped = strip(updatedVehicle, PublicVehicleFields);
@@ -182,11 +188,11 @@ abstract class VehicleService {
     await cache.invalidate([CacheKeys.vehicles.submissionById(submission.id)]);
 
     // 3. If there's an image upload, handle it
-    if (body.image) {
-      await VehicleService.handleVehicleImage(submission.id, body.image);
-      // Remove the temporary imageFile property
-      delete (submission as any).photos;
-    }
+    // if (body.image) {
+    //   await VehicleService.handleVehicleImage(submission.id, body.image);
+    //   // Remove the temporary imageFile property
+    //   delete (submission as any).photos;
+    // }
 
     console.log(
       `🔄 Submitted vehicle ${submission.plate} and invalidated cache`,
@@ -206,39 +212,39 @@ abstract class VehicleService {
   /**
    * Handle vehicle image upload to S3
    */
-  private static async handleVehicleImage(
-    vehicleId: string,
-    imageFile: File,
-  ): Promise<void> {
-    try {
-      // Create unique filename
-      const extension = imageFile.name.split(".").pop() || "jpg";
-      const fileName = `vehicles/${vehicleId}/image-${Date.now()}.${extension}`;
+  // private static async handleVehicleImage(
+  //   vehicleId: string,
+  //   imageFile: File,
+  //   ): Promise<void> {
+  //   try {
+  //     // Create unique filename
+  //     const extension = imageFile.name.split(".").pop() || "jpg";
+  //     const fileName = `vehicles/${vehicleId}/image-${Date.now()}.${extension}`;
 
-      // Upload to S3
-      const s3File = s3.file(fileName);
-      await s3File.write(imageFile, {
-        type: imageFile.type,
-        // metadata: {
-        //   vehicleId: vehicleId.toString(),
-        //   uploadedAt: new Date().toISOString(),
-        // },
-      });
+  //     // Upload to S3
+  //     const s3File = s3.file(fileName);
+  //     await s3File.write(imageFile, {
+  //       type: imageFile.type,
+  //       // metadata: {
+  //       //   vehicleId: vehicleId.toString(),
+  //       //   uploadedAt: new Date().toISOString(),
+  //       // },
+  //     });
 
-      console.log(
-        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${fileName}`,
-      );
+  //     console.log(
+  //       `📸 Uploaded image for vehicle ${vehicleId} to S3: ${fileName}`,
+  //     );
 
-      // Update vehicle with image key
-      await db.vehicle.update({
-        where: { id: vehicleId },
-        data: { photo: fileName },
-      });
-    } catch (error) {
-      console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
-      throw new Error(`Image upload failed: ${error}`);
-    }
-  }
+  //     // Update vehicle with image key
+  //     await db.vehicle.update({
+  //       where: { id: vehicleId },
+  //       data: { photos: fileName },
+  //     });
+  //   } catch (error) {
+  //     console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
+  //     throw new Error(`Image upload failed: ${error}`);
+  //   }
+  // }
 
   static async computeConsensus(plate: string) {
     const submissions = await db.vehicleSubmission.findMany({

@@ -21,8 +21,15 @@ const vehiclesController = new Elysia({
         limit: query.limit ? query.limit : 10,
       });
 
+      if (!vehicles.length) {
+        return status(404, "No vehicles found");
+      }
+
       status(200);
-      return { data: vehicles };
+      return {
+        data: vehicles,
+        message: `Successfully retrieved ${vehicles.length} vehicles`,
+      };
     },
     {
       query: t.Object({
@@ -65,7 +72,8 @@ const vehiclesController = new Elysia({
   .get(
     "/:id",
     async ({ status, params: { id }, set }) => {
-      const vehicle: Vehicle | null = await VehicleService.getVehicleById(id);
+      const vehicle: PublicVehicle | null =
+        await VehicleService.getVehicleById(id);
 
       if (!vehicle) {
         return status(404, "Vehicle not found");
@@ -73,7 +81,7 @@ const vehiclesController = new Elysia({
 
       // Add cache headers for client-side caching
       set.headers["Cache-Control"] = "public, max-age=60";
-      return strip(vehicle, PublicVehicleFields);
+      return status(200, vehicle);
     },
     {
       params: t.Object({
@@ -92,8 +100,15 @@ const vehiclesController = new Elysia({
         limit: query.limit ? query.limit : 10,
       });
 
+      if (!vehicles.length) {
+        return status(404, "No vehicles found");
+      }
+
       status(200);
-      return { data: vehicles };
+      return {
+        data: vehicles,
+        message: `Found ${vehicles.length} vehicles`,
+      };
     },
     {
       query: t.Object({

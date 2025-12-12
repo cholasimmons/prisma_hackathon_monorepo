@@ -5,7 +5,6 @@ const PublicVehicleFields = [
   "plate",
   "make",
   "model",
-  "photo",
   "color",
   "year",
 ] as const;

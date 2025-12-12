@@ -17,9 +17,9 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 # Skip running postinstall scripts for now
 ENV npm_config_ignore_scripts=true
 
-# RUN bun install --production=false
+RUN bun install --production=false
 # Try frozen first, fallback to regular install
-RUN bun install --production=false --frozen-lockfile 2>/dev/null || bun install --production=false
+# RUN bun install --production=false --frozen-lockfile 2>/dev/null || bun install --production=false
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
