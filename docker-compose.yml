@@ -10,11 +10,11 @@ services:
     # env_file:
     #   - apps/api/.env
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+    #   interval: 30s
+    #   timeout: 3s
+    #   retries: 5
     networks:
       - coolify # ← join the existing Coolify network
 
