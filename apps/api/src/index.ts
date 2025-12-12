@@ -16,6 +16,7 @@ import {
   fileController,
 } from "~/modules/index";
 import db from "./utils/database/client";
+import logosController from "./modules/logos";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -75,6 +76,7 @@ const root = new Elysia({
   .use(authController)
   .use(vehiclesController)
   .use(fileController)
+  .use(logosController)
 
   .get("/", () => "Hello Stranger")
 
