@@ -7,9 +7,13 @@ docker-compose*
 README.md
 LICENSE
 .vscode
+.zed
 Makefile
 helm-charts
 .env
+.env/local
 .editorconfig
 .idea
 coverage*
+npm-debug.log
+bun-debug.log
