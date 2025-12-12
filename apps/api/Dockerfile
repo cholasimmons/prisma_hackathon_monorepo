@@ -1,5 +1,5 @@
 FROM oven/bun:1.3.4-alpine AS base
-RUN apk add --no-cache git wget netcat-openbsd
+RUN apk add --no-cache git wget netcat-openbsd curl
 WORKDIR /app
 
 # --------------------------------------
@@ -29,11 +29,11 @@ COPY --from=install /app/node_modules ./node_modules
 COPY . .
 
 # Debug before generating Prisma client
-RUN echo "Listing /app contents:" && ls -la
-RUN echo "Listing prisma folder:" && ls -la prisma || echo "No prisma directory"
+# RUN echo "Listing /app contents:" && ls -la
+# RUN echo "Listing prisma folder:" && ls -la prisma || echo "No prisma directory"
 RUN echo "Prisma CLI version:" && bunx prisma --version || echo "Prisma CLI not found"
 
-RUN cat prisma/schema.prisma || echo "No schema.prisma file"
+# RUN cat prisma/schema.prisma || echo "No schema.prisma file"
 
 RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
 RUN bun run prisma:generate
@@ -75,7 +75,8 @@ RUN chmod +x ./start.sh
 # ENV NODE_ENV=production
 ENV PORT=3000
 
-# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD [ "curl", "-f", "http://localhost:3000/health" ]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+CMD curl -f http://localhost:3000/health || exit 1
 
 # run the app
 

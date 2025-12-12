@@ -1,7 +1,6 @@
 import { Prisma, Vehicle, VehicleSubmission } from "@/generated/prisma/client";
 import { cache } from "~/utils/cache";
 import db from "~/utils/database/client";
-import s3 from "~/utils/s3";
 import { strip } from "~/utils/strip";
 import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import type { PublicVehicle, PublicVehicleSubmission } from "./model";
