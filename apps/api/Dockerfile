@@ -59,7 +59,7 @@ COPY --from=build /app/prisma ./prisma
 COPY --from=install /app/start.sh ./start.sh
 
 # Copy database adapter, dotenv and prisma
-COPY --from=install /app/node_modules/@prisma/adapter-pg ./node_modules/@prisma/adapter-pg
+# COPY --from=install /app/node_modules/@prisma/adapter-pg ./node_modules/@prisma/adapter-pg
 COPY --from=install /app/node_modules/dotenv ./node_modules/dotenv
 COPY --from=install /app/node_modules/prisma ./node_modules/prisma
 COPY --from=install /app/node_modules/@prisma ./node_modules/@prisma
