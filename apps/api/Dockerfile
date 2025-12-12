@@ -61,7 +61,7 @@ COPY --from=install /app/start.sh ./start.sh
 # Copy database adapter
 COPY --from=install /app/node_modules/@prisma/adapter-pg ./node_modules/@prisma/adapter-pg
 # Copy database config
-COPY --from=install /app/src/utils/database/client.ts ./src/utils/database/client.ts
+COPY src/utils/database/client.ts ./src/utils/database/client.ts
 # Copy prisma.config script
 COPY --from=install /app/prisma.config.ts ./prisma.config.ts
 
