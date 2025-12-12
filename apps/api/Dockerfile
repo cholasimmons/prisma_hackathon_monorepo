@@ -17,9 +17,9 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 # Skip running postinstall scripts for now
 ENV npm_config_ignore_scripts=true
 
-RUN bun install
+# RUN bun install --production=false
 # Try frozen first, fallback to regular install
-# RUN bun install --frozen-lockfile 2>/dev/null || bun install
+RUN bun install --production=false --frozen-lockfile 2>/dev/null || bun install --production=false
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
@@ -43,7 +43,6 @@ RUN bun run build
 # -----------------------------
 # Production (pure binary)
 # -----------------------------
-# FROM alpine:3.19 AS release
 FROM oven/bun:1.3.4-alpine AS release
 WORKDIR /app
 

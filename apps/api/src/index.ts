@@ -15,6 +15,7 @@ import {
   vehiclesController,
   fileController,
 } from "~/modules/index";
+import db from "./utils/database/client";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -103,18 +104,29 @@ const root = new Elysia({
       console.log("Client disconnected");
     },
   })
-  .get("/health", ({ status }: Context) => {
-    const info = {
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      services: {
-        redis: process.env.REDIS_HOST ? "enabled" : "disabled",
-        s3: process.env.S3_BUCKET ? "enabled" : "disabled",
-        database: process.env.DATABASE_NAME ? "enabled" : "disabled",
-      },
-    };
-    status(200);
-    return { data: info, success: true, message: "Root service is healthy" };
+  .get("/health", async ({ status }: Context) => {
+    try {
+      await db.$queryRaw`SELECT 1`;
+
+      const info = {
+        status: "ok",
+        db: "connected",
+        timestamp: new Date().toISOString(),
+        services: {
+          redis: process.env.REDIS_HOST ? "enabled" : "disabled",
+          s3: process.env.S3_BUCKET ? "enabled" : "disabled",
+          database: process.env.DATABASE_NAME ? "enabled" : "disabled",
+        },
+      };
+      status(200);
+      return { info, success: true, message: "Service is healthy" };
+    } catch (err) {
+      console.error(err);
+      return status(
+        503,
+        err instanceof Error ? err.message : (err ?? "Unknown"),
+      );
+    }
   })
 
   // doing CORS' job! 🤦‍♂️

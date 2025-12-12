@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "start": "bun run src/index.ts",
-    "_post_install": "prisma generate && prisma migrate deploy"
+    "_post_install": "prisma generate"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.0",
@@ -27,13 +27,13 @@
     "elysia-xss": "^1.0.3",
     "image-hash": "^7.0.1",
     "logestic": "^1.2.4",
-    "prisma": "^7.1.0",
     "prismabox": "^1.1.26",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/bun": "^1.3.4",
     "dotenv": "^17.2.3",
+    "prisma": "^7.1.0",
     "typescript": "^5.9.3"
   },
   "module": "src/index.js"

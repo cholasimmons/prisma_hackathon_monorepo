@@ -7,6 +7,7 @@ docker-compose*
 README.md
 LICENSE
 .vscode
+.zed
 Makefile
 helm-charts
 .env
