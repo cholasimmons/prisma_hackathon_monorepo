@@ -28,6 +28,19 @@ const root = new Elysia({
   normalize: "typebox",
 })
   .use(
+    cors({
+      origin: [
+        process.env.NODE_ENV === "production"
+          ? "*" // process.env.ORIGIN_URL!
+          : "http://localhost:5173",
+      ],
+      aot: false,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
+    }),
+  )
+  .use(
     openapi({
       documentation: {
         components: await OpenAPI.components,
@@ -35,19 +48,7 @@ const root = new Elysia({
       },
     }),
   )
-  .use(
-    cors({
-      origin: [
-        process.env.NODE_ENV === "production"
-          ? process.env.ORIGIN_URL!
-          : "http://localhost:5173",
-      ],
-      aot: false,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization"],
-    }).as("global"),
-  )
+
   .use(helmet())
   .use(elysiaXSS({}))
   .use(ip())
