@@ -3,7 +3,7 @@ import VehicleService from "./service";
 import { betterAuth } from "~/middleware/betterauth";
 import { cache } from "~/utils/cache";
 import { strip } from "~/utils/strip";
-import { PublicVehicle, PublicVehicleFields } from "./model";
+import { PublicVehicle, PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import { Vehicle } from "@/generated/prisma/client";
 
 const vehiclesController = new Elysia({
@@ -19,17 +19,19 @@ const vehiclesController = new Elysia({
         make: query.make,
         year: query.year ? query.year : undefined,
         limit: query.limit ? query.limit : 10,
+        color: query.color,
+        model: query.model ? query.model : undefined,
+        plate: query.plate,
       });
 
-      if (!vehicles.length) {
+      if (!vehicles) {
         return status(404, "No vehicles found");
       }
 
-      status(200);
-      return {
-        data: vehicles,
+      // status(200);
+      return status(200, { data: vehicles,
         message: `Successfully retrieved ${vehicles.length} vehicles`,
-      };
+      });
     },
     {
       query: t.Object({
@@ -37,6 +39,8 @@ const vehiclesController = new Elysia({
         year: t.Optional(t.Numeric()),
         limit: t.Optional(t.Numeric()),
         color: t.Optional(t.String()),
+        model: t.Optional(t.String()),
+        plate: t.Optional(t.String()),
       }),
     },
   )
@@ -45,7 +49,7 @@ const vehiclesController = new Elysia({
   .get(
     "/submissions",
     async ({ status, query, session }) => {
-      const vehicles = await VehicleService.searchSubmittedVehicles(
+      const submissions = await VehicleService.searchSubmittedVehicles(
         {
           make: query.make,
           year: query.year ? query.year : undefined,
@@ -54,8 +58,14 @@ const vehiclesController = new Elysia({
         session.userId,
       );
 
+      if (!submissions) {
+        return status(404, "No Vehicle submissions found");
+      }
+
+      const cleanSubmissions = strip(submissions, PublicVehicleSubmissionFields);
+
       status(200);
-      return { data: vehicles };
+      return { data: cleanSubmissions };
     },
     {
       query: t.Object({
@@ -100,7 +110,7 @@ const vehiclesController = new Elysia({
         limit: query.limit ? query.limit : 10,
       });
 
-      if (!vehicles.length) {
+      if (!vehicles) {
         return status(404, "No vehicles found");
       }
 

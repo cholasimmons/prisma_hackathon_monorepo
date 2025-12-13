@@ -1,8 +1,5 @@
 import { Elysia, t } from "elysia";
 import LogoService from "./service";
-import { cache } from "~/utils/cache";
-import { strip } from "~/utils/strip";
-import { Logo } from "@/generated/prisma/client";
 import { betterAuth } from "~/middleware/betterauth";
 
 const logosController = new Elysia({
@@ -75,8 +72,13 @@ const logosController = new Elysia({
   .get("/", async ({ status }) => {
     const logos = await LogoService.fetchLogos();
 
-    status(200);
-    return { data: logos };
+    if(!logos) {
+      console.error("❌ Failed to fetch logos");
+      return status(404, "Could not fetch logos");
+    }
+
+    return status(200, { data: logos, message: `Fetched ${logos.length} logos` });
+    // return { data: logos };
   })
 
   .get(
@@ -84,8 +86,13 @@ const logosController = new Elysia({
     async ({ status, params }) => {
       const logo = await LogoService.getLogoByName(params.name);
 
-      status(200);
-      return { data: logo };
+      if(!logo) {
+        console.error("❌ Failed to fetch logo");
+        return status(404, "Could not fetch logo");
+      }
+
+      return status(200, logo);
+      // return { data: logo };
     },
     {
       params: t.Object({

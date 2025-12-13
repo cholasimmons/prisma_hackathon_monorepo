@@ -9,7 +9,7 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // Create 2 vehicles
-  const [v1, v2] = await db.vehicle.createManyAndReturn({
+  const vehicles = await db.vehicle.createManyAndReturn({
     data: [
       {
         plate: "GRZ 1 Z",
@@ -18,6 +18,7 @@ async function main() {
         color: "Silver",
         year: 2020,
         forSale: true,
+        isActive: true
         // photos: {
         //   create: [
         //     { photo: 'https://example.com/toyota-front.jpg' },
@@ -32,11 +33,17 @@ async function main() {
         color: "Blue",
         year: 2022,
         forSale: false,
+        isActive: true
       },
     ],
     select: { id: true, plate: true },
     skipDuplicates: true,
   });
+
+  if(!vehicles) {
+    console.error("❌ Failed to create vehicles");
+    process.exit(1);
+  }
 
   // Optional: Add photos to vehicles
   // await db.vehiclePhoto.createMany({
@@ -49,7 +56,7 @@ async function main() {
   //   ],
   // });
 
-  console.log(`✅ Created vehicles: ${v1.plate}, ${v2.plate}`);
+  console.log(`✅ Created vehicles: ${vehicles[0].plate}, ${vehicles[1].plate}`);
 }
 
 main()

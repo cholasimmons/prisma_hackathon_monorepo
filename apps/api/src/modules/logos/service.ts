@@ -1,8 +1,6 @@
 import {
   Logo,
-  Prisma,
-  Vehicle,
-  VehicleSubmission,
+  Prisma
 } from "@/generated/prisma/client";
 import { cache } from "~/utils/cache";
 import db from "~/utils/database/client";
@@ -29,12 +27,18 @@ abstract class LogoService {
       return null;
     }
 
-    return strip(logos, PublicLogoFields);
+    await cache.del(CacheKeys.logos.all);
+
+    const cleanLogos = strip(logos, PublicLogoFields);
+
+    await cache.set<PublicLogo[]>(CacheKeys.logos.all, cleanLogos, 6000);
+
+    return cleanLogos;
   }
 
   static async getLogoByName(
     name: string,
-    isActive: boolean = true,
+    isAdmin: boolean = false,
   ): Promise<PublicLogo | null> {
     // 1. Try cache first
     const cached = await cache.get<PublicLogo>(CacheKeys.logos.byName(name));
@@ -48,7 +52,7 @@ abstract class LogoService {
     const logo = await db.logo.findUnique({
       where: {
         name,
-        isActive,
+        isActive: isAdmin ? undefined : true,
       },
     });
 

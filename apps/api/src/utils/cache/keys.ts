@@ -21,6 +21,7 @@ export const CacheKeys = {
 
   logos: {
     all: "logos:all",
+    everything: "logos:*",
     byName: (name: string) => `logos:${name}`,
   },
 

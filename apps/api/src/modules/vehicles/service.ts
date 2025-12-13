@@ -6,6 +6,7 @@ import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import type { PublicVehicle, PublicVehicleSubmission } from "./model";
 import { CacheKeys } from "~/utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
+import { dmmfToRuntimeDataModel } from "@prisma/client/runtime/client";
 
 abstract class VehicleService {
   static async searchVehicles(params: {
@@ -13,18 +14,35 @@ abstract class VehicleService {
     year?: number;
     limit?: number;
     color?: string;
-  }): Promise<Vehicle[]> {
-    const { make, year, limit, color } = params;
+    model?: string;
+    plate?: string;
+  }, isAdmin: boolean = false): Promise<PublicVehicle[] | null> {
+    const { make, year, limit, color, model, plate } = params;
     const where: Prisma.VehicleWhereInput = {};
 
     if (make) where.make = make;
     if (year) where.year = year;
     if (color) where.color = color;
+    if (model) where.model = model;
+    if (plate) where.plate = plate;
 
-    return await db.vehicle.findMany({
+    if (!isAdmin) {
+      where.isActive = true;
+    }
+
+    const vehicles: Vehicle[] | null = await db.vehicle.findMany({
       where,
       take: limit,
     });
+
+    if (!vehicles) {
+      console.error("❌ Failed to fetch vehicles");
+      return null;
+    }
+
+    const cleanVehicles = strip(vehicles, PublicVehicleFields);
+
+    return cleanVehicles;
   }
 
   static async searchSubmittedVehicles(
@@ -35,7 +53,7 @@ abstract class VehicleService {
       color?: string;
     },
     userId: string,
-  ): Promise<VehicleSubmission[]> {
+  ): Promise<PublicVehicleSubmission[] | null> {
     const { make, year, limit, color } = params;
     const where: Prisma.VehicleSubmissionWhereInput = {};
 
@@ -44,10 +62,19 @@ abstract class VehicleService {
     if (color) where.color = color;
     where.submittedById = userId;
 
-    return await db.vehicleSubmission.findMany({
+    const submissions = await db.vehicleSubmission.findMany({
       where,
       take: limit,
     });
+
+    if (!submissions) {
+      console.error("❌ Failed to fetch submissions");
+      return null;
+    }
+
+    const cleanSubmissions = strip(submissions, PublicVehicleSubmissionFields);
+
+    return cleanSubmissions;
   }
 
   static async getVehicleById(

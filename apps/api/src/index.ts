@@ -69,7 +69,7 @@ const root = new Elysia({
     cron({
       name: "cron-job",
       pattern: Patterns.EVERY_5_MINUTES,
-      run: () => console.log("Cron job executed (5 minutes"),
+      run: () => console.log("Cron job executed (5 minutes)"),
     }),
   )
   .use(betterAuth)
