@@ -4,6 +4,7 @@ FROM oven/bun:1.3.4 AS base
 RUN apt-get update && apt-get install -y \
     libvips \
     curl \
+    netcat \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
