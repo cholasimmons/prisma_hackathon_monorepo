@@ -1,5 +1,8 @@
-FROM oven/bun:1.3.4-alpine AS base
-RUN apk add --no-cache git wget netcat-openbsd curl
+FROM oven/bun:1.3.4 AS base
+# RUN apk add --no-cache git wget netcat-openbsd curl \
+# vips vips-dev libc6-compat # sharp specific
+RUN apt-get update && apt-get install -y libvips \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # --------------------------------------
@@ -15,12 +18,11 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 # RUN cp bun.lock bun.lock 2>/dev/null || true
 
 # Skip running postinstall scripts for now
-ENV npm_config_ignore_scripts=true
+# ENV npm_config_ignore_scripts=true
 
 # RUN bun install
 # Try frozen first, fallback to regular install
-RUN bun install --frozen-lockfile 2>/dev/null || bun install
-RUN bun install --include=optional --os=linux --libc=musl --cpu=x64 sharp
+RUN bun install --production --frozen-lockfile 2>/dev/null || bun install --production
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
@@ -42,9 +44,9 @@ RUN bun run prisma:generate
 RUN bun run build
 
 # -----------------------------
-# Production (pure binary)
+# Production runtime
 # -----------------------------
-FROM oven/bun:1.3.4-alpine AS release
+FROM base AS release
 WORKDIR /app
 
 # Copy binary
@@ -58,6 +60,10 @@ COPY --from=build /app/prisma ./prisma
 
 # Copy start script
 COPY --from=install /app/start.sh ./start.sh
+
+COPY --from=build /app/node_modules ./node_modules
+
+COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 
 # Copy database adapter, dotenv and prisma
 # COPY --from=install /app/node_modules/@prisma/adapter-pg ./node_modules/@prisma/adapter-pg
