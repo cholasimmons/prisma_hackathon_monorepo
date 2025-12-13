@@ -19,7 +19,7 @@ import db from "./utils/database/client";
 import logosController from "./modules/logos";
 import staticPlugin from "@elysiajs/static";
 
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT || 3000);
 
 const root = new Elysia({
   websocket: {

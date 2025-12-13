@@ -40,7 +40,7 @@ RUN ls -la node_modules/.bin/prisma || echo "Prisma CLI not installed!"
 RUN bun run prisma:generate
 
 # Build Bun server (single executable)
-RUN bun run build
+RUN bun run build:js
 
 # -----------------------------
 # Production runtime
