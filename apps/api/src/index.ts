@@ -37,17 +37,11 @@ const root = new Elysia({
   )
   .use(
     cors({
-      origin: (req) => {
-        const origin = req.headers.get("origin");
-        if (!origin) return false; // server-to-server requests
-
-        if (process.env.NODE_ENV === "production") {
-          return /https:\/\/(.*\.)?simmons\.studio$/.test(origin);
-        } else {
-          // allow localhost dev
-          return origin === "http://localhost:5173";
-        }
-      },
+      origin: [
+        process.env.NODE_ENV === "production"
+          ? process.env.ORIGIN_URL!
+          : "http://localhost:5173",
+      ],
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
       credentials: true,
@@ -126,6 +120,7 @@ const root = new Elysia({
   // doing CORS' job! 🤦‍♂️
   .onAfterHandle(({ request, set }) => {
     const origin = request.headers.get("origin");
+    console.log(`onAfterHandle origin: ${origin}`);
 
     if (origin === (process.env.ORIGIN_URL || "http://localhost:3000")) {
       set.headers["Access-Control-Allow-Origin"] = origin;
