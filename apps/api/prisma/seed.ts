@@ -1,4 +1,3 @@
-// import db from "../src/utils/database/client";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
@@ -39,24 +38,21 @@ async function main() {
     select: { id: true, plate: true },
     skipDuplicates: true,
   });
+  console.log(`✅ Created ${vehicles.length} vehicles`);
 
-  if(!vehicles) {
-    console.error("❌ Failed to create vehicles");
-    process.exit(1);
-  }
+  // Demo logos
+  const logos = await db.logo.createManyAndReturn({
+    data: [
+      { name: 'Toyota', url: './public/logos/toyota.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Mazda', url: './public/logos/mazda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Ford', url: './public/logos/ford.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Honda', url: './public/logos/honda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 }
+    ],
+    skipDuplicates: true
+  });
+  console.log(`✅ Created ${logos.length} test logos`);
 
-  // Optional: Add photos to vehicles
-  // await db.vehiclePhoto.createMany({
-  //   data: [
-  //     // Photos for GRZ 1 Z
-  //     { photo: 'https://example.com/toyota-front.jpg', vehicleId: v1.id },
-  //     { photo: 'https://example.com/toyota-side.jpg', vehicleId: v1.id },
-  //     // Photos for ABC 123
-  //     { photo: 'https://example.com/ford-front.jpg', vehicleId: v2.id },
-  //   ],
-  // });
 
-  console.log(`✅ Created vehicles: ${vehicles[0].plate}, ${vehicles[1].plate}`);
 }
 
 main()

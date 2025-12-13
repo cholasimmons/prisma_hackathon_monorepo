@@ -17,6 +17,7 @@ import {
 } from "~/modules/index";
 import db from "./utils/database/client";
 import logosController from "./modules/logos";
+import staticPlugin from "@elysiajs/static";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -72,6 +73,7 @@ const root = new Elysia({
       run: () => console.log("Cron job executed (5 minutes)"),
     }),
   )
+  .use(staticPlugin({ indexHTML: true }))
   .use(betterAuth)
   .use(authController)
   .use(vehiclesController)

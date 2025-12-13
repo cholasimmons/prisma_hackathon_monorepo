@@ -68,6 +68,8 @@ COPY --from=install /app/start.sh ./start.sh
 COPY src/utils/database/client.ts ./src/utils/database/client.ts
 # Copy prisma.config script
 COPY --from=install /app/prisma.config.ts ./prisma.config.ts
+# Copy static folder
+COPY public ./public
 
 RUN chmod +x ./server
 RUN chmod +x ./start.sh

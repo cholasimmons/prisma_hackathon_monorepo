@@ -40,8 +40,10 @@ abstract class LogoService {
     name: string,
     isAdmin: boolean = false,
   ): Promise<PublicLogo | null> {
+    const lowercaseName = name.toLowerCase();
+
     // 1. Try cache first
-    const cached = await cache.get<PublicLogo>(CacheKeys.logos.byName(name));
+    const cached = await cache.get<PublicLogo>(CacheKeys.logos.byName(lowercaseName));
     if (cached) {
       console.log(`✅ Cache HIT for ${name} logo`);
       return cached;
@@ -62,7 +64,7 @@ abstract class LogoService {
 
     const cleanLogo = strip(logo, PublicLogoFields);
 
-    await cache.set<PublicLogo>(CacheKeys.logos.byName(name), cleanLogo, 6000);
+    await cache.set<PublicLogo>(CacheKeys.logos.byName(lowercaseName), cleanLogo, 6000);
     return cleanLogo;
   }
 
@@ -86,7 +88,7 @@ abstract class LogoService {
           name,
           url: fileName,
           uploadSizeKb,
-          submitedById: userId,
+          submittedById: userId,
         },
       });
 
@@ -136,13 +138,13 @@ abstract class LogoService {
             name: name,
             url: fileName,
             uploadSizeKb,
-            submitedById: userId,
+            submittedById: userId,
           },
           update: {
             name: name,
             url: fileName,
             uploadSizeKb,
-            submitedById: userId,
+            submittedById: userId,
           },
         });
 
