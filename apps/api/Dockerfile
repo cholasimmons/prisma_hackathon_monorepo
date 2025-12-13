@@ -22,7 +22,7 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 
 # RUN bun install
 # Try frozen first, fallback to regular install
-RUN bun install --production --frozen-lockfile 2>/dev/null || bun install --production
+RUN bun install --frozen-lockfile 2>/dev/null || bun install
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
