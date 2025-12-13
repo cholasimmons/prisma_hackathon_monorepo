@@ -84,8 +84,8 @@ RUN chmod +x ./start.sh
 ENV PORT=3000
 
 # Healthcheck for Coolify
-# HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-#     CMD curl -fs http://localhost:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -fs http://localhost:3000/health || exit 1
 
 # run the app as non-root
 USER bun

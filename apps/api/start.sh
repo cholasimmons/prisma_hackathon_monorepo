@@ -57,7 +57,6 @@ bunx prisma migrate deploy
 
 # Run Prisma seed
 if [ -f ./prisma/seed.ts ] || [ -f ./prisma/seed.js ]; then
-    echo "🌱 Seeding database..."
     bun ./prisma/seed.ts
 else
     echo "⏩ No seed file found, skipping..."
