@@ -19,9 +19,6 @@ COPY package.json ./
 # Install only prod deps for runtime
 RUN bun install --production
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD curl -fs http://localhost:3000/health || exit 1
-
 ENV PORT=3001
 
 # run the app

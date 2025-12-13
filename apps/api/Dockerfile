@@ -1,7 +1,9 @@
 FROM oven/bun:1.3.4 AS base
-# RUN apk add --no-cache git wget netcat-openbsd curl \
+# RUN apk add --no-cache git wget netcat-openbsd curl
 # vips vips-dev libc6-compat # sharp specific
-RUN apt-get update && apt-get install -y libvips \
+RUN apt-get update && apt-get install -y \
+    libvips \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
@@ -63,8 +65,6 @@ COPY --from=install /app/start.sh ./start.sh
 
 COPY --from=build /app/node_modules ./node_modules
 
-COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-
 # Copy database adapter, dotenv and prisma
 # COPY --from=install /app/node_modules/@prisma/adapter-pg ./node_modules/@prisma/adapter-pg
 #COPY --from=install /app/node_modules/dotenv ./node_modules/dotenv
@@ -84,8 +84,8 @@ RUN chmod +x ./start.sh
 # ENV NODE_ENV=production
 ENV PORT=3000
 
-# HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-# CMD curl -f http://localhost:3000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -fs http://localhost:3000/health || exit 1
 
 # run the app
 

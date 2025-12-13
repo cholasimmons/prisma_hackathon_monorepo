@@ -42,12 +42,12 @@ const systemBoot = async () => {
 
     console.info("| Checking database connection (Postgres)...");
     await db.$connect();
-    console.log("| ✅");
+    console.log("| ✅ Prisma + Postgres");
 
     console.info("| Checking cache connection (Redis)...");
     const redisConnected = cache.connect(); // ("system:booted", "true");
     if (redisConnected === true) {
-      console.log("| ✅");
+      console.log("| ✅ Redis");
     } else {
       console.error("| ✖️ Redis");
     }
