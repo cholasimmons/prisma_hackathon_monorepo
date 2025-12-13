@@ -65,4 +65,5 @@ fi
 
 echo "🔥 Starting Elysia app..."
 
-exec ./server # bun run ./dist/index.ts
+# exec ./server # for single executable
+exec bun run ./build/index.js

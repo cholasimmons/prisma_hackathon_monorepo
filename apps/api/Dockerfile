@@ -22,7 +22,6 @@ RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No loc
 
 # Install all dependencies, including optional (Sharp)
 RUN bun install --frozen-lockfile 2>/dev/null || bun install
-RUN bun install --include=optional --os=linux --cpu=x64 sharp
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
@@ -49,8 +48,11 @@ RUN bun run build
 FROM base AS release
 WORKDIR /app
 
-# Copy binary
-COPY --from=build /app/server ./server
+# Copy binary (exec-build)
+# COPY --from=build /app/server ./server
+
+# Copy build folder (exec-build)
+COPY --from=build /app/build ./build
 
 # Copy Prisma client runtime
 COPY --from=build /app/src/generated ./src/generated
@@ -72,8 +74,10 @@ COPY --from=install /app/prisma.config.ts ./prisma.config.ts
 # Copy static folder
 COPY public ./public
 
+RUN bun install --include=optional --os=linux --cpu=x64 sharp --force
+
 # Make executables runnable
-RUN chmod +x ./server
+# RUN chmod +x ./server
 RUN chmod +x ./start.sh
 
 # ENV NODE_ENV=production
