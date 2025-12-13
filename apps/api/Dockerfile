@@ -20,6 +20,7 @@ ENV npm_config_ignore_scripts=true
 # RUN bun install
 # Try frozen first, fallback to regular install
 RUN bun install --frozen-lockfile 2>/dev/null || bun install
+RUN bun install --os=linux --libc=musl --cpu=x64 sharp
 
 # --------------------------------------
 # Build stage (with dev dependencies) + Generate Prisma
