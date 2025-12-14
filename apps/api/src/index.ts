@@ -14,9 +14,9 @@ import {
   authController,
   vehiclesController,
   fileController,
+  logosController
 } from "~/modules/index";
 import db from "./utils/database/client";
-import logosController from "./modules/logos";
 import staticPlugin from "@elysiajs/static";
 
 const PORT = Number(process.env.PORT || 3000);
@@ -31,13 +31,16 @@ const root = new Elysia({
     cors({
       origin: [
         process.env.NODE_ENV === "production"
-          ? "*" // process.env.ORIGIN_URL!
+          ? process.env.ORIGIN_URL!
           : "http://localhost:5173",
       ],
       aot: false,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
+      maxAge: 86400,
+      preflight: true,
+      exposeHeaders: ["Content-Type", "Authorization", "Host", "User-Agent", "Origin"]
     }),
   )
   .use(
@@ -123,7 +126,7 @@ const root = new Elysia({
     const origin = request.headers.get("origin");
     console.log(`onAfterHandle origin: ${origin}`);
 
-    if (origin === (process.env.ORIGIN_URL || "http://localhost:3000")) {
+    if (origin === process.env.ORIGIN_URL || origin === "http://localhost:3000") {
       set.headers["Access-Control-Allow-Origin"] = origin;
       set.headers["Access-Control-Allow-Methods"] =
         "GET, POST, PUT, PATCH, DELETE, OPTIONS";
