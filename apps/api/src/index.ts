@@ -18,6 +18,7 @@ import {
 } from "~/modules/index";
 import db from "./utils/database/client";
 import staticPlugin from "@elysiajs/static";
+import { corsPlugin } from "./plugins/cors.plugin";
 
 const PORT = Number(process.env.PORT || 3000);
 
@@ -27,23 +28,28 @@ const app = new Elysia({
   },
   normalize: "typebox",
 })
-  .use(
-    cors({
-      origin: process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",
-      // origin: [
-      //   process.env.NODE_ENV === "production"
-      //     ? process.env.ORIGIN_URL!
-      //     : "http://localhost:5173",
-      // ],
-      aot: false,
-      methods: "*", // ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["content-type", "authorization"],
-      credentials: true,
-      maxAge: 86400,
-      preflight: true,
-      exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
-    }),
-  )
+  // .use(
+  //   cors({
+  //     origin: process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",
+  //     // origin: [
+  //     //   process.env.NODE_ENV === "production"
+  //     //     ? process.env.ORIGIN_URL!
+  //     //     : "http://localhost:5173",
+  //     // ],
+  //     aot: false,
+  //     methods: "*", // ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  //     allowedHeaders: ["content-type", "authorization"],
+  //     credentials: true,
+  //     maxAge: 86400,
+  //     preflight: true,
+  //     exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
+  //   }),
+  // )
+  .use(corsPlugin({
+    origins: [process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",],
+    credentials: true,
+    maxAge: 300
+  }))
   .use(
     openapi({
       documentation: {

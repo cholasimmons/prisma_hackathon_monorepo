@@ -43,10 +43,10 @@ async function main() {
   // Demo logos
   const logos = await db.logo.createManyAndReturn({
     data: [
-      { name: 'Toyota', url: './public/logos/toyota.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Mazda', url: './public/logos/mazda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Ford', url: './public/logos/ford.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Honda', url: './public/logos/honda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 }
+      { name: 'Toyota', url: '/public/logos/toyota.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Mazda', url: '/public/logos/mazda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Ford', url: '/public/logos/ford.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
+      { name: 'Honda', url: '/public/logos/honda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 }
     ],
     skipDuplicates: true
   });
