@@ -98,8 +98,7 @@ const vehiclesController = new Elysia({
   )
 
   // Search final vehicles
-  .get(
-    "/search",
+  .get("/search",
     async ({ status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
         make: query.make,
@@ -111,11 +110,10 @@ const vehiclesController = new Elysia({
         return status(404, "No vehicles found");
       }
 
-      status(200);
-      return {
+      return status(200, {
         data: vehicles,
         message: `Found ${vehicles.length} vehicles`,
-      };
+      });
     },
     {
       query: t.Object({

@@ -127,6 +127,10 @@ const app = new Elysia({
     };
     return status(200, { info, success: true, message: "Service is healthy" });
   })
+  .options('*', ({ set, status }) => {
+    set.status = 204;
+    return status(204)
+  })
 
   // doing CORS' job! 🤦‍♂️
   // .onAfterHandle(({ request, set }) => {
