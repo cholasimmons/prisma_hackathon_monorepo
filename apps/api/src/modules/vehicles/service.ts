@@ -7,6 +7,8 @@ import type { PublicVehicle, PublicVehicleSubmission } from "./model";
 import { CacheKeys } from "~/utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
 import { dmmfToRuntimeDataModel } from "@prisma/client/runtime/client";
+import { BucketNames } from "~/utils/image/storage";
+import s3 from "~/utils/s3";
 
 abstract class VehicleService {
   static async searchVehicles(params: {
@@ -64,7 +66,8 @@ abstract class VehicleService {
 
     const submissions = await db.vehicleSubmission.findMany({
       where,
-      take: limit,
+      include: { photos:true },
+      take: limit || 20,
     });
 
     if (!submissions) {
@@ -181,12 +184,59 @@ abstract class VehicleService {
   }
 
   /**
+   * Update vehicle image
+   */
+  static async updateVehicleImage(
+    vehicleId: string,
+    image: File,
+    userId: string
+  ): Promise<PublicVehicleSubmission | null> {
+    // 1. Upload image in S3
+    const { path, size } = await VehicleService.handleVehicleImage(vehicleId, image);
+
+    // 2: Update database
+    const updatedVehicle: VehicleSubmission | null = await db.vehicleSubmission.update({
+      where: { id: vehicleId },
+      data: {
+        photos: {
+          create: {
+            photo: path,
+            uploadSizeKb: size
+          },
+        },
+      },
+      include: { photos: true}
+    });
+
+    if (!updatedVehicle) {
+      return null;
+    }
+
+    // 2. Invalidate relevant cache entries
+    await cache.invalidate([CacheKeys.vehicles.submissionById(updatedVehicle.id)]);
+
+    console.log(`🔄 Updated vehicle image (${updatedVehicle.plate}) and invalidated cache`);
+    const updatedStripped = strip(updatedVehicle, PublicVehicleSubmissionFields);
+
+    if(!updatedStripped) {
+      return null;
+    }
+
+    await cache.set<PublicVehicleSubmission>(
+      CacheKeys.vehicles.submissionById(updatedVehicle.id),
+      updatedStripped,
+    );
+
+    return updatedStripped;
+  }
+
+  /**
    * Submit vehicle to pool
    */
   static async submitVehicle(
     body: VehicleSubmissionCreateInput & { image?: File },
     userId: string,
-  ): Promise<PublicVehicleSubmission | null> {
+    ): Promise<PublicVehicleSubmission | null> {
     // 1. Update in database
     const submission: VehicleSubmission | null =
       await db.vehicleSubmission.upsert({
@@ -238,83 +288,93 @@ abstract class VehicleService {
   /**
    * Handle vehicle image upload to S3
    */
-  // private static async handleVehicleImage(
-  //   vehicleId: string,
-  //   imageFile: File,
-  //   ): Promise<void> {
-  //   try {
-  //     // Create unique filename
-  //     const extension = imageFile.name.split(".").pop() || "jpg";
-  //     const fileName = `vehicles/${vehicleId}/image-${Date.now()}.${extension}`;
+  private static async handleVehicleImage(
+    vehicleId: string,
+    imageFile: File,
+    ): Promise<{ path: string, size: number }> {
+    try {
+      // Create unique filename
+      const extension = imageFile.name.split(".").pop() || "jpg";
+      const fileName = `${BucketNames.vehicles}/${vehicleId}/image-${Date.now()}.${extension}`;
 
-  //     // Upload to S3
-  //     const s3File = s3.file(fileName);
-  //     await s3File.write(imageFile, {
-  //       type: imageFile.type,
-  //       // metadata: {
-  //       //   vehicleId: vehicleId.toString(),
-  //       //   uploadedAt: new Date().toISOString(),
-  //       // },
-  //     });
+      // Upload to S3
+      const s3File = s3.file(fileName);
+      const uploadSizeKb = await s3File.write(imageFile, {
+        type: imageFile.type,
+        // metadata: {
+        //   vehicleId: vehicleId.toString(),
+        //   uploadedAt: new Date().toISOString(),
+        // },
+      });
 
-  //     console.log(
-  //       `📸 Uploaded image for vehicle ${vehicleId} to S3: ${fileName}`,
-  //     );
+      console.log(
+        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${fileName}`,
+      );
 
-  //     // Update vehicle with image key
-  //     await db.vehicle.update({
-  //       where: { id: vehicleId },
-  //       data: { photos: fileName },
-  //     });
-  //   } catch (error) {
-  //     console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
-  //     throw new Error(`Image upload failed: ${error}`);
-  //   }
-  // }
+      return { path: fileName, size: uploadSizeKb };
+    } catch (error) {
+      console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
+      throw error;
+    }
+  }
 
-  static async computeConsensus(plate: string) {
-    const submissions = await db.vehicleSubmission.findMany({
-      where: { plate },
-      orderBy: { createdAt: "asc" },
-      include: { photos: true },
+  static async isMyVehicleSubmission(vehicleId: string, userId: string): Promise<boolean> {
+    const cached = await cache.get<VehicleSubmission>(CacheKeys.vehicles.submissionById(vehicleId));
+    if(cached && cached.submittedById === userId) return true;
+
+    const vehicle = await db.vehicleSubmission.findUnique({
+      where: { id: vehicleId },
+      select: {
+        submittedById: true,
+      }
     });
 
-    if (!submissions.length) return null;
-
-    const fields = ["color", "make", "model", "year"] as const;
-
-    const result: any = { plate };
-
-    // 1. Majority vote for each attribute
-    for (const field of fields) {
-      const votes = submissions
-        .map((s: VehicleSubmission) => s[field])
-        .filter(Boolean);
-
-      if (votes.length === 0) {
-        result[field] = null;
-        continue;
-      }
-
-      const freq: Record<string, number> = {};
-      for (const v of votes) freq[v!] = (freq[v!] || 0) + 1;
-
-      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
-      result[field] = sorted[0][0];
-    }
-
-    // 2. Determine the best photo by clustering pHashes
-    // const photos = submissions.filter((s: VehicleSubmission) => s.photos && s.pHash);
-
-    // if (!photos.length) {
-    //   result.photos = null;
-    // } else {
-    //   // TODO: Fix this
-    //   result.photos = null; // this.findConsensusPhoto(photos[0]);
-    // }
-
-    return result;
+    return vehicle?.submittedById === userId;
   }
+
+  // static async computeConsensus(plate: string) {
+  //   const submissions = await db.vehicleSubmission.findMany({
+  //     where: { plate },
+  //     orderBy: { createdAt: "asc" },
+  //     include: { photos: true },
+  //   });
+
+  //   if (!submissions.length) return null;
+
+  //   const fields = ["color", "make", "model", "year"] as const;
+
+  //   const result: any = { plate };
+
+  //   // 1. Majority vote for each attribute
+  //   for (const field of fields) {
+  //     const votes = submissions
+  //       .map((s: VehicleSubmission) => s[field])
+  //       .filter(Boolean);
+
+  //     if (votes.length === 0) {
+  //       result[field] = null;
+  //       continue;
+  //     }
+
+  //     const freq: Record<string, number> = {};
+  //     for (const v of votes) freq[v!] = (freq[v!] || 0) + 1;
+
+  //     const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+  //     result[field] = sorted[0][0];
+  //   }
+
+  //   // 2. Determine the best photo by clustering pHashes
+  //   // const photos = submissions.filter((s: VehicleSubmission) => s.photos && s.pHash);
+
+  //   // if (!photos.length) {
+  //   //   result.photos = null;
+  //   // } else {
+  //   //   // TODO: Fix this
+  //   //   result.photos = null; // this.findConsensusPhoto(photos[0]);
+  //   // }
+
+  //   return result;
+  // }
 
   // private static getMode(list: string[]) {
   //   if (!list || list.length === 0) return null;

@@ -21,7 +21,10 @@ const auth = betterAuth({
   //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
   //   },
   // },
-  advanced: {},
+  advanced: {
+    disableOriginCheck: true,
+    disableCSRFCheck: true,
+  },
   plugins: [openAPI(), organization(), adminPlugin()],
 });
 

@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_B6qV5sCt4M
+createdAt: 2025-12-14T11:48:21.363610
+updatedAt: 2025-12-14T12:42:22.904184700
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: vehicles
+sortPriority: 1000.0
+url: ${[ base_url ]}/vehicles
+urlParameters: []

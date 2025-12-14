@@ -9,7 +9,7 @@ const betterAuth = new Elysia({ name: "better-auth" }).macro({
         headers,
       });
 
-      if (!session) return status(401);
+      if (!session) return status(401, "You must be logged in");
 
       return {
         user: session.user,
@@ -17,6 +17,6 @@ const betterAuth = new Elysia({ name: "better-auth" }).macro({
       };
     },
   },
-});
+}).as('global');
 
 export { betterAuth };

@@ -21,7 +21,7 @@ import staticPlugin from "@elysiajs/static";
 
 const PORT = Number(process.env.PORT || 3000);
 
-const root = new Elysia({
+const app = new Elysia({
   websocket: {
     idleTimeout: 30,
   },
@@ -36,12 +36,12 @@ const root = new Elysia({
       //     : "http://localhost:5173",
       // ],
       aot: false,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
+      methods: "*", // ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["content-type", "authorization"],
       credentials: true,
       maxAge: 86400,
       preflight: true,
-      exposeHeaders: ["Content-Type", "Authorization", "Host", "User-Agent", "Origin"]
+      exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
     }),
   )
   .use(
@@ -123,27 +123,27 @@ const root = new Elysia({
   })
 
   // doing CORS' job! 🤦‍♂️
-  .onAfterHandle(({ request, set }) => {
-    const origin = request.headers.get("origin");
-    console.log(`onAfterHandle origin: ${origin}`);
+  // .onAfterHandle(({ request, set }) => {
+  //   const origin = request.headers.get("origin");
+  //   console.log(`onAfterHandle origin: ${origin}`);
 
-    if (origin === process.env.ORIGIN_URL || origin === "http://localhost:3000") {
-      set.headers["Access-Control-Allow-Origin"] = origin;
-      set.headers["Access-Control-Allow-Methods"] =
-        "GET, POST, PUT, PATCH, DELETE, OPTIONS";
-      set.headers["Access-Control-Allow-Headers"] =
-        "Content-Type, Authorization";
-      set.headers["x-powered-by"] = "Simmons Multimedia";
-    }
-  })
+  //   if (origin === process.env.ORIGIN_URL || origin === "http://localhost:3000") {
+  //     set.headers["Access-Control-Allow-Origin"] = origin;
+  //     set.headers["Access-Control-Allow-Methods"] =
+  //       "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+  //     set.headers["Access-Control-Allow-Headers"] =
+  //       "Content-Type, Authorization";
+  //     set.headers["x-powered-by"] = "Simmons Multimedia";
+  //   }
+  // })
 
   // .onStart(systemBoot)
   .onStop(systemOff);
 
 systemBoot().then(() => {
-  root.listen({ port: PORT, hostname: "0.0.0.0" }, () => {
+  app.listen({ port: PORT }, () => {
     console.log(
-      `🦊 Backend running at ${root.server?.hostname}:${root.server?.port}`,
+      `🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`,
     );
   });
 });

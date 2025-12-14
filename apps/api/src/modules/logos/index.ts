@@ -76,7 +76,6 @@ const logosController = new Elysia({
     }
 
     return status(200, { data: logos, message: `Fetched ${logos.length} logos` });
-    // return { data: logos };
   })
 
   .get(

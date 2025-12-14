@@ -3,8 +3,8 @@ import VehicleService from "./service";
 import { betterAuth } from "~/middleware/betterauth";
 import { cache } from "~/utils/cache";
 import { strip } from "~/utils/strip";
-import { PublicVehicle, PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
-import { Vehicle } from "@/generated/prisma/client";
+import { PublicVehicle, PublicVehicleFields, PublicVehicleSubmission, PublicVehicleSubmissionFields } from "./model";
+import { Vehicle, VehicleSubmission } from "@/generated/prisma/client";
 
 const vehiclesController = new Elysia({
   prefix: "/vehicles",
@@ -49,7 +49,7 @@ const vehiclesController = new Elysia({
   .get(
     "/submissions",
     async ({ status, query, session }) => {
-      const submissions = await VehicleService.searchSubmittedVehicles(
+      const submissions: PublicVehicleSubmission[] | null = await VehicleService.searchSubmittedVehicles(
         {
           make: query.make,
           year: query.year ? query.year : undefined,
@@ -62,10 +62,7 @@ const vehiclesController = new Elysia({
         return status(404, "No Vehicle submissions found");
       }
 
-      const cleanSubmissions = strip(submissions, PublicVehicleSubmissionFields);
-
-      status(200);
-      return { data: cleanSubmissions };
+      return status(200, { data: submissions });
     },
     {
       query: t.Object({
@@ -132,8 +129,7 @@ const vehiclesController = new Elysia({
 
   // POST
 
-  .post(
-    "/",
+  .post("/",
     async ({ body, status, session }) => {
       const submission = await VehicleService.submitVehicle(
         body,
@@ -144,8 +140,7 @@ const vehiclesController = new Elysia({
         return status(400, "Invalid vehicle submission");
       }
 
-      status(200);
-      return { success: true, data: submission };
+      return status(200, { success: true, data: submission });
     },
     {
       body: t.Object({
@@ -155,9 +150,8 @@ const vehiclesController = new Elysia({
         }),
         image: t.Optional(
           t.File({
-            maxSize: 1024 * 1024 * 5,
-            format: "image/*",
-            error: "Image size exceeds limit",
+            type: 'image',
+            maxSize: '3m'
           }),
         ),
         make: t.Optional(t.String()),
@@ -198,6 +192,38 @@ const vehiclesController = new Elysia({
           }),
         ),
       }),
+    },
+  )
+
+  // Update vehicle image
+  .post("/image/:vehicleId",
+    async ({ params: { vehicleId }, body: { image }, status, session: { userId } }) => {
+      console.log("image: ",image);
+
+      const isMyVehicleSubmission: boolean = await VehicleService.isMyVehicleSubmission(vehicleId, userId);
+
+      if(!isMyVehicleSubmission) {
+        return status(403, "You are not authorized to update this vehicle");
+      }
+
+      const updated = await VehicleService.updateVehicleImage(vehicleId, image, userId);
+
+      if (!updated) {
+        return status(404, "Unable to upload image");
+      }
+
+      return status(201, { success: true, data: updated });
+    },
+    {
+      params: t.Object({
+        vehicleId: t.String(),
+      }),
+      body: t.Object({
+        image: t.File({
+          maxSize: 1024 * 1024 * 3
+        }),
+      }),
+      auth: true
     },
   )
 

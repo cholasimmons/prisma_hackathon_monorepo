@@ -15,7 +15,6 @@ const PublicVehicleSubmissionFields = [
   "model",
   "color",
   "year",
-  "submittedById",
   "createdAt",
   "updatedAt",
 ] as const;

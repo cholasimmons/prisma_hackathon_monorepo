@@ -24,12 +24,7 @@ model VehicleSubmission {
   make           String?
   model          String?
   photos         VehiclePhoto[] @relation("vehicleSubmissionPhotos")
-  /// @prismabox.input.hide
-  pHash          String?
-  /// @prismabox.input.hide
-  width          Int?
-  /// @prismabox.input.hide
-  height         Int?
+
   color          String?
   year           Int?
   forSale        Boolean?
@@ -53,6 +48,14 @@ model VehiclePhoto {
   /// @prismabox.input.hide
   isPrimary      Boolean  @default(false)
   /// @prismabox.input.hide
+  uploadSizeKb     Int?
+  /// @prismabox.input.hide
+  pHash          String?
+  /// @prismabox.input.hide
+  width          Int?
+  /// @prismabox.input.hide
+  height         Int?
+  /// @prismabox.input.hide
   verifiedById   String?
   verifiedBy     User?    @relation("VehiclePhotoVerifiedBy",fields: [verifiedById], references: [id])
   verifiedAt     DateTime?
@@ -60,8 +63,8 @@ model VehiclePhoto {
   submittedVehicleId      String
   submittedVehicle        VehicleSubmission @relation("vehicleSubmissionPhotos", fields: [submittedVehicleId], references: [id])
 
-  vehicleId      String
-  vehicle        Vehicle @relation("vehiclePhotos", fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleId      String?
+  vehicle        Vehicle? @relation("vehiclePhotos", fields: [vehicleId], references: [id], onDelete: Cascade)
   /// @prismabox.input.hide
   createdAt      DateTime @default(now())
   /// @prismabox.input.hide

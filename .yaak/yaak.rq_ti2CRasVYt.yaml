@@ -1,0 +1,35 @@
+type: http_request
+model: http_request
+id: rq_ti2CRasVYt
+createdAt: 2025-12-14T12:30:08.892882900
+updatedAt: 2025-12-14T12:42:22.953360100
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "email": "frank@simmons.studio",
+      "password": "password"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: JB7YMrrZBG
+- enabled: true
+  name: Origin
+  value: http://localhost:5173
+  id: vMXSeXN4dg
+- enabled: true
+  name: ''
+  value: ''
+  id: aQXPI9g60G
+method: POST
+name: /auth/sign-in/email
+sortPriority: 7000.0
+url: ${[ base_url ]}/auth/sign-in/email
+urlParameters: []

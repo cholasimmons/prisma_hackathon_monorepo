@@ -4,6 +4,7 @@ const nameFile = (name: string, bucketName: BucketNames) => `${bucketName}/${nam
 enum BucketNames {
   images = "images",
   logos = "logos",
+  vehicles = "vehicles",
 }
 
 export { nameFile, BucketNames };

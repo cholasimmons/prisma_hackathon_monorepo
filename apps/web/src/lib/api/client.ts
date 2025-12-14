@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '$lib/env';
+// import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 // Response shape expected from *all* Elysia endpoints
 interface ApiResponse<T = unknown> {

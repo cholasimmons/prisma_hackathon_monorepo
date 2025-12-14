@@ -23,12 +23,12 @@ export async function fetchLogos() {
 
 	try {
 		const r = await api.raw('/logos');
-		const data = await r.json();
+		const res = await r.json();
 
-		console.log('data:', data);
+		console.log('data:', res);
 
-		_logos = data;
-		localStorage.setItem('logos', JSON.stringify(data));
+		_logos = res.data;
+		localStorage.setItem('logos', JSON.stringify(res.data));
 	} catch (err) {
 		console.error('Failed to fetch logos', err);
 	} finally {
