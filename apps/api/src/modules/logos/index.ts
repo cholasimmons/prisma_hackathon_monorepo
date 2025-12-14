@@ -26,7 +26,6 @@ const logosController = new Elysia({
           body: t.Object({
             image: t.File({
               maxSize: 1024 * 1024 * 5,
-              maxCount: 1,
               format: "image/*",
               error: "Image size exceeds limit",
             }),
@@ -59,7 +58,6 @@ const logosController = new Elysia({
               t.File({
                 type: "image/*",
                 maxSize: 1024 * 1024 * 5,
-                maxCount: 1,
                 error: "Maximum image size 5MB",
               }),
             ),

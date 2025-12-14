@@ -19,7 +19,7 @@ abstract class LogoService {
 
     where.isActive = isAdmin ? undefined : true;
 
-    const logos = await db.logo.findMany({
+    const logos: Logo[] | null = await db.logo.findMany({
       where,
     });
 
@@ -29,7 +29,11 @@ abstract class LogoService {
 
     await cache.del(CacheKeys.logos.all);
 
-    const cleanLogos = strip(logos, PublicLogoFields);
+    const cleanLogos: PublicLogo[] | null = strip(logos, PublicLogoFields);
+
+    if (!cleanLogos) {
+      return null;
+    }
 
     await cache.set<PublicLogo[]>(CacheKeys.logos.all, cleanLogos, 6000);
 
@@ -75,24 +79,33 @@ abstract class LogoService {
       const buffer = await image.arrayBuffer();
       const s = await sharp(buffer)
         .rotate()
-        .resize({ width: 1280 })
-        .toFormat("webp")
+        .resize({ width: 512 })
+        .toFormat("webp", { quality: 80 })
         .toBuffer();
       const uploadSizeKb = (await s3.write(name, s)) * 1024;
-      const fileName = nameFile(name, BucketNames.logos);
+      const pathName = nameFile(name, BucketNames.logos);
 
-      console.log(`Uploaded ${uploadSizeKb}KB to ${fileName}`);
+      console.log(`Uploaded ${uploadSizeKb}KB to ${pathName}`);
 
       const logo = await db.logo.create({
         data: {
           name,
-          url: fileName,
+          url: pathName,
           uploadSizeKb,
           submittedById: userId,
         },
       });
 
+      if(!logo) {
+        throw new Error('Logo not created');
+      }
+
       const cleanLogo = strip(logo, PublicLogoFields);
+
+      if(!cleanLogo) {
+        throw new Error('Logo not stripped');
+      }
+
       await cache.set<PublicLogo>(
         CacheKeys.logos.byName(name),
         cleanLogo,

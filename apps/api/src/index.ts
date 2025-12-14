@@ -29,11 +29,12 @@ const root = new Elysia({
 })
   .use(
     cors({
-      origin: [
-        process.env.NODE_ENV === "production"
-          ? process.env.ORIGIN_URL!
-          : "http://localhost:5173",
-      ],
+      origin: process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",
+      // origin: [
+      //   process.env.NODE_ENV === "production"
+      //     ? process.env.ORIGIN_URL!
+      //     : "http://localhost:5173",
+      // ],
       aot: false,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
