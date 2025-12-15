@@ -25,6 +25,8 @@ export const corsPlugin = (options: CorsOptions = {}) =>
 
       set.headers = applyCorsHeaders(set.headers, origin, options);
 
+      console.log("[CORS] | onRequest HEADERS: ", set.headers);
+
       set.status = 204;
       return status(204, null); // short-circuit routing
     })
