@@ -47,10 +47,7 @@ const app = new Elysia({
   // )
   .use(
     corsPlugin({
-      origins:
-        process.env.NODE_ENV === "production"
-          ? [process.env.ORIGIN_URL!]
-          : ["http://localhost:5173", process.env.ORIGIN_URL!],
+      origins: [process.env.ORIGIN_URL!],
       allowedHeaders: [
         "content-type",
         "authorization",
@@ -58,7 +55,7 @@ const app = new Elysia({
         "x-client-plate-normalized",
       ],
       credentials: true,
-      maxAge: 300,
+      maxAge: 400,
     }),
   )
   .use(
