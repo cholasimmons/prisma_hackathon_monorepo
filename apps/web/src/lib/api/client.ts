@@ -2,12 +2,13 @@ import { API_BASE_URL } from '$lib/env';
 // import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 // Response shape expected from *all* Elysia endpoints
-interface ApiResponse<T = unknown> {
+export interface ApiResponse<T = unknown> {
 	data: T;
 	message: string; // always present — success or error reason
 	code: number; // e.g. 200, 201
 	// code: string;           // e.g. 'SUCCESS', 'VALIDATION_ERROR', 'NOT_FOUND'
-	status: 'success' | 'error';
+	status?: 'success' | 'error';
+	success?: boolean;
 }
 
 // Options for api.get/post/etc.
@@ -72,7 +73,7 @@ async function request<T>(
 			}
 
 			// ✅ Always use `.message` for UX (success or error)
-			if (responseBody.status === 'error') {
+			if (responseBody.status === 'error' || responseBody.success === false) {
 				throw new ApiError(
 					responseBody.message || 'An unknown error occurred',
 					responseBody.code || 500,
