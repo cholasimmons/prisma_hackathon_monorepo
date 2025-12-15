@@ -1,4 +1,4 @@
-import { Elysia } from 'elysia';
+import { Elysia } from "elysia";
 
 type CorsOptions = {
   origins?: string[] | ((origin: string) => boolean);
@@ -10,20 +10,20 @@ type CorsOptions = {
 };
 
 export const corsPlugin = (options: CorsOptions = {}) =>
-  new Elysia({ name: 'custom-cors' })
+  new Elysia({ name: "custom-cors" })
 
     /* ---------- PRE-FLIGHT ---------- */
     .onRequest(({ request, set, status }) => {
-      if (request.method !== 'OPTIONS') return;
+      if (request.method !== "OPTIONS") return;
 
-      const origin = request.headers.get('origin');
+      const origin = request.headers.get("origin");
       if (!origin) return;
 
       console.log("[CORS] | onRequest OPTIONS: origin: ", origin);
 
       if (!isOriginAllowed(origin, options.origins)) return;
 
-      applyCorsHeaders(set.headers, origin, options);
+      set.headers = applyCorsHeaders(set.headers, origin, options);
 
       set.status = 204;
       return status(204, null); // short-circuit routing
@@ -31,37 +31,40 @@ export const corsPlugin = (options: CorsOptions = {}) =>
 
     /* ---------- NORMAL RESPONSES ---------- */
     .onAfterHandle(({ request, set }) => {
-      const origin = request.headers.get('origin');
+      const origin = request.headers.get("origin");
       if (!origin) return;
 
-      console.log("[CORS] | onAfterHandle ",request.method, ": origin: ", origin);
-
+      console.log(
+        "[CORS] | onAfterHandle ",
+        request.method,
+        ": origin: ",
+        origin,
+      );
 
       if (!isOriginAllowed(origin, options.origins)) return;
 
-      applyCorsHeaders(set.headers, origin, options);
+      set.headers = applyCorsHeaders(set.headers, origin, options);
     })
 
     /* ---------- ERRORS ---------- */
     .onError(({ request, set }) => {
-      const origin = request.headers.get('origin');
+      const origin = request.headers.get("origin");
       if (!origin) return;
 
       if (!isOriginAllowed(origin, options.origins)) return;
 
-      applyCorsHeaders(set.headers, origin, options);
+      set.headers = applyCorsHeaders(set.headers, origin, options);
     });
-
 
 type ElysiaHeaders = Record<string, string | number>;
 
 function isOriginAllowed(
   origin: string,
-  allowed?: string[] | ((origin: string) => boolean)
+  allowed?: string[] | ((origin: string) => boolean),
 ) {
   if (!allowed) return true;
 
-  if (typeof allowed === 'function') {
+  if (typeof allowed === "function") {
     return allowed(origin);
   }
 
@@ -71,33 +74,37 @@ function isOriginAllowed(
 function applyCorsHeaders(
   headers: ElysiaHeaders,
   origin: string,
-  options: any
+  options: any,
 ) {
-  headers['Access-Control-Allow-Origin'] = origin;
-    headers['Vary'] = 'Origin';
+  headers["Access-Control-Allow-Origin"] = origin;
+  headers["Vary"] = "Origin";
 
-    headers['Access-Control-Allow-Methods'] = (
-      options.methods ??
-      ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-    ).join(', ');
+  headers["Access-Control-Allow-Methods"] = (
+    options.methods ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  ).join(", ");
 
-    headers['Access-Control-Allow-Headers'] = (
-        options.allowedHeaders ??
-        ['Content-Type', 'Authorization', 'X-Requested-With']
-    ).join(', ');
+  headers["Access-Control-Allow-Headers"] = (
+    options.allowedHeaders ?? [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+    ]
+  ).join(", ");
 
   if (options.exposedHeaders?.length) {
-      headers['Access-Control-Expose-Headers'] =
-        options.exposedHeaders.join(', ');
+    headers["Access-Control-Expose-Headers"] =
+      options.exposedHeaders.join(", ");
   }
 
   if (options.credentials) {
-      headers['Access-Control-Allow-Credentials'] = 'true';
+    headers["Access-Control-Allow-Credentials"] = "true";
   }
 
   if (options.maxAge) {
-    headers['Access-Control-Max-Age'] = String(options.maxAge);
+    headers["Access-Control-Max-Age"] = String(options.maxAge);
   }
 
   headers["x-powered-by"] = "Simmons Multimedia";
+
+  return headers;
 }
