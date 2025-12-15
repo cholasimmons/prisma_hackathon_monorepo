@@ -20,6 +20,10 @@ export const corsPlugin = (options: CorsOptions = {}) =>
       if (!origin) return;
 
       console.log("[CORS] | onRequest OPTIONS: origin: ", origin);
+      console.log(
+        "[CORS] | onRequest OPTIONS: allowed origins: ",
+        options.origins,
+      );
 
       if (!isOriginAllowed(origin, options.origins)) return;
 

@@ -14,7 +14,7 @@ import {
   authController,
   vehiclesController,
   fileController,
-  logosController
+  logosController,
 } from "~/modules/index";
 import db from "./utils/database/client";
 import staticPlugin from "@elysiajs/static";
@@ -45,11 +45,16 @@ const app = new Elysia({
   //     exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
   //   }),
   // )
-  .use(corsPlugin({
-    origins: [process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",],
-    credentials: true,
-    maxAge: 300
-  }))
+  .use(
+    corsPlugin({
+      origins:
+        process.env.NODE_ENV === "production"
+          ? [process.env.ORIGIN_URL!]
+          : ["http://localhost:5173"],
+      credentials: true,
+      maxAge: 300,
+    }),
+  )
   .use(
     openapi({
       documentation: {
@@ -127,9 +132,9 @@ const app = new Elysia({
     };
     return status(200, { info, success: true, message: "Service is healthy" });
   })
-  .options('*', ({ set, status }) => {
+  .options("*", ({ set, status }) => {
     set.status = 204;
-    return status(204)
+    return status(204);
   })
 
   // doing CORS' job! 🤦‍♂️
