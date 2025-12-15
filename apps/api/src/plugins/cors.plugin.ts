@@ -93,6 +93,7 @@ function applyCorsHeaders(
     options.allowedHeaders ?? [
       "Content-Type",
       "Authorization",
+      "Credentials",
       "X-Requested-With",
     ]
   ).join(", ");
