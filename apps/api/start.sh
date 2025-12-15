@@ -34,6 +34,7 @@ ls -la src/generated/prisma/client 2>/dev/null || echo "⚠️ Prisma Client not
 DB_HOST="${DATABASE_HOST}"
 DB_PORT="${DATABASE_PORT}"
 DB_URL="${DATABASE_URL}"
+ENV="${NODE_ENV}"
 
 echo "🚀 Starting startup script..."
 
@@ -62,7 +63,7 @@ else
     echo "⏩ No seed file found, skipping..."
 fi
 
-echo "🔥 Starting Elysia app..."
+echo "🔥 Starting Elysia app in $ENV..."
 
 # exec ./server # for single executable
 exec bun run ./build/index.js

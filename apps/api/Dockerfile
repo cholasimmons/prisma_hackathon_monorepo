@@ -80,7 +80,7 @@ RUN bun install --include=optional --os=linux --cpu=x64 sharp --force
 # RUN chmod +x ./server
 RUN chmod +x ./start.sh
 
-# ENV NODE_ENV=production
+ENV NODE_ENV=production
 ENV PORT=3000
 
 # Healthcheck for Coolify
