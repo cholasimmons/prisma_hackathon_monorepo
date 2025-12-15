@@ -139,7 +139,7 @@ const app = new Elysia({
     return status(200, { info, success: true, message: "Service is healthy" });
   })
   .options("*", ({ set, status }) => {
-    set.status = 204;
+    // set.status = 204;
     return status(204);
   })
 
@@ -162,9 +162,12 @@ const app = new Elysia({
   .onStop(systemOff);
 
 systemBoot().then(() => {
-  app.listen({ port: PORT }, () => {
-    console.log(
-      `🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`,
-    );
-  });
+  app.listen(
+    { port: PORT, development: process.env.NODE_ENV === "development" },
+    () => {
+      console.log(
+        `🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`,
+      );
+    },
+  );
 });
