@@ -50,7 +50,7 @@ const app = new Elysia({
       origins:
         process.env.NODE_ENV === "production"
           ? [process.env.ORIGIN_URL!]
-          : ["http://localhost:5173"],
+          : ["http://localhost:5173", process.env.ORIGIN_URL!],
       credentials: true,
       maxAge: 300,
     }),
