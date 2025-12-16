@@ -5,7 +5,7 @@ import { API_BASE_URL } from '$lib/env';
 export interface ApiResponse<T = unknown> {
 	data: T;
 	message: string; // always present — success or error reason
-	code: number; // e.g. 200, 201
+	code?: number; // e.g. 200, 201
 	// code: string;           // e.g. 'SUCCESS', 'VALIDATION_ERROR', 'NOT_FOUND'
 	status?: 'success' | 'error';
 	success?: boolean;

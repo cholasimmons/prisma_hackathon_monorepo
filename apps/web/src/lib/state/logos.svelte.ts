@@ -25,7 +25,7 @@ export async function fetchLogos() {
 		const r = await api.raw('/logos');
 		const res = await r.json();
 
-		console.log('data:', res);
+		// console.log('data:', res);
 
 		_logos = res.data;
 		localStorage.setItem('logos', JSON.stringify(res.data));
