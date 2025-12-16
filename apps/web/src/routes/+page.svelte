@@ -4,7 +4,8 @@
 	import type { Vehicle } from '$lib/models/vehicle.model';
 	import { toast } from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
-	import { fade } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
+	import { cubicInOut } from 'svelte/easing';
 
 	let loadingLogos = getContext('loading');
 
@@ -162,7 +163,7 @@
 
 		<!-- Loading -->
 		{#if loading}
-			<div class="space-y-4">
+			<div in:fade={{ duration: 300, delay: 100 }} out:fade={{ duration: 100 }} class="space-y-4">
 				{#each { length: 3 } as _, i (i)}
 					<div class="bg-white p-4 rounded-lg shadow animate-pulse">
 						<div class="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -171,7 +172,11 @@
 				{/each}
 			</div>
 		{:else if error}
-			<div in:fade={{ duration: 400 }} class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+			<div
+				in:fade={{ duration: 400, delay: 100 }}
+				out:fade={{ duration: 100 }}
+				class="bg-red-50 border-l-4 border-red-500 p-4 rounded"
+			>
 				<div class="flex">
 					<div class="shrink-0">
 						<svg
@@ -194,7 +199,11 @@
 				</div>
 			</div>
 		{:else if vehicles.length === 0 && cleanPlate.trim()}
-			<div in:fade={{ duration: 400 }} class="text-center py-12">
+			<div
+				in:fade={{ duration: 400, delay: 100 }}
+				out:fade={{ duration: 100 }}
+				class="text-center py-12"
+			>
 				<svg
 					class="mx-auto h-12 w-12 text-gray-400"
 					fill="none"
@@ -211,7 +220,7 @@
 				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
 				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
 				<button
-					in:fade={{ duration: 500, delay: 800 }}
+					in:scale={{ duration: 500, start: 0.8, easing: cubicInOut, delay: 800 }}
 					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
 					onclick={() => submitVehicle()}
 				>
@@ -219,7 +228,7 @@
 				</button>
 			</div>
 		{:else if vehicles.length > 0}
-			<div in:fade={{ duration: 400 }} class="space-y-4">
+			<div in:fade={{ duration: 400, delay: 100 }} out:fade={{ duration: 100 }} class="space-y-4">
 				{#each vehicles as vehicle (vehicle.id)}
 					<div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
 						<div class="p-4 sm:p-5">
@@ -273,7 +282,11 @@
 			</div>
 		{:else}
 			<!-- Initial state: no search yet -->
-			<div in:fade={{ duration: 400, delay: 1000 }} class="text-center py-12 text-gray-500">
+			<div
+				in:fade={{ duration: 400, delay: 1000 }}
+				out:fade={{ duration: 100 }}
+				class="text-center py-12 text-gray-500"
+			>
 				Enter a registration number to begin searching.
 			</div>
 		{/if}

@@ -6,7 +6,6 @@ import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import type { PublicVehicle, PublicVehicleSubmission } from "./model";
 import { CacheKeys } from "~/utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
-import { dmmfToRuntimeDataModel } from "@prisma/client/runtime/client";
 import { BucketNames } from "~/utils/image/storage";
 import s3 from "~/utils/s3";
 
@@ -29,7 +28,7 @@ abstract class VehicleService {
     if (year) where.year = year;
     if (color) where.color = color;
     if (model) where.model = model;
-    if (plate) where.plate = plate;
+    if (plate) where.plate = plate.trim();
 
     if (!isAdmin) {
       where.isActive = true;
@@ -59,6 +58,7 @@ abstract class VehicleService {
     cache.set<PublicVehicle[]>(
       CacheKeys.vehicles.allQueried(JSON.stringify(params)),
       cleanVehicles,
+      60, // 60 seconds
     );
 
     return cleanVehicles;

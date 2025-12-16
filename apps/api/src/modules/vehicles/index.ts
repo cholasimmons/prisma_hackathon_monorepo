@@ -129,7 +129,7 @@ const vehiclesController = new Elysia({
         plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
-        limit: t.Optional(t.Numeric()),
+        limit: t.Optional(t.Numeric({ default: 10 })),
         color: t.Optional(t.String()),
       }),
     },
