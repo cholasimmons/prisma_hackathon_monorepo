@@ -237,7 +237,7 @@
 								{#if vehicle.photos}
 									<div class="shrink-0 w-20 h-20 rounded overflow-hidden bg-gray-100">
 										<img
-											src={vehicle.photos[0]}
+											src={vehicle.photos[0].photo}
 											alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
 											class="w-full h-full object-cover"
 											loading="lazy"

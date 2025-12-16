@@ -5,7 +5,7 @@ interface Vehicle {
 	plate: string;
 	make: string;
 	model?: string | null;
-	photos?: string[] | null;
+	photos?: VehiclePhoto[] | null;
 	color: string;
 	year?: number | null;
 	forSale: boolean | null;

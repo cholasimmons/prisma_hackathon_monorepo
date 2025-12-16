@@ -1,8 +1,20 @@
+import type { Vehicle } from './vehicle.model';
+
 interface VehiclePhoto {
 	id: string;
 	photo: string;
-	isPrimary?: boolean;
-	vehicleId: string;
+	isPrimary: boolean;
+	uploadSizeKb?: number | null;
+
+	pHash?: string | null;
+	width?: number | null;
+	height?: number | null;
+
+	vehicleId?: string | null;
+	vehicle?: Vehicle | null;
+
+	createdAt: Date;
+	updatedAt?: Date | null;
 }
 
 interface Logo {
