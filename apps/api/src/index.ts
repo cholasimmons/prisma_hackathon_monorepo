@@ -16,9 +16,7 @@ import {
   fileController,
   logosController,
 } from "~/modules/index";
-import db from "./utils/database/client";
 import staticPlugin from "@elysiajs/static";
-import { corsPlugin } from "./plugins/cors.plugin";
 
 const PORT = Number(process.env.PORT || 3000);
 
@@ -28,26 +26,11 @@ const app = new Elysia({
   },
   normalize: "typebox",
 })
-  // .use(
-  //   cors({
-  //     origin: process.env.NODE_ENV === "production" ? process.env.ORIGIN_URL! : "http://localhost:5173",
-  //     // origin: [
-  //     //   process.env.NODE_ENV === "production"
-  //     //     ? process.env.ORIGIN_URL!
-  //     //     : "http://localhost:5173",
-  //     // ],
-  //     aot: false,
-  //     methods: "*", // ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  //     allowedHeaders: ["content-type", "authorization"],
-  //     credentials: true,
-  //     maxAge: 86400,
-  //     preflight: true,
-  //     exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
-  //   }),
-  // )
   .use(
-    corsPlugin({
-      origins: [process.env.ORIGIN_URL!],
+    cors({
+      origin: [process.env.ORIGIN_URL!, "http://localhost:5173"],
+      aot: false,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [
         "content-type",
         "authorization",
@@ -55,9 +38,24 @@ const app = new Elysia({
         "x-client-plate-normalized",
       ],
       credentials: true,
-      maxAge: 400,
+      maxAge: 600,
+      preflight: true,
+      // exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
     }),
   )
+  // .use(
+  //   corsPlugin({
+  //     origins: [process.env.ORIGIN_URL!],
+  //     allowedHeaders: [
+  //       "content-type",
+  //       "authorization",
+  //       "credentials",
+  //       "x-client-plate-normalized",
+  //     ],
+  //     credentials: true,
+  //     maxAge: 400,
+  //   }),
+  // )
   .use(
     openapi({
       documentation: {
@@ -135,10 +133,7 @@ const app = new Elysia({
     };
     return status(200, { info, success: true, message: "Service is healthy" });
   })
-  .options("*", ({ set, status }) => {
-    // set.status = 204;
-    return status(204);
-  })
+  .options("*", ({ status }) => status(204))
 
   // doing CORS' job! 🤦‍♂️
   // .onAfterHandle(({ request, set }) => {
