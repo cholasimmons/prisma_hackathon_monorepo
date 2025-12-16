@@ -3,24 +3,29 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
-    # image: prisma-hackathon-api:latest   # tag the image
+    init: true
     container_name: elysia-api
     ports:
       - "3000:3000"
-    # env_file:
-    #   - apps/api/.env
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-    #   interval: 30s
-    #   timeout: 3s
-    #   retries: 5
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      start_interval: 5s
     networks:
       - coolify # ← join the existing Coolify network
-    # labels:
-    #   - traefik.enable=true
-    #   - "traefik.http.routers.api.rule=Host(`api.plates.simmons.studio.io`) && PathPrefix(`/`)"
-    #   - traefik.http.routers.api.entryPoints=https
+    labels:
+      studio.simmons.plates.api/name: Plates API
+      studio.simmons.plates.api/type: service
+      studio.simmons.plates.api/healthcheck: true
+      studio.simmons.plates.api/healthcheck-interval: 1m
+      studio.simmons.plates.api/healthcheck-timeout: 10s
+      studio.simmons.plates.api/healthcheck-retries: 3
+      studio.simmons.plates.api/healthcheck-start-period: 30s
+      studio.simmons.plates.api/healthcheck-start-interval: 5s
 
   web:
     build:
@@ -29,25 +34,12 @@ services:
     container_name: sveltekit-web
     ports:
       - "3001:3001"
-    # env_file:
-    #   - apps/web/.env
     depends_on:
       - api
     restart: unless-stopped
     networks:
       - coolify # ← join the existing Coolify network
 
-  # migrate:
-  #   build:
-  #     context: ./apps/api
-  #     dockerfile: Dockerfile
-  #   container_name: api-migrate # optional, runtime container name
-  #   depends_on:
-  #     - api
-  #   command: ["bun", "run", "prisma:migrate"]
-  #   restart: "no"
-  #   environment:
-  #     DATABASE_URL: ${DATABASE_URL}
 networks:
   coolify:
     external: true # ← crucial: don't create, just attach

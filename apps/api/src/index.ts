@@ -19,6 +19,7 @@ import {
 import staticPlugin from "@elysiajs/static";
 
 const PORT = Number(process.env.PORT || 3000);
+const ENV = process.env.BUN_ENV ?? process.env.NODE_ENV;
 
 const app = new Elysia({
   websocket: {
@@ -133,7 +134,15 @@ const app = new Elysia({
     };
     return status(200, { info, success: true, message: "Service is healthy" });
   })
+
   .options("*", ({ status }) => status(204))
+  .onError(({ set }) => {
+    set.headers["Access-Control-Allow-Origin"] =
+      process.env.ORIGIN_URL || "http://localhost:5173";
+    set.headers["Access-Control-Allow-Methods"] =
+      "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+    set.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
+  })
 
   // doing CORS' job! 🤦‍♂️
   // .onAfterHandle(({ request, set }) => {
@@ -154,12 +163,9 @@ const app = new Elysia({
   .onStop(systemOff);
 
 systemBoot().then(() => {
-  app.listen(
-    { port: PORT, development: process.env.NODE_ENV === "development" },
-    () => {
-      console.log(
-        `🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`,
-      );
-    },
-  );
+  app.listen({ port: PORT, development: ENV === "development" }, () => {
+    console.log(
+      `🦊 Backend running at ${app.server?.hostname}:${app.server?.port}`,
+    );
+  });
 });
