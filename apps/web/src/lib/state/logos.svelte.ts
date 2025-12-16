@@ -1,6 +1,7 @@
 import { api } from '$lib/api/client';
+import type { Logo } from '$lib/models/photo.model';
 
-let _logos = $state([]);
+let _logos = $state<Logo[]>([]);
 let _loadingLogos = $state(true);
 let _initialized = false;
 
@@ -26,6 +27,7 @@ export async function fetchLogos() {
 		const res = await r.json();
 
 		// console.log('data:', res);
+		console.log(`Logos fetched: ${res.data.length}`);
 
 		_logos = res.data;
 		localStorage.setItem('logos', JSON.stringify(res.data));
