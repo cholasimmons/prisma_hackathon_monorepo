@@ -3,7 +3,7 @@ import { api } from './client';
 
 async function searchVehicles(plate: string): Promise<Vehicle[]> {
 	// Normalize on client — but backend should also normalize!
-	const normalized = plate.trim().toLowerCase();
+	const normalized = plate.trim();
 	if (!normalized) return [];
 
 	const payload = await api.get<Vehicle[]>(

@@ -1,7 +1,7 @@
 model Vehicle {
   /// @prismabox.input.hide
   id             String   @id @default(cuid())
-  plate          String   @unique
+  plate          String   @unique @db.Citext
   make           String
   model          String?
   photos         VehiclePhoto[]   @relation("vehiclePhotos")
