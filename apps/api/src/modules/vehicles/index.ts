@@ -75,7 +75,7 @@ const vehiclesController = new Elysia({
       query: t.Object({
         make: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
-        limit: t.Optional(t.Numeric()),
+        limit: t.Optional(t.Numeric({ default: 20 })),
         color: t.Optional(t.String()),
       }),
       auth: true,

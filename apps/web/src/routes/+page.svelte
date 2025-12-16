@@ -5,7 +5,7 @@
 	import { toast } from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
-	import { cubicInOut } from 'svelte/easing';
+	import { cubicIn, cubicInOut } from 'svelte/easing';
 
 	let loadingLogos = getContext('loading');
 
@@ -220,7 +220,7 @@
 				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
 				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
 				<button
-					in:scale={{ duration: 500, start: 0.8, easing: cubicInOut, delay: 800 }}
+					in:scale={{ duration: 800, start: 0.7, easing: cubicIn, delay: 1200 }}
 					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
 					onclick={() => submitVehicle()}
 				>

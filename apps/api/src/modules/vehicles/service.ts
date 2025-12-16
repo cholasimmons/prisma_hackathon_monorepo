@@ -44,7 +44,13 @@ abstract class VehicleService {
     }
 
     const vehicles: Vehicle[] | null = await db.vehicle.findMany({
-      where,
+      where: {
+        plate: { contains: plate, mode: "insensitive" },
+        color: { contains: color, mode: "insensitive" },
+        model: { contains: model, mode: "insensitive" },
+        year,
+        make,
+      },
       take: limit,
     });
 
@@ -82,7 +88,11 @@ abstract class VehicleService {
     where.submittedById = userId;
 
     const submissions = await db.vehicleSubmission.findMany({
-      where,
+      where: {
+        color: { contains: color, mode: "insensitive" },
+        year,
+        make,
+      },
       include: { photos: true },
       take: limit || 20,
     });
