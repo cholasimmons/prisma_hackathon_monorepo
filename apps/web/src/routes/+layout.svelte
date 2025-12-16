@@ -2,6 +2,7 @@
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import toast, { Toaster } from 'svelte-french-toast';
+	import { page } from '$app/state';
 
 	// Supports weights 100-900
 	import '@fontsource-variable/montserrat';
@@ -81,6 +82,7 @@
 	// 	'suzuki',
 	// 	'tesla'
 	// ];
+
 </script>
 
 <svelte:head>
@@ -89,9 +91,16 @@
 </svelte:head>
 
 <main class="flex flex-col justify-center min-h-dvh w-full bg-gray-100 dark:bg-gray-800">
+    {#if page.data}
+    <header  class="py-4 text-end">
+        User: ${page.data}
+    </header>
+    {/if}
+
 	<div class="grow flex justify-center w-full pt-12">
 		{@render children()}
 	</div>
+
 	<footer class="py-4 text-center">
 		<a href="https://simmons.studio">
 			<small class="text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300">
