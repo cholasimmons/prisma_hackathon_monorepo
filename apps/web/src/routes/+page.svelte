@@ -4,6 +4,7 @@
 	import type { Vehicle } from '$lib/models/vehicle.model';
 	import { toast } from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
 	let loadingLogos = getContext('loading');
 
@@ -170,7 +171,7 @@
 				{/each}
 			</div>
 		{:else if error}
-			<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+			<div in:fade={{ duration: 400 }} class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
 				<div class="flex">
 					<div class="shrink-0">
 						<svg
@@ -193,7 +194,7 @@
 				</div>
 			</div>
 		{:else if vehicles.length === 0 && cleanPlate.trim()}
-			<div class="text-center py-12">
+			<div in:fade={{ duration: 400 }} class="text-center py-12">
 				<svg
 					class="mx-auto h-12 w-12 text-gray-400"
 					fill="none"
@@ -210,6 +211,7 @@
 				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
 				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
 				<button
+					in:fade={{ duration: 500, delay: 800 }}
 					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
 					onclick={() => submitVehicle()}
 				>
@@ -217,7 +219,7 @@
 				</button>
 			</div>
 		{:else if vehicles.length > 0}
-			<div class="space-y-4">
+			<div in:fade={{ duration: 400 }} class="space-y-4">
 				{#each vehicles as vehicle (vehicle.id)}
 					<div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
 						<div class="p-4 sm:p-5">
@@ -271,7 +273,7 @@
 			</div>
 		{:else}
 			<!-- Initial state: no search yet -->
-			<div class="text-center py-12 text-gray-500">
+			<div in:fade={{ duration: 400, delay: 1000 }} class="text-center py-12 text-gray-500">
 				Enter a registration number to begin searching.
 			</div>
 		{/if}
