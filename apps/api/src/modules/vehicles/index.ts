@@ -3,7 +3,12 @@ import VehicleService from "./service";
 import { betterAuth } from "~/middleware/betterauth";
 import { cache } from "~/utils/cache";
 import { strip } from "~/utils/strip";
-import { PublicVehicle, PublicVehicleFields, PublicVehicleSubmission, PublicVehicleSubmissionFields } from "./model";
+import {
+  PublicVehicle,
+  PublicVehicleFields,
+  PublicVehicleSubmission,
+  PublicVehicleSubmissionFields,
+} from "./model";
 import { Vehicle, VehicleSubmission } from "@/generated/prisma/client";
 
 const vehiclesController = new Elysia({
@@ -29,7 +34,8 @@ const vehiclesController = new Elysia({
       }
 
       // status(200);
-      return status(200, { data: vehicles,
+      return status(200, {
+        data: vehicles,
         message: `Successfully retrieved ${vehicles.length} vehicles`,
       });
     },
@@ -49,14 +55,15 @@ const vehiclesController = new Elysia({
   .get(
     "/submissions",
     async ({ status, query, session }) => {
-      const submissions: PublicVehicleSubmission[] | null = await VehicleService.searchSubmittedVehicles(
-        {
-          make: query.make,
-          year: query.year ? query.year : undefined,
-          limit: query.limit ? query.limit : 10,
-        },
-        session.userId,
-      );
+      const submissions: PublicVehicleSubmission[] | null =
+        await VehicleService.searchSubmittedVehicles(
+          {
+            make: query.make,
+            year: query.year ? query.year : undefined,
+            limit: query.limit ? query.limit : 10,
+          },
+          session.userId,
+        );
 
       if (!submissions) {
         return status(404, "No Vehicle submissions found");
@@ -98,9 +105,11 @@ const vehiclesController = new Elysia({
   )
 
   // Search final vehicles
-  .get("/search",
+  .get(
+    "/search",
     async ({ status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
+        plate: query.plate,
         make: query.make,
         year: query.year ? query.year : undefined,
         limit: query.limit ? query.limit : 10,
@@ -117,6 +126,7 @@ const vehiclesController = new Elysia({
     },
     {
       query: t.Object({
+        plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
         limit: t.Optional(t.Numeric()),
@@ -127,7 +137,8 @@ const vehiclesController = new Elysia({
 
   // POST
 
-  .post("/",
+  .post(
+    "/",
     async ({ body, status, session }) => {
       const submission = await VehicleService.submitVehicle(
         body,
@@ -148,8 +159,8 @@ const vehiclesController = new Elysia({
         }),
         image: t.Optional(
           t.File({
-            type: 'image',
-            maxSize: '3m'
+            type: "image",
+            maxSize: "3m",
           }),
         ),
         make: t.Optional(t.String()),
@@ -194,17 +205,28 @@ const vehiclesController = new Elysia({
   )
 
   // Update vehicle image
-  .post("/image/:vehicleId",
-    async ({ params: { vehicleId }, body: { image }, status, session: { userId } }) => {
-      console.log("image: ",image);
+  .post(
+    "/image/:vehicleId",
+    async ({
+      params: { vehicleId },
+      body: { image },
+      status,
+      session: { userId },
+    }) => {
+      console.log("image: ", image);
 
-      const isMyVehicleSubmission: boolean = await VehicleService.isMyVehicleSubmission(vehicleId, userId);
+      const isMyVehicleSubmission: boolean =
+        await VehicleService.isMyVehicleSubmission(vehicleId, userId);
 
-      if(!isMyVehicleSubmission) {
+      if (!isMyVehicleSubmission) {
         return status(403, "You are not authorized to update this vehicle");
       }
 
-      const updated = await VehicleService.updateVehicleImage(vehicleId, image, userId);
+      const updated = await VehicleService.updateVehicleImage(
+        vehicleId,
+        image,
+        userId,
+      );
 
       if (!updated) {
         return status(404, "Unable to upload image");
@@ -218,10 +240,10 @@ const vehiclesController = new Elysia({
       }),
       body: t.Object({
         image: t.File({
-          maxSize: 1024 * 1024 * 3
+          maxSize: 1024 * 1024 * 3,
         }),
       }),
-      auth: true
+      auth: true,
     },
   )
 

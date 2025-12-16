@@ -11,14 +11,17 @@ import { BucketNames } from "~/utils/image/storage";
 import s3 from "~/utils/s3";
 
 abstract class VehicleService {
-  static async searchVehicles(params: {
-    make?: string;
-    year?: number;
-    limit?: number;
-    color?: string;
-    model?: string;
-    plate?: string;
-  }, isAdmin: boolean = false): Promise<PublicVehicle[] | null> {
+  static async searchVehicles(
+    params: {
+      make?: string;
+      year?: number;
+      limit?: number;
+      color?: string;
+      model?: string;
+      plate?: string;
+    },
+    isAdmin: boolean = false,
+  ): Promise<PublicVehicle[] | null> {
     const { make, year, limit, color, model, plate } = params;
     const where: Prisma.VehicleWhereInput = {};
 
@@ -32,6 +35,15 @@ abstract class VehicleService {
       where.isActive = true;
     }
 
+    // 1. Try cache first
+    const cached = await cache.get<PublicVehicle[]>(
+      CacheKeys.vehicles.allQueried(JSON.stringify(params)),
+    );
+    if (cached) {
+      console.log(`✅ Cache HIT for vehicle search ${JSON.stringify(params)}`);
+      return cached;
+    }
+
     const vehicles: Vehicle[] | null = await db.vehicle.findMany({
       where,
       take: limit,
@@ -43,6 +55,11 @@ abstract class VehicleService {
     }
 
     const cleanVehicles = strip(vehicles, PublicVehicleFields);
+
+    cache.set<PublicVehicle[]>(
+      CacheKeys.vehicles.allQueried(JSON.stringify(params)),
+      cleanVehicles,
+    );
 
     return cleanVehicles;
   }
@@ -66,7 +83,7 @@ abstract class VehicleService {
 
     const submissions = await db.vehicleSubmission.findMany({
       where,
-      include: { photos:true },
+      include: { photos: true },
       take: limit || 20,
     });
 
@@ -189,36 +206,47 @@ abstract class VehicleService {
   static async updateVehicleImage(
     vehicleId: string,
     image: File,
-    userId: string
+    userId: string,
   ): Promise<PublicVehicleSubmission | null> {
     // 1. Upload image in S3
-    const { path, size } = await VehicleService.handleVehicleImage(vehicleId, image);
+    const { path, size } = await VehicleService.handleVehicleImage(
+      vehicleId,
+      image,
+    );
 
     // 2: Update database
-    const updatedVehicle: VehicleSubmission | null = await db.vehicleSubmission.update({
-      where: { id: vehicleId },
-      data: {
-        photos: {
-          create: {
-            photo: path,
-            uploadSizeKb: size
+    const updatedVehicle: VehicleSubmission | null =
+      await db.vehicleSubmission.update({
+        where: { id: vehicleId },
+        data: {
+          photos: {
+            create: {
+              photo: path,
+              uploadSizeKb: size,
+            },
           },
         },
-      },
-      include: { photos: true}
-    });
+        include: { photos: true },
+      });
 
     if (!updatedVehicle) {
       return null;
     }
 
     // 2. Invalidate relevant cache entries
-    await cache.invalidate([CacheKeys.vehicles.submissionById(updatedVehicle.id)]);
+    await cache.invalidate([
+      CacheKeys.vehicles.submissionById(updatedVehicle.id),
+    ]);
 
-    console.log(`🔄 Updated vehicle image (${updatedVehicle.plate}) and invalidated cache`);
-    const updatedStripped = strip(updatedVehicle, PublicVehicleSubmissionFields);
+    console.log(
+      `🔄 Updated vehicle image (${updatedVehicle.plate}) and invalidated cache`,
+    );
+    const updatedStripped = strip(
+      updatedVehicle,
+      PublicVehicleSubmissionFields,
+    );
 
-    if(!updatedStripped) {
+    if (!updatedStripped) {
       return null;
     }
 
@@ -236,7 +264,7 @@ abstract class VehicleService {
   static async submitVehicle(
     body: VehicleSubmissionCreateInput & { image?: File },
     userId: string,
-    ): Promise<PublicVehicleSubmission | null> {
+  ): Promise<PublicVehicleSubmission | null> {
     // 1. Update in database
     const submission: VehicleSubmission | null =
       await db.vehicleSubmission.upsert({
@@ -291,7 +319,7 @@ abstract class VehicleService {
   private static async handleVehicleImage(
     vehicleId: string,
     imageFile: File,
-    ): Promise<{ path: string, size: number }> {
+  ): Promise<{ path: string; size: number }> {
     try {
       // Create unique filename
       const extension = imageFile.name.split(".").pop() || "jpg";
@@ -318,15 +346,20 @@ abstract class VehicleService {
     }
   }
 
-  static async isMyVehicleSubmission(vehicleId: string, userId: string): Promise<boolean> {
-    const cached = await cache.get<VehicleSubmission>(CacheKeys.vehicles.submissionById(vehicleId));
-    if(cached && cached.submittedById === userId) return true;
+  static async isMyVehicleSubmission(
+    vehicleId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const cached = await cache.get<VehicleSubmission>(
+      CacheKeys.vehicles.submissionById(vehicleId),
+    );
+    if (cached && cached.submittedById === userId) return true;
 
     const vehicle = await db.vehicleSubmission.findUnique({
       where: { id: vehicleId },
       select: {
         submittedById: true,
-      }
+      },
     });
 
     return vehicle?.submittedById === userId;

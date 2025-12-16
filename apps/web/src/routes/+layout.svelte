@@ -31,7 +31,7 @@
 			fetchLogos()
 				.then(() => {
 					resolveLogos();
-					console.log(logos.length + ' logos found. ');
+					console.log(logos().length + ' logos found. ');
 				})
 				.catch(() => rejectLogos());
 			// toast('Welcome!', { icon: '👋' });

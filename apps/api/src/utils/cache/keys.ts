@@ -12,6 +12,7 @@ export const CacheKeys = {
 
   vehicles: {
     all: "vehicles:all",
+    allQueried: (query: string) => `vehicles:all:query:${query}`,
     byId: (id: string | number) => `vehicle:${id}`,
     byPlate: (plate: string) => `vehicle:plate:${plate}`,
     byMake: (make: string) => `vehicles:make:${make}`,
