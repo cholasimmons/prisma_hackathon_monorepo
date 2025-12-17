@@ -5,12 +5,24 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: {
-				id: string;
-				email: string;
-				name: string;
-				image: string | null;
-        role?: string | null;
+   	    id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string;
+        emailVerified: boolean;
+        name: string;
+        image?: string | null | undefined | undefined;
 			} | null;
+      session: {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        expiresAt: Date;
+        token: string;
+        ipAddress?: string | null | undefined | undefined;
+        userAgent?: string | null | undefined | undefined;
+      } | null;
 		}
 		// interface PageData {}
 		// interface PageState {}

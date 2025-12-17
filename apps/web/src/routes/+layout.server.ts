@@ -1,6 +1,6 @@
-import type { LayoutServerLoad } from './$types';
+import type { AuthUser } from '$lib/models/auth.model.js';
 
-export async function load({ locals }) {
+export function load({ locals }) {
   return {
     user: locals.user ?? null
   };
