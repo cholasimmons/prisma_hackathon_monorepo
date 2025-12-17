@@ -3,7 +3,7 @@
  * Add to `vite.config.ts` `define` or use `$env/static/public`
  */
 const API_BASE_URL =
-	import.meta.env.API_BASE_URL || import.meta.env.DEV
+	import.meta.env.API_BASE_URL || import.meta.env.NODE_ENV === 'development'
 		? 'http://localhost:3000' // ← your Elysia dev port
 		: 'https://api.plates.simmons.studio';
 

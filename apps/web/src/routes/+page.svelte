@@ -126,7 +126,7 @@
 	<title>Vehicle Registration Search</title>
 </svelte:head>
 
-<main class="min-h-full py-12 px-8 sm:px-6">
+<main class="min-h-full p-8 sm:px-6 items-start flex flex-col justify-center">
 	<div class="max-w-xl m-auto text-center">
 		<div class="mb-10">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />
@@ -147,8 +147,8 @@
 				onblur={handleBlur}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full px-6 py-2 rounded-2xl shadow-md
-				border-gray-300 bg-gray-100 dark:bg-gray-600
+				class="mx-auto max-w-lg px-6 py-2 rounded-xl shadow-md
+				border-gray-300 bg-gray-200 dark:bg-gray-600
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
 				plates plate-input--reflective text-7xl text-center text-gray-800"
@@ -198,7 +198,7 @@
 					</div>
 				</div>
 			</div>
-		{:else if vehicles.length === 0 && cleanPlate.trim()}
+		{:else if vehicles.length === 0 && cleanPlate.trim() && !loading}
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
@@ -220,7 +220,7 @@
 				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
 				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
 				<button
-					in:scale={{ duration: 800, start: 0.7, easing: cubicIn, delay: 1200 }}
+					in:scale={{ duration: 800, start: 0.7, easing: cubicIn, delay: 1600 }}
 					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
 					onclick={() => submitVehicle()}
 				>
@@ -285,7 +285,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 1000 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-12 text-gray-500"
+				class="text-center py-4 text-gray-500"
 			>
 				Enter a registration number to begin searching.
 			</div>

@@ -10,6 +10,8 @@
 
 	import { onMount } from 'svelte';
 	import { logos, fetchLogos } from '$lib/state/logos.svelte';
+	import { authClient } from '$lib/auth-client';
+	import { goto, refreshAll } from '$app/navigation';
 
 	let { children } = $props();
 
@@ -21,11 +23,29 @@
 	});
 
 	// Immediately show "loading…" toast
-	toast.promise(logosPromise, {
-		loading: 'Fetching logos...',
-		success: 'Logos saved!',
-		error: 'Could not fetch logos'
-	});
+	// toast.promise(logosPromise, {
+	// 	loading: 'Fetching logos...',
+	// 	success: 'Logos saved!',
+	// 	error: 'Could not fetch logos'
+	// });
+
+	function logout() {
+		authClient.signOut().then(() => {
+			console.log('User signed out');
+			refreshAll();
+		});
+	}
+	function login() {
+		goto('/login');
+		// authClient.signIn.email({email, password, callbackURL: '/', rememberMe: true}).then(() => {
+		// 	console.log('User signed out');
+		// 	refreshAll();
+		// });
+	}
+
+	function about() {
+		toast.success('a Simmons Studio project');
+	}
 
 	onMount(() => {
 		try {
@@ -82,7 +102,6 @@
 	// 	'suzuki',
 	// 	'tesla'
 	// ];
-
 </script>
 
 <svelte:head>
@@ -90,14 +109,37 @@
 	<title>Vehicle Directory</title>
 </svelte:head>
 
-<main class="flex flex-col justify-center min-h-dvh w-full bg-gray-100 dark:bg-gray-800">
-    {#if page.data}
-    <header  class="py-4 text-end">
-        User: ${page.data}
-    </header>
-    {/if}
+<main class="flex flex-col justify-start min-h-dvh w-full bg-gray-100 dark:bg-gray-800">
+	<header
+		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-400 flex flex-row w-full items-center"
+	>
+		<div class="grow">
+			{#if page.data?.user}
+				${page.data.user.name}
+			{:else}
+				<p>Welcome!</p>
+			{/if}
+		</div>
+		<div class="shrink-0 space-x-2">
+			{#if page.data?.user}
+				<button
+					class="border-red-900 border-2 text-red-400 px-6 py-1 rounded-2xl cursor-pointer"
+					onclick={() => logout()}>Logout</button
+				>
+			{:else}
+				<button
+					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-6 py-1 rounded-2xl cursor-pointer"
+					onclick={() => login()}>Login</button
+				>
+			{/if}
+			<button
+				class="bg-amber-600 border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-gray-800 px-2 py-1 rounded-full cursor-pointer"
+				onclick={() => about()}>❔</button
+			>
+		</div>
+	</header>
 
-	<div class="grow flex justify-center w-full pt-12">
+	<div class="grow flex flex-col w-full pt-4">
 		{@render children()}
 	</div>
 

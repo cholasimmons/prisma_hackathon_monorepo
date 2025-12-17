@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import type { Vehicle } from '$lib/models/vehicle.model';
 	import { toast } from 'svelte-french-toast';
 	import { api, ApiError } from '$lib/api/client';
+	import { page } from '$app/state';
 
 	$effect(() => {
-		document.title = `${$page.data.vehicle.plate} • Vehicle Details`;
+		document.title = `${page.data.vehicle.plate} • Vehicle Details`;
 	});
 
-	const { vehicle } = $page.data;
+	const { vehicle } = page.data;
 
 	// 🔤 Make → lowercase
 	const makeLower = vehicle.make.toLowerCase();
