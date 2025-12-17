@@ -36,12 +36,11 @@
 			refreshAll();
 		});
 	}
-	function login() {
+	function gotoLogin() {
 		goto('/login');
-		// authClient.signIn.email({email, password, callbackURL: '/', rememberMe: true}).then(() => {
-		// 	console.log('User signed out');
-		// 	refreshAll();
-		// });
+	}
+	function gotoSignup() {
+		goto('/signup');
 	}
 
 	function about() {
@@ -62,47 +61,6 @@
 		}
 	});
 
-	// 		const topMakes = [
-	// 	'toyota',
-	// 	'ford',
-	// 	'honda',
-	// 	'nissan',
-	// 	'bmw',
-	// 	'mazda',
-	// 	'chevrolet',
-	// 	'audi',
-	// 	'lexus',
-	// 	'volkswagen',
-	// 	'subaru',
-	// 	'hyundai',
-	// 	'jeep',
-	// 	'kia',
-	// 	'mercedes-benz',
-	// 	'porsche',
-	// 	'volvo',
-	// 	'alfa-romeo',
-	// 	'aston-martin',
-	// 	'bentley',
-	// 	'dodge',
-	// 	'fiat',
-	// 	'gmc',
-	// 	'infiniti',
-	// 	'jaguar',
-	// 	'land-rover',
-	// 	'lincoln',
-	// 	'lotus',
-	// 	'maserati',
-	// 	'mini',
-	// 	'nissan',
-	// 	'opel',
-	// 	'peugeot',
-	// 	'ram',
-	// 	'rolls-royce',
-	// 	'saab',
-	// 	'ssangyong',
-	// 	'suzuki',
-	// 	'tesla'
-	// ];
 </script>
 
 <svelte:head>
@@ -127,12 +85,19 @@
 					class="border-red-900 border-2 text-red-400 px-6 py-1 rounded-2xl cursor-pointer"
 					onclick={() => logout()}>Logout</button
 				>
-			{:else if page.url.pathname !== '/login'}
+			{:else if page.url.pathname.startsWith('/login')}
 				<button
-					in:fade={{ duration: 400 }}
-					out:fade={{ duration: 400 }}
+					in:fade={{ duration: 400, delay: 250 }}
+					out:fade={{ duration: 200 }}
+					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-4 py-1 rounded-2xl cursor-pointer"
+					onclick={() => gotoSignup()}>Sign Up</button
+				>
+			{:else}
+				<button
+					in:fade={{ duration: 400, delay: 250 }}
+					out:fade={{ duration: 200 }}
 					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-6 py-1 rounded-2xl cursor-pointer"
-					onclick={() => login()}>Login</button
+					onclick={() => gotoLogin()}>Login</button
 				>
 			{/if}
 			<button
@@ -146,10 +111,10 @@
 		{@render children()}
 	</div>
 
-	<footer class="p-4 text-center">
+	<footer class="text-center p-3">
 		<a href="https://simmons.studio">
 			<small
-				class="p-6 text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
+				class="px-6 py-1 text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
 			>
 				Simmons Studio
 			</small>
