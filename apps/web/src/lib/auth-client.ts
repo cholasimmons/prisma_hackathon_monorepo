@@ -23,6 +23,11 @@ export const authClient = createAuthClient({
 				console.log('User signed up');
 			});
 		}
+	},
+	fetchOptions: {
+		headers: {
+			'Content-Type': 'application/json'
+		}
 	}
 	// plugins: [sveltekitCookies(getRequestEvent)] // make sure this is the last plugin in the array
 });

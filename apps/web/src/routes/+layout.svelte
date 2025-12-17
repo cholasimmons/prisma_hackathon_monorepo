@@ -12,6 +12,7 @@
 	import { logos, fetchLogos } from '$lib/state/logos.svelte';
 	import { authClient } from '$lib/auth-client';
 	import { goto, refreshAll } from '$app/navigation';
+	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
 
@@ -126,8 +127,10 @@
 					class="border-red-900 border-2 text-red-400 px-6 py-1 rounded-2xl cursor-pointer"
 					onclick={() => logout()}>Logout</button
 				>
-			{:else}
+			{:else if page.url.pathname !== '/login'}
 				<button
+					in:fade={{ duration: 400 }}
+					out:fade={{ duration: 400 }}
 					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-6 py-1 rounded-2xl cursor-pointer"
 					onclick={() => login()}>Login</button
 				>
@@ -143,9 +146,11 @@
 		{@render children()}
 	</div>
 
-	<footer class="py-4 text-center">
+	<footer class="p-4 text-center">
 		<a href="https://simmons.studio">
-			<small class="text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300">
+			<small
+				class="p-6 text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
+			>
 				Simmons Studio
 			</small>
 		</a>

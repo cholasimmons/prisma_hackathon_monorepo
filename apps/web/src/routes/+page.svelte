@@ -103,7 +103,7 @@
 
 	function handleInput(e: any) {
 		clearTimeout(debounceTimer);
-		debounceTimer = window.setTimeout(search, 600);
+		debounceTimer = window.setTimeout(search, 900);
 		// Let user type freely, but visually enforce rules
 		const input = e.target as HTMLInputElement;
 		input.value = cleanPlate;
@@ -126,8 +126,8 @@
 	<title>Vehicle Registration Search</title>
 </svelte:head>
 
-<main class="min-h-full p-8 sm:px-6 items-start flex flex-col justify-center">
-	<div class="max-w-xl m-auto text-center">
+<main class="min-h-full min-w-full p-8 sm:px-6 items-start flex flex-col justify-center">
+	<div class="w-full mx-auto text-center">
 		<div class="mb-10">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />
 		</div>
@@ -135,10 +135,9 @@
 		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-4">
 			Vehicle Registration Search
 		</h1>
-		<small></small>
 
 		<!-- Search Bar -->
-		<div class="relative mb-10">
+		<div class="relative mb-6">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
 			<input
 				type="text"
@@ -147,8 +146,8 @@
 				onblur={handleBlur}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="mx-auto max-w-lg px-6 py-2 rounded-xl shadow-md
-				border-gray-300 bg-gray-200 dark:bg-gray-600
+				class="w-full max-w-md p-2 rounded-xl shadow-md
+				 bg-gray-200 dark:bg-gray-600
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
 				plates plate-input--reflective text-7xl text-center text-gray-800"
@@ -163,7 +162,11 @@
 
 		<!-- Loading -->
 		{#if loading}
-			<div in:fade={{ duration: 300, delay: 100 }} out:fade={{ duration: 100 }} class="space-y-4">
+			<div
+				in:fade={{ duration: 300, delay: 100 }}
+				out:fade={{ duration: 100 }}
+				class="mx-auto space-y-4 w-full max-w-md"
+			>
 				{#each { length: 3 } as _, i (i)}
 					<div class="bg-white p-4 rounded-lg shadow animate-pulse">
 						<div class="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -202,7 +205,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-12"
+				class="text-center py-2 w-full max-w-md mx-auto"
 			>
 				<svg
 					class="mx-auto h-12 w-12 text-gray-400"
@@ -217,18 +220,22 @@
 						d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 					/>
 				</svg>
-				<h3 class="mt-2 text-lg font-medium text-gray-900">No vehicles found</h3>
-				<p class="mt-1 text-gray-500">Try checking the registration number and search again.</p>
+				<h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-gray-200">No vehicles found</h3>
+				<p class="mt-1 text-gray-500">Check the registration number and search again.</p>
 				<button
-					in:scale={{ duration: 800, start: 0.7, easing: cubicIn, delay: 1600 }}
-					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors"
+					in:scale={{ duration: 800, start: 0.8, easing: cubicIn, delay: 1600 }}
+					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors cursor-pointer"
 					onclick={() => submitVehicle()}
 				>
 					Add a Vehicle
 				</button>
 			</div>
 		{:else if vehicles.length > 0}
-			<div in:fade={{ duration: 400, delay: 100 }} out:fade={{ duration: 100 }} class="space-y-4">
+			<div
+				in:fade={{ duration: 400, delay: 100 }}
+				out:fade={{ duration: 100 }}
+				class="space-y-4 w-full max-w-md mx-auto"
+			>
 				{#each vehicles as vehicle (vehicle.id)}
 					<div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
 						<div class="p-4 sm:p-5">
@@ -283,9 +290,9 @@
 		{:else}
 			<!-- Initial state: no search yet -->
 			<div
-				in:fade={{ duration: 400, delay: 1000 }}
+				in:fade={{ duration: 400, delay: 3000 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-4 text-gray-500"
+				class="text-center py-4 text-gray-500 w-full max-w-md mx-auto"
 			>
 				Enter a registration number to begin searching.
 			</div>
