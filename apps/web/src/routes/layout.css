@@ -1,10 +1,21 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
 	font-family: 'Montserrat Variable', sans-serif;
 }
+
+/*:root {
+	--bg: white;
+	--fg: black;
+}
+
+.dark {
+	--bg: #0a0a0a;
+	--fg: #fafafa;
+}*/
 
 .plates {
 	font-family: 'Jersey 25', ui-monospace, monospace, 'Courier New', Courier;

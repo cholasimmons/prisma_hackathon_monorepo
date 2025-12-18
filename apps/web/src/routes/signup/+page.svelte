@@ -26,7 +26,7 @@
 </script>
 
 <main
-	class="container mx-auto px-8 py-4 text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="mx-auto px-8 py-4 text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
 	<h1 class="text-gray-400 text-2xl">Sign Up</h1>
 

@@ -9,12 +9,14 @@
 	import '@fontsource/rubik-mono-one';
 
 	import { onMount } from 'svelte';
+	import { initTheme, applyTheme } from '$lib/theme';
 	import { logos, fetchLogos } from '$lib/state/logos.svelte';
 	import { authClient } from '$lib/auth-client';
 	import { goto, refreshAll } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
+	let dark = $state(true);
 
 	// This promise will be linked to toast.promise
 	let resolveLogos: any, rejectLogos: any;
@@ -43,12 +45,18 @@
 		goto('/signup');
 	}
 
+	function toggleTheme() {
+		dark = !dark;
+		applyTheme(dark ? 'dark' : 'light');
+	}
 	function about() {
 		toast.success('a Simmons Studio project');
 	}
 
 	onMount(() => {
 		try {
+			initTheme();
+			dark = document.documentElement.classList.contains('dark');
 			fetchLogos()
 				.then(() => {
 					resolveLogos();
@@ -60,7 +68,6 @@
 			rejectLogos(err);
 		}
 	});
-
 </script>
 
 <svelte:head>
@@ -68,9 +75,9 @@
 	<title>Vehicle Directory</title>
 </svelte:head>
 
-<main class="flex flex-col justify-start min-h-dvh w-full bg-gray-100 dark:bg-gray-800">
+<main class="flex flex-col justify-start min-h-dvh w-full bg-gray-200 dark:bg-gray-800">
 	<header
-		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-400 flex flex-row w-full items-center"
+		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-500 dark:text-gray-400 flex flex-row items-center"
 	>
 		<div class="grow">
 			{#if page.data?.user}
@@ -89,19 +96,25 @@
 				<button
 					in:fade={{ duration: 400, delay: 250 }}
 					out:fade={{ duration: 200 }}
-					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-4 py-1 rounded-2xl cursor-pointer"
+					class="txt-btn"
 					onclick={() => gotoSignup()}>Sign Up</button
 				>
 			{:else}
 				<button
 					in:fade={{ duration: 400, delay: 250 }}
 					out:fade={{ duration: 200 }}
-					class="border-amber-600 border-2 text-amber-600 hover:border-amber-500 hover:text-amber-500 hover:bg-amber-500/20 px-6 py-1 rounded-2xl cursor-pointer"
+					class="txt-btn"
 					onclick={() => gotoLogin()}>Login</button
 				>
 			{/if}
 			<button
-				class="bg-amber-600 border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-gray-800 px-2 py-1 rounded-full cursor-pointer"
+				class=" border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-gray-800/20 px-1.5 py-1 rounded-full cursor-pointer"
+				onclick={toggleTheme}
+			>
+				{dark ? '🌙' : '☀️'}
+			</button>
+			<button
+				class="bg-amber-600 border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-amber-800/20 px-2 py-1 rounded-full cursor-pointer"
 				onclick={() => about()}>❔</button
 			>
 		</div>
@@ -123,3 +136,9 @@
 </main>
 
 <Toaster position="bottom-center" />
+
+<style>
+	.txt-btn {
+		@apply cursor-pointer rounded-xl border-2 border-gray-600 px-6 py-1 text-gray-600 hover:border-gray-500 hover:bg-gray-500/10 hover:text-gray-500 dark:border-amber-600 dark:text-amber-600 hover:dark:border-amber-500 hover:dark:bg-amber-500/20 hover:dark:text-amber-500;
+	}
+</style>

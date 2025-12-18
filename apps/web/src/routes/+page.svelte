@@ -123,7 +123,7 @@
 </script>
 
 <svelte:head>
-	<title>Vehicle Registration Search</title>
+	<title>Vehicle Search</title>
 </svelte:head>
 
 <main class="min-h-full min-w-full p-8 sm:px-6 items-start flex flex-col justify-center">
@@ -133,7 +133,7 @@
 		</div>
 
 		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-4">
-			Vehicle Registration Search
+			Vehicle Search
 		</h1>
 
 		<!-- Search Bar -->
@@ -147,7 +147,7 @@
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
 				class="w-full max-w-md p-2 rounded-xl shadow-md
-				 bg-gray-200 dark:bg-gray-600
+				 bg-gray-200 dark:bg-gray-600 border-gray-300
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
 				plates plate-input--reflective text-7xl text-center text-gray-800"
