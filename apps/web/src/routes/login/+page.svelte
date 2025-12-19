@@ -74,7 +74,7 @@
 		<button
 			type="submit"
 			disabled={_signingIn}
-			class="w-full rounded-lg bg-black py-2 font-medium dark:text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+			class="w-full rounded-lg bg-black dark:bg-amber-800 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 		>
 			{_signingIn ? 'Signing in…' : 'Sign in'}
 		</button>
@@ -89,7 +89,7 @@
 	<!-- Social login -->
 	<div class="flex space-x-3">
 		<a
-			href="/auth/sign-in/google"
+			href="/oauth/google"
 			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
 		>
 			<Icon icon={GoogleIcon} />
@@ -97,7 +97,7 @@
 		</a>
 
 		<a
-			href="/auth/sign-in/microsoft"
+			href="/oauth/microsoft"
 			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
 		>
 			<Icon icon={MicrosoftIcon} />
@@ -105,7 +105,7 @@
 		</a>
 
 		<a
-			href="/auth/sign-in/github"
+			href="/oauth/github"
 			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
 		>
 			<Icon icon={GithubIcon} />
@@ -113,7 +113,7 @@
 		</a>
 
 		<a
-			href="/auth/sign-in/apple"
+			href="/oauth/apple"
 			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
 		>
 			<Icon icon={AppleIcon} />

@@ -14,6 +14,7 @@
 	import { authClient } from '$lib/auth-client';
 	import { goto, refreshAll } from '$app/navigation';
 	import { fade } from 'svelte/transition';
+	import InstallToast from '$lib/components/installToast.svelte';
 
 	let { children } = $props();
 	let dark = $state(true);
@@ -53,8 +54,11 @@
 		toast.success('a Simmons Studio project');
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		try {
+			// const { registerSW } = await import('virtual:pwa-register');
+			// registerSW({ immediate: true });
+
 			initTheme();
 			dark = document.documentElement.classList.contains('dark');
 			fetchLogos()
@@ -136,9 +140,3 @@
 </main>
 
 <Toaster position="bottom-center" />
-
-<style>
-	.txt-btn {
-		@apply cursor-pointer rounded-xl border-2 border-gray-600 px-6 py-1 text-gray-600 hover:border-gray-500 hover:bg-gray-500/10 hover:text-gray-500 dark:border-amber-600 dark:text-amber-600 hover:dark:border-amber-500 hover:dark:bg-amber-500/20 hover:dark:text-amber-500;
-	}
-</style>

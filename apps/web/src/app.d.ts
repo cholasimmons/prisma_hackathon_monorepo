@@ -5,29 +5,47 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user: {
-   	    id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        email: string;
-        emailVerified: boolean;
-        name: string;
-        image?: string | null | undefined | undefined;
+				id: string;
+				createdAt: Date;
+				updatedAt: Date;
+				email: string;
+				emailVerified: boolean;
+				name: string;
+				image?: string | null | undefined | undefined;
 			} | null;
-      session: {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        userId: string;
-        expiresAt: Date;
-        token: string;
-        ipAddress?: string | null | undefined | undefined;
-        userAgent?: string | null | undefined | undefined;
-      } | null;
+			session: {
+				id: string;
+				createdAt: Date;
+				updatedAt: Date;
+				userId: string;
+				expiresAt: Date;
+				token: string;
+				ipAddress?: string | null | undefined | undefined;
+				userAgent?: string | null | undefined | undefined;
+			} | null;
 		}
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
+		// /// <reference types="@sveltejs/kit" />
+
+		interface BeforeInstallPromptEvent extends Event {
+			readonly platforms: string[];
+			readonly userChoice: Promise<{
+				outcome: 'accepted' | 'dismissed';
+				platform: string;
+			}>;
+			prompt(): Promise<void>;
+		}
 	}
+}
+
+declare module 'virtual:pwa-register' {
+	export function registerSW(options?: {
+		immediate?: boolean;
+		onNeedRefresh?: () => void;
+		onOfflineReady?: () => void;
+	}): void;
 }
 
 export {};
