@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
 	import Icon from '@iconify/svelte';
+	import toast from 'svelte-french-toast';
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
@@ -10,28 +11,35 @@
 	const MicrosoftIcon = 'logos:microsoft-icon';
 	const GithubIcon = 'ri:github-fill';
 	const AppleIcon = 'skill-icons:apple-dark';
+
+	const handleEnhance = () => {
+      _signingIn = true;
+
+      return async ({ result, update }:any) => {
+        console.log(result)
+
+        if (result?.type === 'success') {
+          toast.success(result.data.message!);
+        } else if (result?.type === 'error' || result?.type === 'failure') {
+          toast.error(result.data.message);
+        }
+
+        await update();
+        _signingIn = false;
+      }
+    };
 </script>
 
 <main
-	class="mx-auto max-w-lg px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8 text-center"
+	class="mx-auto px-8  dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8 "
 >
 	<h1 class="mb-1 dark:text-gray-200 text-3xl">Log In</h1>
 	<p class="mb-8 md:text-sm">Welcome back. Enter your details to proceed.</p>
 
-	<!-- <p class="text-gray-200">
-		You have come across a new feature.<br />
-		A page currently under development
-	</p> -->
-
 	<form
 		method="POST"
 		class="space-y-4"
-		use:enhance={() => {
-			_signingIn = true;
-			return async () => {
-				_signingIn = false;
-			};
-		}}
+		use:enhance={handleEnhance}
 	>
 		<div class="space-y-1">
 			<label for="email" class="text-sm font-medium">Email</label>
@@ -40,7 +48,7 @@
 				name="email"
 				type="email"
 				required
-				class="w-full rounded-lg border px-3 py-2 text-lg focus:outline-none focus:ring focus:border-amber-600"
+				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-lg md:text-2xl focus:outline-none focus:ring focus:border-amber-600 "
 			/>
 		</div>
 
@@ -51,7 +59,7 @@
 				name="password"
 				type="password"
 				required
-				class="w-full rounded-lg border px-3 py-2 text-lg focus:outline-none focus:ring focus:border-amber-600"
+				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-lg md:text-2xl focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
 
@@ -64,11 +72,11 @@
 			<a href="/forgot-password" class="dark:text-amber-500 hover:underline"> Forgot password? </a>
 		</div>
 
-		{#if form?.error}
+		<!-- {#if form?.success === false }
 			<p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-				{form.error}
+				{form.message}
 			</p>
-		{/if}
+		{/if} -->
 
 		<button
 			type="submit"

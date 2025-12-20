@@ -58,7 +58,7 @@
 				rawInput = cleanPlate;
 			}
 		}, 300); // slight delay → lets space “stick” briefly
-		return () => clearTimeout(id);
+		// return () => clearTimeout(id);
 
 		// Debounced search
 		clearTimeout(searchTimeout);

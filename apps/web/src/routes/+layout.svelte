@@ -11,10 +11,9 @@
 	import { onMount } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
 	import { logos, fetchLogos } from '$lib/state/logos.svelte';
-	import { authClient } from '$lib/auth-client';
 	import { goto, refreshAll } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import {LucideLightbulb, LightbulbOffIcon, LightbulbIcon, CircleQuestionMark } from '@lucide/svelte';
+	import {LucideLightbulb, LightbulbOffIcon, LightbulbIcon, CircleQuestionMark, HouseIcon } from '@lucide/svelte';
 
 	let { children } = $props();
 	let dark = $state(true);
@@ -34,10 +33,10 @@
 	// });
 
 	function logout() {
-		authClient.signOut().then(() => {
-			console.log('User signed out');
-			refreshAll();
-		});
+		// authClient.signOut().then(() => {
+		// 	console.log('User signed out');
+		// 	refreshAll();
+		// });
 	}
 	function gotoLogin() {
 		goto('/login');
@@ -83,11 +82,14 @@
 	<header
 		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
 	>
-		<div class="grow">
+		<div class="grow space-x-4 flex flex-row items-center">
+    		<button class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
+    			onclick={() => goto('/')}>
+    			<HouseIcon />
+    		</button>
+
 			{#if page.data?.user}
 				${page.data.user.name}
-			{:else}
-				<p>Welcome!</p>
 			{/if}
 		</div>
 		<div class="shrink-0 space-x-4 flex flex-row items-center">

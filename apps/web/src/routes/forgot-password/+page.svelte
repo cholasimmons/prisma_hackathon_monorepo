@@ -1,31 +1,37 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { PageProps } from './$types';
-	let { data, form }: PageProps = $props();
+	import toast from 'svelte-french-toast';
+	// @ts-checkpe { PageProps } from './$types';
+	// let { data, form }: PageProps = $props();
 	let _resetting = $state(false);
 
+	const handleEnhance = () => {
+      // form submission finished
+      _resetting = true;
+
+      return async ({ result, update }:any) => {
+        if (result?.type === 'success') {
+          toast.success(result.data.message!);
+        } else if (result?.type === 'error' || result?.type === 'failure') {
+          toast.error(result.data.message);
+        }
+
+        await update();
+        _resetting = false;
+      }
+    };
 </script>
 
 <main
-	class="container mx-auto max-w-xl px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="container mx-auto max-w-xl px-8 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
 	<h1 class="mb-1 dark:text-gray-200 text-2xl">Forgot Password</h1>
 	<p class="mb-8 text-sm">
 	    Enter your email address, we'll send you a link to reset your password.
 	</p>
 
-	<!-- <p class="text-gray-200">
-		You have come across a new feature.<br />
-		A page currently under development
-	</p> -->
-
 	<form method="POST" class="space-y-4"
-		use:enhance={() => {
-			_resetting = true
-			return async () => {
-				_resetting = false
-			}
-		}}
+		use:enhance={handleEnhance}
     >
 
         <div class="space-y-1">
@@ -39,16 +45,6 @@
 			/>
 		</div>
 
-
-    	{#if form?.error}
-       		<p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-				{form.error}
-			</p>
-		{:else if form?.success}
-    		<p class="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-600">
-    			{form.message ?? `Email sent!`}
-    		</p>
-        {/if}
 
         <button
 			type="submit"

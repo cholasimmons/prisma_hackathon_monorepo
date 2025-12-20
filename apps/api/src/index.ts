@@ -29,7 +29,7 @@ const app = new Elysia({
 })
   .use(
     cors({
-      origin: [process.env.ORIGIN_URL!, "http://localhost:5173"],
+      origin: [process.env.ORIGIN_URL!, "http://localhost:3001"],
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [
@@ -44,19 +44,7 @@ const app = new Elysia({
       // exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
     }),
   )
-  // .use(
-  //   corsPlugin({
-  //     origins: [process.env.ORIGIN_URL!],
-  //     allowedHeaders: [
-  //       "content-type",
-  //       "authorization",
-  //       "credentials",
-  //       "x-client-plate-normalized",
-  //     ],
-  //     credentials: true,
-  //     maxAge: 400,
-  //   }),
-  // )
+
   .use(
     openapi({
       documentation: {

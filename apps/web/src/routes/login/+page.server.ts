@@ -1,5 +1,5 @@
-import { fail, redirect, type Actions } from '@sveltejs/kit'
 import { authClient } from '$lib/auth-client';
+import { fail, redirect, type Actions } from '@sveltejs/kit'
 
 // export function load({ locals }) {
 //   if(locals.user) {
@@ -11,42 +11,48 @@ export const actions: Actions = {
   default: async ({ request }) => {
     const data = await request.formData()
 
-    const email = String(data.get('email') ?? '')
-    const password = String(data.get('password') ?? '')
+    const email = String(data.get('email') ?? '').trim()
+    const password = String(data.get('password') ?? '').trim()
     const rememberMe = data.get('rememberMe') === 'on';
 
     // VALIDATION — always here
-    if (!email.includes('@')) {
-      return fail(400, { email, rememberMe, error: 'Invalid email' })
+    if (!email.includes('@') || email.length < 8) {
+      return fail(400, { success: false, email, rememberMe, message: 'Invalid Email' })
     }
 
     if (password.length < 8) {
-      return fail(400, { email, rememberMe, error: 'Invalid password' })
+      return fail(400, { success: false, email, rememberMe, message: 'Invalid password' })
     }
 
     // AUTH — delegated
     const result = await authClient.signIn.email({
-      email,
-      password,
-      rememberMe,
-      callbackURL: '/'
+        email,
+        password,
+        rememberMe,
+        callbackURL: '/'
     })
 
     console.log(result);
 
     if (result.error) {
-      return fail(401, {
+       const message =  result.error.message ?? result.error.statusText ?? 'Sign-in failed';
+
+      return fail(result.error.status ?? 409, {
+        success: false,
         email,
         rememberMe,
-        error: result.error.statusText ?? 'Sign-in failed'
+        message
       })
+    } else if(result.data.user) {
+      const user = result.data.user;
+      const redirect = result.data.redirect;
+      const url = result.data.url;
+      // return fail(200, { user, success: true })
+      return { user, success: true, redirect, url, message: 'Sign-in successful' }
+      // throw redirect(302, result.data.url)
     }
 
-    if(result.data.redirect && result.data.url) {
-      // return { email, rememberMe, success: true }
-      throw redirect(302, result.data.url)
-    }
-
-    throw redirect(302, '/')
+    // fallback
+    return fail(500, { success: false, message: 'Unknown Error' });
   }
 } satisfies Actions;

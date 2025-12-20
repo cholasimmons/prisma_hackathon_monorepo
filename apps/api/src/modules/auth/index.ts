@@ -13,8 +13,7 @@ const authController = new Elysia({
       endpoint: "/auth",
 
     }
-    status(200);
-    return { data, success: true, message: "Auth service is healthy" };
+    return status(200, { data, success: true, message: "Auth service is healthy" });
   });
 
 export default authController;
