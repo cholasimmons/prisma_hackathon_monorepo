@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { fade } from 'svelte/transition';
 	import { enhance } from '$app/forms';
 	import type { PageProps } from './$types';
 	import Icon from '@iconify/svelte';
@@ -14,10 +13,10 @@
 </script>
 
 <main
-	class="mx-auto max-w-lg px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="mx-auto max-w-lg px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8 text-center"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-2xl">Log In</h1>
-	<p class="mb-8 text-sm">Welcome back. Enter your details to proceed.</p>
+	<h1 class="mb-1 dark:text-gray-200 text-3xl">Log In</h1>
+	<p class="mb-8 md:text-sm">Welcome back. Enter your details to proceed.</p>
 
 	<!-- <p class="text-gray-200">
 		You have come across a new feature.<br />
@@ -87,10 +86,10 @@
 	</div>
 
 	<!-- Social login -->
-	<div class="flex space-x-3">
+	<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mx-auto">
 		<a
 			href="/oauth/google"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
+			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GoogleIcon} />
 			<span>Google</span>
@@ -98,7 +97,7 @@
 
 		<a
 			href="/oauth/microsoft"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
+			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={MicrosoftIcon} />
 			<span>Microsoft</span>
@@ -106,7 +105,7 @@
 
 		<a
 			href="/oauth/github"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
+			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GithubIcon} />
 			<span>GitHub</span>
@@ -114,7 +113,7 @@
 
 		<a
 			href="/oauth/apple"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100 hover:dark:text-gray-800"
+			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={AppleIcon} />
 			<span>Apple</span>

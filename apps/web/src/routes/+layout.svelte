@@ -14,7 +14,7 @@
 	import { authClient } from '$lib/auth-client';
 	import { goto, refreshAll } from '$app/navigation';
 	import { fade } from 'svelte/transition';
-	import InstallToast from '$lib/components/installToast.svelte';
+	import {LucideLightbulb, LightbulbOffIcon, LightbulbIcon, CircleQuestionMark } from '@lucide/svelte';
 
 	let { children } = $props();
 	let dark = $state(true);
@@ -81,7 +81,7 @@
 
 <main class="flex flex-col justify-start min-h-dvh w-full bg-gray-200 dark:bg-gray-800">
 	<header
-		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-500 dark:text-gray-400 flex flex-row items-center"
+		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
 	>
 		<div class="grow">
 			{#if page.data?.user}
@@ -90,7 +90,7 @@
 				<p>Welcome!</p>
 			{/if}
 		</div>
-		<div class="shrink-0 space-x-2">
+		<div class="shrink-0 space-x-4 flex flex-row items-center">
 			{#if page.data?.user}
 				<button
 					class="border-red-900 border-2 text-red-400 px-6 py-1 rounded-2xl cursor-pointer"
@@ -112,14 +112,16 @@
 				>
 			{/if}
 			<button
-				class=" border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-gray-800/20 px-1.5 py-1 rounded-full cursor-pointer"
+				class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-1.5 py-1 cursor-pointer items-center"
 				onclick={toggleTheme}
 			>
-				{dark ? '🌙' : '☀️'}
+				{#if dark} <LucideLightbulb/> {:else} <LightbulbOffIcon/> {/if}
 			</button>
 			<button
-				class="bg-amber-600 border-2 border-amber-600 text-gray-800 hover:text-white hover:bg-amber-800/20 px-2 py-1 rounded-full cursor-pointer"
-				onclick={() => about()}>❔</button
+				class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
+				onclick={() => about()}>
+				    <CircleQuestionMark/>
+				</button
 			>
 		</div>
 	</header>

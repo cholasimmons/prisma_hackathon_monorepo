@@ -139,18 +139,20 @@
 		<!-- Search Bar -->
 		<div class="relative mb-6">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
-			<input
+			<input id="search-reg"
+			    name="search-reg"
 				type="text"
 				bind:value={rawInput}
 				oninput={handleInput}
 				onblur={handleBlur}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full max-w-md p-2 rounded-xl shadow-md
-				 bg-gray-200 dark:bg-gray-600 border-gray-300
+				class="w-full max-w-md p-2 rounded-2xl shadow-md
+				 border-gray-300
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
-				placeholder:text-gray-300 placeholder:font-normal placeholder:text-center
-				plates plate-input--reflective text-7xl text-center text-gray-800"
+				bg-gray-500 dark:bg-gray-700
+				placeholder:text-gray-300 dark:placeholder:text-gray-500 placeholder:font-normal placeholder:text-center
+				plates text-7xl text-center text-gray-100 dark:text-gray-300"
 				autocomplete="off"
 				autoCapitalize="characters"
 				inputmode="text"

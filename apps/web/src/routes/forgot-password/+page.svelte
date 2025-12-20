@@ -46,7 +46,7 @@
 			</p>
 		{:else if form?.success}
     		<p class="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-600">
-    			{form.message ?? `Email sent to ${form.email}!`}
+    			{form.message ?? `Email sent!`}
     		</p>
         {/if}
 
