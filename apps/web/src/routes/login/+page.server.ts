@@ -45,11 +45,11 @@ export const actions: Actions = {
       })
     } else if(result.data.user) {
       const user = result.data.user;
-      const redirect = result.data.redirect;
-      const url = result.data.url;
+      const rdrct = result.data.redirect ?? true;
+      const url = result.data.url ?? '/';
       // return fail(200, { user, success: true })
-      return { user, success: true, redirect, url, message: 'Sign-in successful' }
-      // throw redirect(302, result.data.url)
+      // return { user, success: true, redirect, url, message: 'Sign-in successful' }
+      throw redirect(302, rdrct ? url : '/')
     }
 
     // fallback

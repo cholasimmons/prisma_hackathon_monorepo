@@ -7,8 +7,6 @@
 	import { fade, scale } from 'svelte/transition';
 	import { cubicIn, cubicInOut } from 'svelte/easing';
 
-	let loadingLogos = getContext('loading');
-
 	let rawInput = $state<string>('');
 
 	// Derived clean value (always valid)
@@ -116,6 +114,13 @@
 		rawInput = cleanPlate.trim();
 	}
 
+	function handleKeyDown(e: any) {
+		if (e.key === 'Escape') {
+			rawInput = '';
+			handleBlur();
+		}
+	}
+
 	// Cleanup on unmount
 	onMount(() => {
 		return () => clearTimeout(debounceTimer);
@@ -145,9 +150,10 @@
 				bind:value={rawInput}
 				oninput={handleInput}
 				onblur={handleBlur}
+				onkeydown={handleKeyDown}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full max-w-md p-2 rounded-2xl shadow-md
+				class="w-full max-w-sm p-1 rounded-2xl shadow-md
 				 border-gray-300
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				bg-gray-500 dark:bg-gray-700

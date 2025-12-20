@@ -5,24 +5,49 @@ import { building } from "$app/environment";
 import { authClient } from '$lib/auth-client';
 
 export async function handle({ event, resolve }) {
-  const headers = event.request.headers;
-  const res = await fetch(`${API_BASE_URL}/auth/get-session`, {
-    headers, credentials: 'include', method: 'GET'
-  });
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), 3000);
 
-  const data = await res.json();
+  const cookie = event.request.headers.get('cookie') ?? '';
+  console.log("cookie:", cookie)
+  if(!cookie) {
+    event.locals.user = null;
+    event.locals.session = null;
+    event.locals.apiDown = false; // API reachable, just unauthenticated
+    return resolve(event)
+  }
 
-  // Fetch current session from Better Auth
-  // const { data } = await authClient.getSession();
+  let res: Response;
 
-  console.log("hooks:", data)
+  try {
+    res = await fetch(`${API_BASE_URL}/auth/get-session`, {
+      headers: { 'Content-Type': 'application/json', cookie }, method: 'GET', signal: controller.signal
+    });
 
-  // Make session and user available on server
-  event.locals.session = data?.session ?? null;
-  event.locals.user = data?.user ?? null;
+    if(!res.ok) {
+      event.locals.user = null;
+      event.locals.session = null;
+      event.locals.apiDown = false; // API reachable, just unauthenticated
+      return resolve(event)
+    }
 
-  return resolve(event)
-  // return svelteKitHandler({ event, resolve, authClient, building });
+    const data = await res.json();
+
+    console.log("hooks:", data)
+
+    // Make session and user available on server
+    event.locals.session = data?.session ?? null;
+    event.locals.user = data?.user ?? null;
+    event.locals.apiDown = false; // API reachable, just unauthenticated
+
+    return resolve(event)
+  } catch (error) {
+    event.locals.user = null;
+    event.locals.session = null;
+    event.locals.apiDown = true; // API unreachable
+
+    return resolve(event)
+  }
 }
 
 // const handle: Handle = async ({ event, resolve }) => {

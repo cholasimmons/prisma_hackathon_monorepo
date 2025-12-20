@@ -7,8 +7,8 @@
 <main
 	class="mx-auto max-w-xl px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-center"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-7xl">{page.error?.message ?? 'Unknown Error'}</h1>
-	<p class="mb-8 text-sm">
+	<h1 class="mb-1 dark:text-gray-200 text-5xl">{page.error?.message ?? 'Unknown Error'}</h1>
+	<p class="mb-8">
 		{ emojis[500], page.status }
 	</p>
 

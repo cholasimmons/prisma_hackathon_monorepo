@@ -4,31 +4,6 @@ import { API_BASE_URL } from './env';
 export const authClient = createAuthClient({
 	baseURL: API_BASE_URL,
 	basePath: '/auth',
-	credentials: 'include',
-	email: {
-		login: async ({ email, password }: { email: string; password: string }) => {
-			authClient.signIn.email({ email, password, callbackURL: '/', rememberMe: true }).then(() => {
-				console.log('User signed out');
-			});
-		},
-		register: async ({
-			email,
-			password,
-			name
-		}: {
-			email: string;
-			password: string;
-			name: string;
-		}) => {
-			authClient.signUp.email({ email, password, callbackURL: '/login', name }).then(() => {
-				console.log('User signed up');
-			});
-		}
-	},
-	fetchOptions: {
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	}
+	credentials: 'include'
 	// plugins: [sveltekitCookies(getRequestEvent)] // make sure this is the last plugin in the array
 });

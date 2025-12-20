@@ -3,6 +3,7 @@
 	import type { PageProps } from './$types';
 	import Icon from '@iconify/svelte';
 	import toast from 'svelte-french-toast';
+	import { goto } from '$app/navigation';
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
@@ -20,8 +21,9 @@
 
         if (result?.type === 'success') {
           toast.success(result.data.message!);
+          goto(result.data?.redirect ? result.data?.url : '/');
         } else if (result?.type === 'error' || result?.type === 'failure') {
-          toast.error(result.data.message);
+          toast.error(result.data?.message ?? 'Unable to sign in');
         }
 
         await update();
@@ -48,7 +50,7 @@
 				name="email"
 				type="email"
 				required
-				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-lg md:text-2xl focus:outline-none focus:ring focus:border-amber-600 "
+				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600 "
 			/>
 		</div>
 
@@ -59,7 +61,7 @@
 				name="password"
 				type="password"
 				required
-				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-lg md:text-2xl focus:outline-none focus:ring focus:border-amber-600"
+				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
 

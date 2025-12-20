@@ -23,6 +23,7 @@ declare global {
 				ipAddress?: string | null | undefined | undefined;
 				userAgent?: string | null | undefined | undefined;
 			} | null;
+			apiDown: boolean | null; // API reachable, just unauthenticated
 		}
 		// interface PageData {}
 		// interface PageState {}
