@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import toast from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
+	import { authClient } from '$lib/auth-client';
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
@@ -20,8 +21,16 @@
         console.log(result)
 
         if (result?.type === 'success') {
+          const { email, password, rememberMe } = result.data?.user;
           toast.success(result.data.message!);
-          goto(result.data?.redirect ? result.data?.url : '/');
+
+          const res = await authClient.signIn.email({
+              email,
+              password,
+              rememberMe,
+              callbackURL: '/'
+          })
+          goto(res.data?.redirect ? res.data?.url ?? '/' : '/');
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data?.message ?? 'Unable to sign in');
         }

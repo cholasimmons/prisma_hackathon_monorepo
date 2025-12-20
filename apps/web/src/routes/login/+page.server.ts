@@ -25,34 +25,35 @@ export const actions: Actions = {
     }
 
     // AUTH — delegated
-    const result = await authClient.signIn.email({
-        email,
-        password,
-        rememberMe,
-        callbackURL: '/'
-    })
+    // const result = await authClient.signIn.email({
+    //     email,
+    //     password,
+    //     rememberMe,
+    //     callbackURL: '/'
+    // })
 
-    console.log(result);
+    // console.log(result);
 
-    if (result.error) {
-       const message =  result.error.message ?? result.error.statusText ?? 'Sign-in failed';
+    // if (result.error) {
+    //    const message =  result.error.message ?? result.error.statusText ?? 'Sign-in failed';
 
-      return fail(result.error.status ?? 409, {
-        success: false,
-        email,
-        rememberMe,
-        message
-      })
-    } else if(result.data.user) {
-      const user = result.data.user;
-      const rdrct = result.data.redirect ?? true;
-      const url = result.data.url ?? '/';
-      // return fail(200, { user, success: true })
-      // return { user, success: true, redirect, url, message: 'Sign-in successful' }
-      throw redirect(302, rdrct ? url : '/')
-    }
+    //   return fail(result.error.status ?? 409, {
+    //     success: false,
+    //     email,
+    //     rememberMe,
+    //     message
+    //   })
+    // } else if(result.data.user) {
+    //   const user = result.data.user;
+    //   const rdrct = result.data.redirect ?? true;
+    //   const url = result.data.url ?? '/';
+    //   // return fail(200, { user, success: true })
+    //   // return { user, success: true, redirect, url, message: 'Sign-in successful' }
+    //   throw redirect(302, rdrct ? url : '/')
+    // }
 
     // fallback
-    return fail(500, { success: false, message: 'Unknown Error' });
+    // return fail(500, { success: false, message: 'Unknown Error' });
+    return { success: true, user: { email, rememberMe, password }, message: 'All systems go!' };
   }
 } satisfies Actions;
