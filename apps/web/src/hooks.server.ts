@@ -1,4 +1,4 @@
-import { PRIVATE_API_BASE_URL } from '$lib/env';
+import { API_BASE_URL } from '$lib/env';
 import type { Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { building } from "$app/environment";
@@ -10,30 +10,36 @@ export async function handle({ event, resolve }) {
 
   let response: Response;
 
-  // const cookie = event.request.headers.get('cookie') ?? '';
-  const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
-  // console.log("cookie:", cookie)
-  console.log("sessionToken:", sessionToken)
+  const cookie = event.request.headers.get('cookie');
+  // const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
+
+  console.log("cookie:", cookie)
+  // console.log("sessionToken:", sessionToken)
 
   try {
-    if(sessionToken) {
-      response = await fetch(`${PRIVATE_API_BASE_URL}/auth/get-session`, {
+    if(cookie) {
+      response = await fetch(`${API_BASE_URL}/auth/get-session`, {
         headers: {
           // 'Content-Type': 'application/json',
-          'Cookie': sessionToken
-        }, method: 'GET', signal: controller.signal
+          cookie: cookie ?? ''
+        }, method: 'GET', signal: controller.signal, credentials: 'include',
       });
 
-      if(response.ok) {
-        const data = await response.json();
-        event.locals.user = data?.session.user ?? null;
-        event.locals.session = data?.session.session ?? null;
-        event.locals.apiDown = false; // API reachable, just unauthenticated
-
-        console.log("hooks:", data)
-
+      if(!response.ok) {
+        event.locals.user = null;
+        event.locals.session = null;
+        event.locals.apiDown = true; // API unreachable
         return resolve(event)
       }
+
+      const data = await response.json();
+      event.locals.user = data?.session.user ?? null;
+      event.locals.session = data?.session.session ?? null;
+      event.locals.apiDown = false; // API reachable, just unauthenticated
+
+      console.log("hooks:", data)
+
+      return resolve(event)
     } else {
       event.locals.user = null;
       event.locals.session = null;

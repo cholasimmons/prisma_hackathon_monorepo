@@ -31,9 +31,19 @@ const auth = betterAuth({
     crossSubDomainCookies: {
       enabled: true,
       domain: ".plates.simmons.studio"
+    },
+    cookies: {
+      session_token: {
+        name: "session_token",
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30 // 30 days
+      }
     }
   },
-  trustedOrigins: ["https://plates.simmons.studio"],
+  trustedOrigins: ["https://plates.simmons.studio", "https://api.plates.simmons.studio"],
   plugins: [openAPI(), adminPlugin()],
 });
 
