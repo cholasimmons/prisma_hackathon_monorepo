@@ -9,7 +9,7 @@ RUN bun install --frozen-lockfile || (echo "⚠️ bun.lockb outdated — regene
 RUN bun run build
 
 # Production stage
-FROM base AS production
+FROM oven/bun:1.3.5 AS production
 WORKDIR /app
 
 # Copy built files
