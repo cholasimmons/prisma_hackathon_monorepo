@@ -54,6 +54,6 @@ export const actions: Actions = {
 
     // fallback
     // return fail(500, { success: false, message: 'Unknown Error' });
-    return { success: true, user: { email, rememberMe, password }, message: 'All systems go!' };
+    return { success: true, user: { email, rememberMe, password }, message: 'Welcome!' };
   }
 } satisfies Actions;

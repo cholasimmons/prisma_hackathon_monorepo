@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { authClient } from '$lib/auth-client';
 	import toast from 'svelte-french-toast';
 	// @ts-checkpe { PageProps } from './$types';
 	// let { data, form }: PageProps = $props();
@@ -11,6 +12,14 @@
 
       return async ({ result, update }:any) => {
         if (result?.type === 'success') {
+          const { email } = result.data;
+          // AUTH — delegated
+          const response = await authClient.requestPasswordReset({
+            email,
+            redirectTo: '/login'
+          })
+
+          console.log(response);
           toast.success(result.data.message!);
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data.message);

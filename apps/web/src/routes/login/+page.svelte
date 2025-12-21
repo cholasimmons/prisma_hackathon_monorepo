@@ -22,7 +22,6 @@
 
         if (result?.type === 'success') {
           const { email, password, rememberMe } = result.data?.user;
-          toast.success(result.data.message!);
 
           const res = await authClient.signIn.email({
               email,
@@ -30,6 +29,8 @@
               rememberMe,
               callbackURL: '/'
           })
+          toast.success(result.data.message!);
+
           goto(res.data?.redirect ? res.data?.url ?? '/' : '/');
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data?.message ?? 'Unable to sign in');

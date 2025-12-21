@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '$lib/env';
+import { PRIVATE_API_BASE_URL } from '$lib/env';
 import type { Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import { building } from "$app/environment";
@@ -17,10 +17,10 @@ export async function handle({ event, resolve }) {
 
   try {
     if(sessionToken) {
-      response = await fetch(`${API_BASE_URL}/auth/get-session`, {
+      response = await fetch(`${PRIVATE_API_BASE_URL}/auth/get-session`, {
         headers: {
-          'Content-Type': 'application/json',
-          'Cookie': `better-auth.session_token=${sessionToken}`
+          // 'Content-Type': 'application/json',
+          'Cookie': sessionToken
         }, method: 'GET', signal: controller.signal
       });
 

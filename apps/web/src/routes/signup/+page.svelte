@@ -3,6 +3,7 @@
 	import type { PageProps } from './$types';
 	import toast from 'svelte-french-toast';
 	import { EyeClosedIcon, EyeOffIcon, EyeIcon } from '@lucide/svelte';
+	import { authClient } from '$lib/auth-client';
 
 	let { data, form }: PageProps = $props();
 	let _signingUp = $state(false);
@@ -14,6 +15,17 @@
 
       return async ({ result, update }:any) => {
         if (result?.type === 'success') {
+          const { email, name, password } = result?.data.user;
+
+          // AUTH — delegated
+          const res = await authClient.signUp.email({
+            email,
+            password,
+            name,
+            callbackURL: '/login'
+          })
+
+          console.log('response:', res);
           toast.success(result.data.message!);
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data.message);

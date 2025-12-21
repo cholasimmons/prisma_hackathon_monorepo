@@ -12,26 +12,7 @@ export const actions: Actions = {
       return fail(400, { success: false, email, message: 'Invalid Email' })
     }
 
-    // AUTH — delegated
-    const result = await authClient.requestPasswordReset({
-      email,
-      redirectTo: '/login'
-    })
+    return { user: { email }, message: 'Email address accepted', success: true }
 
-    console.log(result);
-
-    if (result.error) {
-      return fail(401, {
-        email,
-        message: result.error.message ?? result.error.statusText ?? 'Password reset failed'
-      })
-    }
-
-    if(result.data.status) {
-      return { email, message: result.data.message, success: true }
-    }
-
-    // fallback
-    return fail(500, { success: false, message: 'Unknown Error' });
   }
 } satisfies Actions;

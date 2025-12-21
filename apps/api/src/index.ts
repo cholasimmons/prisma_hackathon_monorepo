@@ -29,7 +29,7 @@ const app = new Elysia({
 })
   .use(
     cors({
-      origin: [process.env.ORIGIN_URL!, "http://localhost:3001"],
+      origin: [process.env.ORIGIN_URL ?? "http://localhost:3001"],
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [

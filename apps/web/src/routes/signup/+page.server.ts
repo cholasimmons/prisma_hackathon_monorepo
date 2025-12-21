@@ -33,36 +33,8 @@ export const actions: Actions = {
       return fail(400, { success: false, email, name, message: 'Invalid Password' })
     }
 
-    // AUTH — delegated
-    const result = await authClient.signUp.email({
-      email,
-      password,
-      name,
-      callbackURL: '/login'
-    })
+    return { success: true, message: 'Registration successful', user: { email, name, password } }
 
-    console.log('result:', result);
 
-    if (result.error) {
-      const message = result.error.message ?? result.error.statusText ?? 'Registration failed';
-
-      console.log('error message:', result.error.status, message);
-      return fail(result.error.status ?? 409, {
-        // email,
-        // name,
-        success: false,
-        message
-      })
-    }
-
-    if(result.data?.user) {
-      const { email, name } = result.data.user;
-      console.log('server signup success:', email);
-      // const token = result.data.token;
-      return fail(200, { success: true, message: 'Registration successful', email, name })
-      }
-
-      // fallback
-      return fail(500, { success: false, message: 'Unknown Error' });
   }
 } satisfies Actions;

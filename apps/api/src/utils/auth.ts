@@ -1,5 +1,6 @@
 import {
   admin as adminPlugin,
+  magicLink,
   openAPI
 } from "better-auth/plugins";
 import { betterAuth } from "better-auth";
@@ -26,13 +27,13 @@ const auth = betterAuth({
     disableOriginCheck: false,
     disableCSRFCheck: false,
     cookiePrefix: "better-auth",
-    // useSecureCookies: true,
+    useSecureCookies: true,
     crossSubDomainCookies: {
       enabled: true,
-      domain: "plates.simmons.studio"
+      domain: ".plates.simmons.studio"
     }
   },
-  trustedOrigins: ["http://localhost:3001", "https://plates.simmons.studio"],
+  trustedOrigins: ["https://plates.simmons.studio"],
   plugins: [openAPI(), adminPlugin()],
 });
 
