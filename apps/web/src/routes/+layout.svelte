@@ -92,10 +92,12 @@
     		class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
     	>
     		<div class="grow space-x-4 flex flex-row items-center">
-      		<button class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
-     			onclick={() => goto('/')}>
-     			<HouseIcon />
-      		</button>
+            {#if page.url.pathname !== '/'}
+          		<button class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
+         			onclick={() => goto('/')}>
+         			<HouseIcon />
+          		</button>
+            {/if}
 
     			{#if page.data?.user}
     				${page.data.user.name}

@@ -31,7 +31,11 @@
           })
           toast.success(result.data.message!);
 
-          goto(res.data?.redirect ? res.data?.url ?? '/' : '/');
+          if(res.data?.redirect){
+            goto(res.data?.url ?? '/');
+          } else {
+            goto('/');
+          }
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data?.message ?? 'Unable to sign in');
         }
