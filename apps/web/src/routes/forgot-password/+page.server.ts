@@ -1,4 +1,3 @@
-import { authClient } from '$lib/auth-client';
 import { fail, redirect, type Actions } from '@sveltejs/kit'
 
 export const actions: Actions = {

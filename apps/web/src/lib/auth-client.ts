@@ -1,8 +1,8 @@
 import { createAuthClient } from 'better-auth/svelte'; // make sure to import from better-auth/svelte
-import { API_BASE_URL } from './env';
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
 
 export const authClient = createAuthClient({
-	baseURL: API_BASE_URL,
+	baseURL: PUBLIC_API_BASE_URL,
 	basePath: '/auth',
 	credentials: 'include'
 	// plugins: [sveltekitCookies(getRequestEvent)] // make sure this is the last plugin in the array
