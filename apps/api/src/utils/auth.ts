@@ -47,9 +47,9 @@ const OpenAPI = {
 
       for (const path of Object.keys(paths)) {
         const key = prefix + path;
-        reference[key] = paths[path]
+        reference[key] = paths[path]!
 
-        for (const method of Object.keys(paths[path])) {
+        for (const method of Object.keys(paths[path]!)) {
           const operation = (reference[key] as any)[method];
 
           operation.tags = ["Better Auth"];
