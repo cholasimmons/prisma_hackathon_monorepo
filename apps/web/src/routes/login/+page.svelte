@@ -18,8 +18,6 @@
       _signingIn = true;
 
       return async ({ result, update }:any) => {
-        console.log(result)
-
         if (result?.type === 'success') {
           const { email, password, rememberMe } = result.data?.user;
 
@@ -29,9 +27,10 @@
               rememberMe,
               callbackURL: '/'
           })
-          toast.success(result.data.message!);
 
-          if(res.data?.redirect){
+          if(res.error?.message || res.error?.statusText) {
+            toast.error(res.error?.message ?? res.error?.statusText);
+          } else if(res.data?.redirect){
             goto(res.data?.url ?? '/');
           } else {
             goto('/');

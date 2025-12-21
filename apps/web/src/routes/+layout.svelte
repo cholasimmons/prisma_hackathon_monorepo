@@ -10,33 +10,19 @@
 
 	import { onMount } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
-	import { logos, fetchLogos } from '$lib/state/logos.svelte';
 	import { goto, refreshAll } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 	import {LucideLightbulb, LightbulbOffIcon, CircleQuestionMark, HouseIcon, TriangleAlert } from '@lucide/svelte';
+	import { authClient } from '$lib/auth-client.js';
 
 	let { children, data } = $props();
 	let dark = $state(true);
 
-	// This promise will be linked to toast.promise
-	let resolveLogos: any, rejectLogos: any;
-	const logosPromise = new Promise((resolve, reject) => {
-		resolveLogos = resolve;
-		rejectLogos = reject;
-	});
-
-	// Immediately show "loading…" toast
-	// toast.promise(logosPromise, {
-	// 	loading: 'Fetching logos...',
-	// 	success: 'Logos saved!',
-	// 	error: 'Could not fetch logos'
-	// });
 
 	function logout() {
-		// authClient.signOut().then(() => {
-		// 	console.log('User signed out');
-		// 	refreshAll();
-		// });
+		authClient.signOut().then(() => {
+			refreshAll();
+		});
 	}
 	function gotoLogin() {
 		goto('/login');
@@ -60,13 +46,6 @@
 
 			initTheme();
 			dark = document.documentElement.classList.contains('dark');
-			// fetchLogos()
-			// 	.then(() => {
-			// 		resolveLogos();
-			// 		console.log(logos().length + ' logos found. ');
-			// 	})
-			// 	.catch(() => rejectLogos());
-			// toast('Welcome!', { icon: '👋' });
 		} catch (err) {
 			// rejectLogos(err);
 		}

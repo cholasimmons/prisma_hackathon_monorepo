@@ -19,7 +19,6 @@
             redirectTo: '/login'
           })
 
-          console.log(response);
           toast.success(result.data.message!);
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data.message);

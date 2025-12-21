@@ -68,7 +68,7 @@
 
 		if (rawInput.length > 12 && cleanPlate.length <= 12) {
 			// user typed >12, but we truncated → notify once
-			toast('Max 12 characters', { duration: 1200, icon: '⚠️' });
+			toast.error('Max 12 characters', { duration: 1200, icon: '⚠️' });
 		}
 	});
 

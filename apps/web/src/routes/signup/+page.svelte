@@ -25,8 +25,11 @@
             callbackURL: '/login'
           })
 
-          console.log('response:', res);
-          toast.success(result.data.message!);
+          if(res.error?.message || res.error?.statusText) {
+            toast.error(res.error?.message ?? res.error?.statusText);
+          } else if(res.data?.user) {
+            toast.success('Account created successfully');
+          }
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data.message);
         }
