@@ -5,7 +5,7 @@ COPY package.json bun.lock* ./
 COPY . .
 
 # Try frozen first, fallback to regular install
-RUN bun install --frozen-lockfile || (echo "⚠️ bun.lockb outdated — regenerating..." && bun install)
+RUN bun install --frozen-lockfile || (echo "⚠️ bun.lock outdated — regenerating..." && bun install)
 RUN bun run build
 
 # Production stage
