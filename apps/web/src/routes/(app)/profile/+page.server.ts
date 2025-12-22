@@ -1,4 +1,4 @@
-import { redirect, type Actions } from '@sveltejs/kit';
+// import { redirect, type Actions } from '@sveltejs/kit';
 
 // export function load({ locals }) {
 // 	if (!locals.user) {

@@ -8,8 +8,9 @@
 	import type { VehicleSubmission } from '$lib/models/vehicle.model';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import type { PageProps } from './$types';
 
-	const { user } = $props();
+	const { data }: PageProps = $props();
 
 	// let colorHex = $state('#000000');
 	// let colorName = $derived.by(() => (colorHex ? hexToColorName(colorHex) : 'Black'));
@@ -51,20 +52,22 @@
 <main
 	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-3xl">{user.name}'s Profile</h1>
+	<h1 class="mb-1 dark:text-gray-200 text-3xl">{data.user!.name}'s Profile</h1>
 	<p class="mb-8 md:text-sm">Your active Profile</p>
 
 	<div class="flex flex-col items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
-		<img src={user.image} alt={user.name} class="w-32 h-32 rounded-full" />
-		<h2 class="text-xl font-bold">{user.name}</h2>
-		<p>{user.email}</p>
+		<img src={data.user!.image} alt={data.user!.name} class="w-32 h-32 rounded-full" />
+		<h2 class="text-xl font-bold">{data.user!.name}</h2>
+		<p>{data.user!.email}</p>
 		{#if _fetchingProfile}
 			<p class="text-gray-500 animate-ping">Loading Profile...</p>
 		{:else if _profile}
 			<p class="text-sm text-gray-500">{_profile.role}</p>
 		{/if}
 
-		<small class="rounded-full px-4 py-2">{user.emailVerified ? 'Verified' : 'Not Verified'}</small>
+		<small class="rounded-full px-4 py-2"
+			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
+		>
 	</div>
 
 	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>

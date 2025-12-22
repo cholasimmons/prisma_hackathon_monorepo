@@ -89,7 +89,11 @@
 				{/if}
 
 				{#if data?.user}
-					<button onclick={() => goto('/profile')}>{data.user.name}</button>
+					<button
+						onclick={() => {
+							goto('/profile');
+						}}>{data.user.name}</button
+					>
 				{/if}
 			</div>
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
