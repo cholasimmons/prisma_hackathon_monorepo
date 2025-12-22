@@ -6,45 +6,13 @@
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
 	import { cubicIn, cubicInOut } from 'svelte/easing';
+	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
+	import { formatPlateInput } from '$lib/vehicles/plate';
 
 	let rawInput = $state<string>('');
 
 	// Derived clean value (always valid)
-	const cleanPlate = $derived.by(() => {
-		// 1. Uppercase
-		let v = rawInput.toUpperCase();
-
-		// 2. Remove invalid chars: keep A-Z, 0-9, space
-		v = v.replace(/[^A-Z0-9 ]/g, '');
-
-		// 3: Collapse all whitespace → single space
-		v = v.replace(/\s+/g, ' ');
-
-		// 4. Enforce max ONE space total — but allow typing "ABC " mid-input
-		const spaces = (v.match(/ /g) || []).length;
-		if (spaces > 2) {
-			// Keep only first 3 parts (e.g. "A B C D" → "A B C")
-			const parts = v.split(' ').filter((p) => p);
-			v = parts.slice(0, 3).join(' '); // max 2 spaces → 3 parts
-
-			// Too many spaces → keep only first space
-			// const firstSpace = v.indexOf(' ');
-			// v = v.slice(0, firstSpace + 1) + v.slice(firstSpace + 1).replace(/ /g, '');
-		}
-
-		// 5. Enforce max 12 chars (including space)
-		v = v.slice(0, 12);
-
-		// 5. Final cleanup: trim *only* if not actively typing a trailing space
-		// → if last char is space and length < 12, keep it (user is mid-typing)
-		// → otherwise, trim
-		if (v.endsWith(' ') && v.length < 12) {
-			// Keep trailing space while typing (e.g. "ABC ")
-			return v;
-		} else {
-			return v.trim(); // Final clean
-		}
-	});
+	const cleanPlate = $derived.by(() => formatPlateInput(rawInput));
 
 	// ✅ Side effects in $effect — debounced search + toast on truncate
 	let searchTimeout: NodeJS.Timeout;
@@ -64,6 +32,7 @@
 			searchTimeout = setTimeout(search, 600);
 		} else {
 			vehicles = [];
+			hasSearched = false;
 		}
 
 		if (rawInput.length > 12 && cleanPlate.length <= 12) {
@@ -75,11 +44,14 @@
 	let vehicles = $state<Vehicle[]>([]);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
+	let hasSearched = $state(false);
+
 
 	// Debounce helper
 	let debounceTimer: number;
 
 	async function search() {
+	  hasSearched = true;
 		loading = true;
 		error = null;
 
@@ -120,6 +92,11 @@
 			handleBlur();
 		}
 	}
+
+	function handleVehicleClick(vehicle: Vehicle) {
+    		goto(`/vehicle/${vehicle.plate}`);
+    }
+
 
 	// Cleanup on unmount
 	onMount(() => {
@@ -209,7 +186,7 @@
 					</div>
 				</div>
 			</div>
-		{:else if vehicles.length === 0 && cleanPlate.trim() && !loading}
+		{:else if hasSearched && vehicles.length === 0 && !loading}
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
@@ -245,54 +222,7 @@
 				class="space-y-4 w-full max-w-md mx-auto"
 			>
 				{#each vehicles as vehicle (vehicle.id)}
-					<div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
-						<div class="p-4 sm:p-5">
-							<div class="flex flex-col sm:flex-row gap-4">
-								<!-- Photo (if exists) -->
-								{#if vehicle.photos}
-									<div class="shrink-0 w-20 h-20 rounded overflow-hidden bg-gray-100">
-										<img
-											src={vehicle.photos[0].photo}
-											alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
-											class="w-full h-full object-cover"
-											loading="lazy"
-											onerror={() => "this.style.display='none'"}
-										/>
-									</div>
-								{/if}
-
-								<!-- Info -->
-								<div class="grow">
-									<div class="flex flex-wrap items-baseline gap-2 mb-1">
-										<span
-											class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-										>
-											{vehicle.plate}
-										</span>
-										{#if vehicle.forSale}
-											<span
-												class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
-											>
-												🏷️ For Sale
-											</span>
-										{/if}
-									</div>
-
-									<h3 class="text-lg font-semibold text-gray-900">
-										{vehicle.make}
-										{vehicle.model || '—'}
-									</h3>
-
-									<div class="mt-1 text-sm text-gray-600 flex flex-wrap gap-x-3 gap-y-1">
-										{#if vehicle.year}
-											<span>{vehicle.year}</span>
-										{/if}
-										<span class="capitalize">{vehicle.color || '—'}</span>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					<VehicleListItem {vehicle} onClick={handleVehicleClick} />
 				{/each}
 			</div>
 		{:else}

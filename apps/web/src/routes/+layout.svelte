@@ -14,6 +14,7 @@
 	import { fade } from 'svelte/transition';
 	import {LucideLightbulb, LightbulbOffIcon, CircleQuestionMark, HouseIcon, TriangleAlert } from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client.js';
+	import { preloadMakeLogos } from '$lib/cache/preload-logos.js';
 
 	let { children, data } = $props();
 	let dark = $state(true);
@@ -46,6 +47,8 @@
 
 			initTheme();
 			dark = document.documentElement.classList.contains('dark');
+
+			preloadMakeLogos();
 		} catch (err) {
 			// rejectLogos(err);
 		}
@@ -79,7 +82,11 @@
             {/if}
 
     			{#if page.data?.user}
-    				${page.data.user.name}
+    				Page: ${page.data.user.name}
+    			{/if}
+
+                {#if data?.user}
+    				Data: ${data.user.name}
     			{/if}
     		</div>
     		<div class="shrink-0 space-x-4 flex flex-row items-center">
@@ -125,7 +132,7 @@
     	<footer class="text-center p-3">
     		<a href="https://simmons.studio">
     			<small
-    				class="px-6 py-1 text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
+    				class="px-6 py-1 text-gray-600 dark:text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
     			>
     				Simmons Studio
     			</small>

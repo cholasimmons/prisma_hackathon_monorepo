@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { getMakeLogo } from '$lib/cache/vehicle-makes';
+	import { hexToColorName } from '$lib/color/colors';
 	import type { Vehicle } from '$lib/models/vehicle.model';
 
 	import { onMount } from 'svelte';
@@ -6,65 +8,83 @@
 		vehicle,
 		onClick,
 		size = 'md'
-	}: { vehicle: Vehicle; onClick: () => void; size?: 'sm' | 'md' } = $props();
+	}: Props = $props();
 
+	type Props = {
+		vehicle: Vehicle;
+		onClick?: (vehicle: Vehicle) => void;
+		size?: 'sm' | 'md';
+	};
 	// Reactive state for thumbnail
-	let imgSrc = <string | null>$state(null);
-	let loading = $state(true);
+	let thumbSrc = $state<string | null>(null);
+	let makeSrc = $state<string | null>(null);
+	let loadingThumb = $state(true);
+	let loadingMake = $state(true);
 	let loadError = $state(false);
-	let imgRef = $state<HTMLImageElement | null>(null);
+	let colorName = $state<string | null>(null);
 
 	// Preloaded default thumbnail
 	const defaultThumbnail = '/images/default-vehicle-thumb.jpg'; // pre-packaged in app
 	let fallbackThumbnail = defaultThumbnail;
 
-	onMount(() => {
+	onMount(async () => {
+	    if (!vehicle.make) {
+			loadingMake = false;
+			return;
+		}
+
+		makeSrc = await getMakeLogo(vehicle.make);
+		loadingMake = false;
+
+		colorName = hexToColorName(vehicle.color) ?? 'Unknown';
+
 		if (vehicle.photos?.length) {
 			const img = new Image();
 			img.src = vehicle.photos[0].photo;
 			img.onload = () => {
-				imgSrc = vehicle.photos?.[0].photo ?? fallbackThumbnail;
-				loading = false;
+				thumbSrc = vehicle.photos?.[0].photo ?? fallbackThumbnail;
+				loadingThumb = false;
 			};
 			img.onerror = () => {
 				loadError = true;
-				imgSrc = fallbackThumbnail;
-				loading = false;
+				thumbSrc = fallbackThumbnail;
+				loadingThumb = false;
 			};
 		} else {
 			// No photo provided, use fallback
-			imgSrc = fallbackThumbnail;
-			loading = false;
+			thumbSrc = fallbackThumbnail;
+			loadingThumb = false;
 		}
 	});
 </script>
 
-<a
-	href={`/vehicle/${vehicle!.plate}`}
-	class="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-	onclick={onClick}
-	class:sm:p-2={size === 'sm'}
-	class:md:p-4={size === 'md'}
+<div
+    role="link"
+    tabindex="0"
+	class={`bg-white/50 rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden cursor-pointer ${size === 'sm' ? 'p-2' : 'p-4'}`}
+	onclick={() => onClick?.(vehicle)}
+	onkeydown={(e) => e.key === 'Enter' && onClick?.(vehicle)}
 >
 	<div class="flex items-center gap-3">
-		<!-- Thumbnail -->
-		<div
-			class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center"
-		>
-			{#if loading}
-				<!-- Circular loader -->
-				<div
-					class="w-6 h-6 border-2 border-gray-300 border-t-amber-500 rounded-full animate-spin"
-				></div>
-			{:else}
-				<img
-					src={imgSrc}
-					alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
-					class="w-full h-full object-cover"
-					loading="lazy"
-				/>
+		<!-- Logo -->
+		<div class="shrink-0 text-gray-400 text-xs sm:text-sm">
+			{#if vehicle.make}
+    			{#if loadingMake}
+    				<!-- Circular loader -->
+    				<div
+    					class="w-6 h-6 border-2 border-gray-300 border-t-amber-500 rounded-full animate-spin"
+    				></div>
+    			{:else}
+    				<img
+    					src={makeSrc}
+    					alt={vehicle.make}
+    					class="w-full h-full object-cover"
+    					loading="lazy"
+    				/>
+    			{/if}
 			{/if}
 		</div>
+
 
 		<!-- Main info -->
 		<div class="flex-1 min-w-0">
@@ -90,15 +110,27 @@
 
 			<div class="text-xs sm:text-sm text-gray-600 flex gap-2 flex-wrap">
 				{#if vehicle.year}<span>{vehicle.year}</span>{/if}
-				<span class="capitalize">{vehicle.color || '—'}</span>
+				<span>{colorName || 'Unspecified Color'}</span>
 			</div>
 		</div>
 
-		<!-- Right side placeholder (optional) -->
-		<!-- <div class="flex-shrink-0 text-gray-400 text-xs sm:text-sm">
-			{#if vehicle.mileage}
-				<span>{vehicle.mileage} km</span>
+		<!-- Right side thumbnail -->
+		<div
+			class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center">
+			{#if loadingThumb}
+				<!-- Circular loader -->
+				<div
+					class="w-6 h-6 border-2 border-gray-300 border-t-amber-500 rounded-full animate-spin"
+				></div>
+			{:else}
+				<img
+					src={thumbSrc}
+					alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
+					class="w-full h-full object-cover"
+					loading="lazy"
+				/>
 			{/if}
-		</div> -->
+		</div>
+
 	</div>
-</a>
+</div>

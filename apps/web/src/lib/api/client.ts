@@ -43,7 +43,7 @@ async function request<T>(
 	method: string,
 	path: string,
 	options: { body?: unknown } & RequestOptions = {}
-): Promise<T> {
+): Promise<ApiResponse<T>> {
 	const { timeout = 10_000, retries = 2, headers = {}, body } = options;
 
 	const url = new URL(path, PUBLIC_API_BASE_URL).href;
@@ -80,7 +80,7 @@ async function request<T>(
 				);
 			}
 
-			return responseBody.data;
+			return responseBody;
 		} catch (err) {
 			const isFinalAttempt = attempt === retries;
 

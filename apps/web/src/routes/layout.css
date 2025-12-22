@@ -46,6 +46,32 @@ body {
 		inset 0 1px 3px rgba(0,0,0, 0.8),
 		0 2px 4px rgba(0, 0, 0, 0.1);
 }
+input,
+textarea,
+select {
+  outline: none; /* remove browser default */
+  transition: all 0.2s ease-in-out; /* smooth focus effect */
+  @apply bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-300;
+    @apply border border-gray-400 dark:border-gray-500 rounded-xl;
+    @apply px-3 py-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-amber-600 focus:border-amber-600;
+    @apply placeholder-gray-400 dark:placeholder-gray-500 placeholder:font-medium;
+}
+button {
+    transition: all 0.2s ease-in-out; /* smooth focus effect */
+    @apply bg-gray-600/40 text-gray-800 dark:text-gray-300 cursor-pointer;
+    @apply px-2 py-2 rounded-xl;
+    @apply hover:dark:text-amber-500 hover:dark:bg-gray-600/40 hover:bg-amber-600 hover:text-white;
+    @apply focus:outline-none focus:ring-1 focus:ring-amber-600 focus:border-amber-600 ;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  @apply ring-2 ring-amber-600; /* Tailwind ring on focus */
+  @apply border-amber-600; /* optional: change border color too */
+}
 .txt-btn {
 	@apply cursor-pointer rounded-lg border-2 border-gray-600 px-6 py-1 text-gray-600 hover:border-gray-500 hover:bg-gray-500/10 hover:text-gray-500 dark:border-amber-600 dark:text-amber-600 hover:dark:border-amber-500 hover:dark:bg-amber-500/20 hover:dark:text-amber-500;
 }

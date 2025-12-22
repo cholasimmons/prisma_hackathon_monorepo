@@ -63,6 +63,7 @@
 				name="email"
 				type="email"
 				required
+				disabled={_signingIn}
 				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600 "
 			/>
 		</div>
@@ -74,13 +75,14 @@
 				name="password"
 				type="password"
 				required
+				disabled={_signingIn}
 				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
 
 		<div class="flex items-center justify-between text-sm">
 			<label for="rememberMe" class="flex items-center gap-2">
-				<input type="checkbox" id="rememberMe" name="rememberMe" />
+				<input type="checkbox" id="rememberMe" name="rememberMe" disabled={_signingIn} />
 				Remember me
 			</label>
 
