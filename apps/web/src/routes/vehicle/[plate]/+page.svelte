@@ -9,6 +9,7 @@
 	});
 
 	const { vehicle } = page.data;
+	// const { data } = $props();
 
 	// 🔤 Make → lowercase
 	const makeLower = vehicle.make.toLowerCase();

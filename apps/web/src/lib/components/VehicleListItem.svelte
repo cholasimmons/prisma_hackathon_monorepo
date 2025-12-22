@@ -9,7 +9,7 @@
 
 	type Props = {
 		vehicle: Vehicle;
-		onClick?: (vehicle: Vehicle) => void;
+		onClick?: (plateNumber: string) => void;
 		size?: 'sm' | 'md';
 	};
 	// Reactive state for thumbnail
@@ -64,8 +64,12 @@
 	role="link"
 	tabindex="0"
 	class={`bg-white/70 dark:bg-black/30 border border-gray-300 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow max-h-24 overflow-hidden cursor-pointer `}
-	onclick={() => onClick?.(vehicle)}
-	onkeydown={(e) => e.key === 'Enter' && onClick?.(vehicle)}
+	onclick={() => {
+		onClick?.(vehicle.plate);
+	}}
+	onkeydown={(e) => {
+		e.key === 'Enter' && onClick?.(vehicle.plate);
+	}}
 >
 	<div class="flex flex-row items-center justify-between w-full h-full">
 		<!-- Logo -->

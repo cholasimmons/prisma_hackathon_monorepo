@@ -6,7 +6,9 @@ import { error } from '@sveltejs/kit';
 export const load = (async ({ params, fetch }) => {
 	const { plate } = params;
 
-	const vehicle = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
+	const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
+	const vehicle = response.data;
+
 	if (!vehicle) {
 		throw error(404, 'Vehicle not found');
 	}

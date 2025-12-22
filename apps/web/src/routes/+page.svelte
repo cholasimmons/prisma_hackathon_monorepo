@@ -92,8 +92,8 @@
 		}
 	}
 
-	function handleVehicleClick(vehicle: Vehicle) {
-		goto(`/vehicle/${vehicle.plate}`);
+	function handleVehicleClick(plateNumber: string) {
+		goto(`/vehicle/${plateNumber}`);
 	}
 
 	// Cleanup on unmount
