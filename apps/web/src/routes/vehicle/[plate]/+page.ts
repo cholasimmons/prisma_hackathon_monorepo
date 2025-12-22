@@ -6,13 +6,15 @@ import { error } from '@sveltejs/kit';
 export const load = (async ({ params, fetch }) => {
 	const { plate } = params;
 
-	const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
-	const vehicle = response.data;
+	console.log('page.ts params:', params);
 
-	if (!vehicle) {
-		throw error(404, 'Vehicle not found');
-	}
+	// const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
+	// const vehicle = response.data;
 
-	// const data = await vehicle.json();
-	return { vehicle };
+	// if (!vehicle) {
+	// 	throw error(404, 'Vehicle not found');
+	// }
+
+	// // const data = await vehicle.json();
+	// return { vehicle };
 }) satisfies PageLoad;

@@ -3,16 +3,21 @@
 	import { toast } from 'svelte-french-toast';
 	import { api, ApiError } from '$lib/api/client';
 	import { page } from '$app/state';
+	import type { Vehicle } from '$lib/models/vehicle.model';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { hexToColorName } from '$lib/color/colors';
+
+	let _loading = $state(true);
+	let _vehicle = $state<Vehicle | null>(null);
 
 	$effect(() => {
 		document.title = `${page.data.vehicle.plate} • Vehicle Details`;
 	});
 
-	const { vehicle } = page.data;
+	const { plate } = page.params;
 	// const { data } = $props();
 
-	// 🔤 Make → lowercase
-	const makeLower = vehicle.make.toLowerCase();
+	let makeLower: string | null = $state(null);
 
 	// 🖼️ Preload make logos on mount
 	let makeLogoUrl = $state<string | null>(null);
@@ -23,6 +28,16 @@
 		let serverMessage = '';
 
 		try {
+			const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate!)}`);
+			const vehicle = response.data;
+
+			if (vehicle) {
+				// 🔤 Make → lowercase
+				makeLower = vehicle.make.toLowerCase();
+				return;
+			}
+			_loading = false;
+
 			// Try to load logo from `/logos/toyota.svg`, etc.
 			const logoPath = `/logos/${makeLower}.svg`;
 
@@ -54,43 +69,41 @@
 	<title>Vehicle Results</title>
 </svelte:head>
 
-<main class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6">
-	<div class="max-w-4xl mx-auto px-4 py-8">
+<main
+	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
+>
+	{#if _loading}
+		<div class="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
+	{:else if _vehicle}
 		<!-- Plate (large) -->
-		<div class="text-center mb-8">
-			<span
-				class="inline-block bg-blue-600 text-white font-['License_Plate'] text-5xl md:text-6xl px-6 py-3 rounded tracking-wider shadow-md"
-			>
-				{vehicle.plate}
-			</span>
-		</div>
+		<PageHeader title={_vehicle.plate} description={_vehicle.make} />
 
 		<!-- Make (with logo or text) -->
 		<div class="flex justify-center items-center mb-10">
 			{#if !logoLoading && makeLogoUrl}
 				<img
 					src={makeLogoUrl}
-					alt={vehicle.make}
+					alt={_vehicle.make}
 					class="h-12 md:h-16 object-contain"
 					loading="lazy"
 				/>
 			{:else if !logoLoading}
-				<span class="text-2xl font-semibold text-gray-800">{vehicle.make}</span>
+				<span class="text-2xl font-semibold text-gray-800">{_vehicle.make}</span>
 			{:else}
 				<div class="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
 			{/if}
 		</div>
 
 		<!-- Photos Grid -->
-		{#if vehicle.photos && vehicle.photos.length > 0}
+		{#if _vehicle.photos && _vehicle.photos.length > 0}
 			<div class="mb-8">
 				<h2 class="text-xl font-bold text-gray-900 mb-4">Photos</h2>
 				<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-					{#each vehicle.photos as url, i}
+					{#each _vehicle.photos as photo, i}
 						<div class="group relative aspect-square overflow-hidden rounded-lg bg-gray-100">
 							<img
-								src={url}
-								alt={`Photo ${i + 1} of ${vehicle.plate}`}
+								src={photo.url}
+								alt={`Photo ${i + 1} of ${_vehicle.plate}`}
 								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
 								loading={i < 4 ? 'eager' : 'lazy'}
 								decoding="async"
@@ -123,23 +136,24 @@
 		<!-- Vehicle Info -->
 		<div class="bg-white rounded-xl shadow p-6">
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-				{#if vehicle.model}
-					<div><span class="font-medium">Model:</span> {vehicle.model}</div>
+				{#if _vehicle.model}
+					<div><span class="font-medium">Model:</span> {_vehicle.model}</div>
 				{/if}
-				{#if vehicle.color}
+				{#if _vehicle.color}
 					<div>
-						<span class="font-medium">Color:</span> <span class="capitalize">{vehicle.color}</span>
+						<span class="font-medium">Color:</span>
+						<span class="capitalize">{hexToColorName(_vehicle.color)}</span>
 					</div>
 				{/if}
-				{#if vehicle.year}
-					<div><span class="font-medium">Year:</span> {vehicle.year}</div>
+				{#if _vehicle.year}
+					<div><span class="font-medium">Year:</span> {_vehicle.year}</div>
 				{/if}
-				<div><span class="font-medium">For Sale:</span> {vehicle.forSale ? 'Yes' : 'No'}</div>
+				<div><span class="font-medium">For Sale:</span> {_vehicle.forSale ? 'Yes' : 'No'}</div>
 			</div>
 		</div>
-
+	{:else}
 		<div class="mt-6 text-center">
-			<a href="/" class="text-blue-600 hover:underline">← Search another plate</a>
+			<a href="/" class="hover:underline">← Search another plate</a>
 		</div>
-	</div>
+	{/if}
 </main>
