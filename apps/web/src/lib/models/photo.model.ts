@@ -2,7 +2,7 @@ import type { Vehicle } from './vehicle.model';
 
 interface VehiclePhoto {
 	id: string;
-	photo: string;
+	url: string;
 	isPrimary: boolean;
 	uploadSizeKb?: number | null;
 

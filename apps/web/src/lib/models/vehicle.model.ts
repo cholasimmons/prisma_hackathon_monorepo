@@ -17,7 +17,7 @@ interface VehicleSubmission {
 	plate: string;
 	make: string;
 	model?: string | null;
-	photo?: VehiclePhoto | null;
+	photos?: VehiclePhoto[] | null;
 	color: string;
 	year?: number | null;
 	forSale?: boolean | null;

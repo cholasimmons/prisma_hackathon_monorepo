@@ -44,7 +44,7 @@ model VehicleSubmission {
 model VehiclePhoto {
   /// @prismabox.input.hide
   id             String   @id @default(cuid())
-  photo          String
+  url          String
   /// @prismabox.input.hide
   isPrimary      Boolean  @default(false)
   /// @prismabox.input.hide

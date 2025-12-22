@@ -15,47 +15,43 @@
 	const AppleIcon = 'skill-icons:apple-dark';
 
 	const handleEnhance = () => {
-      _signingIn = true;
+		_signingIn = true;
 
-      return async ({ result, update }:any) => {
-        if (result?.type === 'success') {
-          const { email, password, rememberMe } = result.data?.user;
+		return async ({ result, update }: any) => {
+			if (result?.type === 'success') {
+				const { email, password, rememberMe } = result.data?.user;
 
-          const res = await authClient.signIn.email({
-              email,
-              password,
-              rememberMe,
-              callbackURL: '/'
-          })
+				const res = await authClient.signIn.email({
+					email,
+					password,
+					rememberMe,
+					callbackURL: '/'
+				});
 
-          if(res.error?.message || res.error?.statusText) {
-            toast.error(res.error?.message ?? res.error?.statusText);
-          } else if(res.data?.redirect){
-            goto(res.data?.url ?? '/');
-          } else {
-            goto('/');
-          }
-        } else if (result?.type === 'error' || result?.type === 'failure') {
-          toast.error(result.data?.message ?? 'Unable to sign in');
-        }
+				if (res.error?.message || res.error?.statusText) {
+					toast.error(res.error?.message ?? res.error?.statusText);
+				} else if (res.data?.redirect) {
+					goto(res.data?.url ?? '/');
+				} else {
+					goto('/');
+				}
+			} else if (result?.type === 'error' || result?.type === 'failure') {
+				toast.error(result.data?.message ?? 'Unable to sign in');
+			}
 
-        await update();
-        _signingIn = false;
-      }
-    };
+			await update();
+			_signingIn = false;
+		};
+	};
 </script>
 
 <main
-	class="mx-auto px-8  dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8 "
+	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
 >
 	<h1 class="mb-1 dark:text-gray-200 text-3xl">Log In</h1>
 	<p class="mb-8 md:text-sm">Welcome back. Enter your details to proceed.</p>
 
-	<form
-		method="POST"
-		class="space-y-4"
-		use:enhance={handleEnhance}
-	>
+	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="space-y-1">
 			<label for="email" class="text-sm font-medium">Email</label>
 			<input
@@ -64,7 +60,7 @@
 				type="email"
 				required
 				disabled={_signingIn}
-				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600 "
+				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
 
@@ -82,7 +78,13 @@
 
 		<div class="flex items-center justify-between text-sm">
 			<label for="rememberMe" class="flex items-center gap-2">
-				<input type="checkbox" id="rememberMe" name="rememberMe" disabled={_signingIn} />
+				<input
+					type="checkbox"
+					id="rememberMe"
+					name="rememberMe"
+					disabled={_signingIn}
+					class="w-4 h-4"
+				/>
 				Remember me
 			</label>
 
