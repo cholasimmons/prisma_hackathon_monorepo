@@ -31,28 +31,28 @@
 		try {
 			const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate!)}`);
 			const vehicle = response.data;
+			console.log(vehicle);
 
 			if (vehicle) {
 				// 🔤 Make → lowercase
 				makeLower = vehicle.make.toLowerCase();
 				colorName = hexToColorName(vehicle.color);
-				return;
+
+				// Try to load logo from `/logos/toyota.svg`, etc.
+				const logoPath = `/logos/${vehicle.make}`;
+
+				res = await api.raw(logoPath, { method: 'HEAD' });
+				if (res.ok) {
+					makeLogoUrl = logoPath;
+					const response = await res.json();
+					serverMessage = response.message;
+				} else {
+					// Fallback to PNG
+					const pngRes = await api.raw(`/logos/${makeLower}.webp`, { method: 'HEAD' });
+					if (pngRes.ok) makeLogoUrl = `/logos/${makeLower}.webp`;
+				}
 			}
 			_loading = false;
-
-			// Try to load logo from `/logos/toyota.svg`, etc.
-			const logoPath = `/logos/${makeLower}.svg`;
-
-			res = await api.raw(logoPath, { method: 'HEAD' });
-			if (res.ok) {
-				makeLogoUrl = logoPath;
-				const response = await res.json();
-				serverMessage = response.message;
-			} else {
-				// Fallback to PNG
-				const pngRes = await api.raw(`/logos/${makeLower}.webp`, { method: 'HEAD' });
-				if (pngRes.ok) makeLogoUrl = `/logos/${makeLower}.webp`;
-			}
 		} catch (e) {
 			// silent fail → use text
 			let err: string | null = null;
