@@ -94,9 +94,8 @@
 	}
 
 	function handleVehicleClick(vehicle: Vehicle) {
-    		goto(`/vehicle/${vehicle.plate}`);
+      goto(`/vehicle/${vehicle.plate}`);
     }
-
 
 	// Cleanup on unmount
 	onMount(() => {
@@ -144,6 +143,12 @@
 				Enter a vehicle registration number to search
 			</p> -->
 		</div>
+
+		<!-- <VehicleListItem
+			vehicle={{ id: '1234', plate: 'abc123', make: 'Toyota', model: 'Camry', year: 2022, color: '#FF1100', forSale: true }}
+			size="sm"
+			onClick={handleVehicleClick}
+		/> -->
 
 		<!-- Loading -->
 		{#if loading}
