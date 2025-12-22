@@ -4,12 +4,6 @@ import { formatPlateInput } from '$lib/vehicles/plate';
 import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
-export function load({ locals }) {
-	if (!locals.user) {
-		throw redirect(302, '/login');
-	}
-}
-
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		if (!locals.user) {

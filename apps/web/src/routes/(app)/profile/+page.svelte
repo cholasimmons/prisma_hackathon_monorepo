@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { api } from '$lib/api/client';
+	import { api, type ApiResponse } from '$lib/api/client';
 	import { mySubmittedVehicles } from '$lib/api/vehicles';
 	import { hexToColorName } from '$lib/color/colors';
 	import type { AuthUser } from '$lib/models/auth.model';
+	import type { UserProfile } from '$lib/models/user.model';
 	import type { VehicleSubmission } from '$lib/models/vehicle.model';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
@@ -14,21 +15,36 @@
 	// let colorName = $derived.by(() => (colorHex ? hexToColorName(colorHex) : 'Black'));
 
 	let submissions: VehicleSubmission[] | null = $state<VehicleSubmission[] | null>([]);
-	let _fetching = $state(false);
+	let _profile = $state<UserProfile | null>();
+	let _fetchingSubmissions = $state(false);
+	let _fetchingProfile = $state(false);
 
 	let _fetchSubmissions = async () => {
 		try {
-			_fetching = true;
+			_fetchingSubmissions = true;
 			submissions = await mySubmittedVehicles();
 		} catch (error) {
 			console.error('Error fetching submissions:', error);
 		} finally {
-			_fetching = false;
+			_fetchingSubmissions = false;
+		}
+	};
+
+	let _fetchProfile = async () => {
+		try {
+			_fetchingProfile = true;
+			const response: ApiResponse<UserProfile> = await api.get<UserProfile>('/auth/me');
+			_profile = response.data;
+		} catch (error) {
+			console.error('Error fetching User Profile:', error);
+		} finally {
+			_fetchingProfile = false;
 		}
 	};
 
 	onMount(() => {
 		_fetchSubmissions();
+		_fetchProfile();
 	});
 </script>
 
@@ -38,10 +54,15 @@
 	<h1 class="mb-1 dark:text-gray-200 text-3xl">{user.name}'s Profile</h1>
 	<p class="mb-8 md:text-sm">Your active Profile</p>
 
-	<div class="flex flex-col items-center justify-center space-y-4">
+	<div class="flex flex-col items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
 		<img src={user.image} alt={user.name} class="w-32 h-32 rounded-full" />
 		<h2 class="text-xl font-bold">{user.name}</h2>
-		<p class="text-gray-600 dark:text-gray-400">{user.email}</p>
+		<p>{user.email}</p>
+		{#if _fetchingProfile}
+			<p class="text-gray-500 animate-ping">Loading Profile...</p>
+		{:else if _profile}
+			<p class="text-sm text-gray-500">{_profile.role}</p>
+		{/if}
 
 		<small class="rounded-full px-4 py-2">{user.emailVerified ? 'Verified' : 'Not Verified'}</small>
 	</div>
@@ -49,7 +70,7 @@
 	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>
 	<p class="mb-8 md:text-sm">Pending / Approved submissions</p>
 
-	{#if _fetching}
+	{#if _fetchingSubmissions}
 		<p class="text-gray-600 dark:text-gray-400 animate-ping">Collecting Submissions...</p>
 	{:else if submissions && submissions.length > 0}
 		<ul class="space-y-4">

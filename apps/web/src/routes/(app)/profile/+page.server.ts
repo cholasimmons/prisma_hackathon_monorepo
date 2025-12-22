@@ -1,10 +1,10 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 
-export function load({ locals }) {
-	if (!locals.user) {
-		redirect(302, '/');
-	}
-}
+// export function load({ locals }) {
+// 	if (!locals.user) {
+// 		redirect(302, '/');
+// 	}
+// }
 
 // export const actions: Actions = {
 // updateProfile: async ({ request, locals }) => {
