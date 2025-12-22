@@ -29,7 +29,7 @@
 		let serverMessage = '';
 
 		try {
-			const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate!)}`);
+			const response = await api.get<Vehicle>(`/vehicles/${plate!}`);
 			const vehicle = response.data;
 			console.log(vehicle);
 
