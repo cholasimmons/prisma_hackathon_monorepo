@@ -48,8 +48,8 @@
 					serverMessage = response.message;
 				} else {
 					// Fallback to PNG
-					const pngRes = await api.raw(`/logos/${makeLower}.webp`, { method: 'HEAD' });
-					if (pngRes.ok) makeLogoUrl = `/logos/${makeLower}.webp`;
+					const pngRes = await api.raw(`/logos/${vehicle.make}`, { method: 'HEAD' });
+					if (pngRes.ok) makeLogoUrl = `/logos/${vehicle.make}`;
 				}
 			}
 			_loading = false;

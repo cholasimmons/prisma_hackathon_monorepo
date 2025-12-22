@@ -73,7 +73,7 @@ const app = new Elysia({
       run: () => console.log("Cron job executed (5 minutes)"),
     }),
   )
-  .use(staticPlugin({ indexHTML: true }))
+  .use(staticPlugin({ indexHTML: false }))
   .use(betterAuth)
   .use(authController)
   .use(vehiclesController)
