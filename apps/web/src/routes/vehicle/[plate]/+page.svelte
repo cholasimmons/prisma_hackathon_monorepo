@@ -11,13 +11,14 @@
 	let _vehicle = $state<Vehicle | null>(null);
 
 	$effect(() => {
-		document.title = `${page.data.vehicle.plate} • Vehicle Details`;
+		document.title = `Vehicle Details`;
 	});
 
 	const { plate } = page.params;
 	// const { data } = $props();
 
 	let makeLower: string | null = $state(null);
+	let colorName: string = $state('Unknown');
 
 	// 🖼️ Preload make logos on mount
 	let makeLogoUrl = $state<string | null>(null);
@@ -34,6 +35,7 @@
 			if (vehicle) {
 				// 🔤 Make → lowercase
 				makeLower = vehicle.make.toLowerCase();
+				colorName = hexToColorName(vehicle.color);
 				return;
 			}
 			_loading = false;
@@ -142,7 +144,7 @@
 				{#if _vehicle.color}
 					<div>
 						<span class="font-medium">Color:</span>
-						<span class="capitalize">{hexToColorName(_vehicle.color)}</span>
+						<span class="capitalize">{colorName}</span>
 					</div>
 				{/if}
 				{#if _vehicle.year}

@@ -7,6 +7,7 @@ export const load = (async ({ params, fetch }) => {
 	const { plate } = params;
 
 	console.log('page.ts params:', params);
+	console.log('page.ts params plate:', plate);
 
 	// const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
 	// const vehicle = response.data;
