@@ -75,7 +75,7 @@
 	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
 >
 	{#if _loading}
-		<div class="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
+		<div class="h-2 w-36 bg-gray-200 animate-pulse rounded"></div>
 	{:else if _vehicle}
 		<!-- Plate (large) -->
 		<PageHeader title={_vehicle.plate} description={_vehicle.make} />
