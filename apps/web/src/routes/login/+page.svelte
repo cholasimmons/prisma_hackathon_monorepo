@@ -5,6 +5,7 @@
 	import toast from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
 	import { authClient } from '$lib/auth-client';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
@@ -48,8 +49,7 @@
 <main
 	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-3xl">Log In</h1>
-	<p class="mb-8 md:text-sm">Welcome back. Enter your details to proceed.</p>
+	<PageHeader title="Log In" description="Welcome back. Enter your details to proceed." />
 
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="space-y-1">

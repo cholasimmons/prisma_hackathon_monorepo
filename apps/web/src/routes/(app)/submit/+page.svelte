@@ -10,6 +10,7 @@
 	import ImageUploader from '$lib/components/ImageUploader.svelte';
 	import { ThumbsUp } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	let vehicleImages: File[] = [];
 
@@ -127,8 +128,10 @@
 			>
 		</div>
 	{:else}
-		<h1 class="mb-1 dark:text-gray-200 text-3xl">Submit a Vehicle</h1>
-		<p class="mb-8 md:text-sm">Your submission will be reviewed by our team.</p>
+		<PageHeader
+			title="Submit a Vehicle"
+			description="Your submission will be reviewed by our team."
+		/>
 
 		<form
 			in:fade={{ duration: 500 }}

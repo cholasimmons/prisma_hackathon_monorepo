@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -52,23 +53,26 @@
 <main
 	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-3xl">{data.user!.name}'s Profile</h1>
-	<p class="mb-8 md:text-sm">Your active Profile</p>
+	<PageHeader title={`${data.user!.name}'s Profile`} description="Your active Profile" />
 
 	<div class="flex flex-col items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
 		<img src={data.user!.image} alt={data.user!.name} class="w-32 h-32 rounded-full" />
 		<h2 class="text-xl font-bold">{data.user!.name}</h2>
 		<p>{data.user!.email}</p>
 		{#if _fetchingProfile}
-			<p class="text-gray-500 animate-ping">Loading Profile...</p>
+			<p class="text-gray-500 animate-pulse">Loading Profile...</p>
 		{:else if _profile}
-			<p class="text-sm text-gray-500">{_profile.role}</p>
+			<p class="text-base text-gray-500">{_profile.role}</p>
+		{:else}
+			<p class="text-sm text-gray-500">Profile not Found</p>
 		{/if}
 
 		<small class="rounded-full px-4 py-2"
 			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
 		>
 	</div>
+
+	<hr class="border-gray-300 dark:border-gray-600 w-full" />
 
 	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>
 	<p class="mb-8 md:text-sm">Pending / Approved submissions</p>
@@ -106,7 +110,9 @@
 		<button
 			in:fade={{ duration: 600, delay: 3000 }}
 			class="mt-4 font-bold py-2 px-4 rounded"
-			onclick={() => goto('/submit')}
+			onclick={() => {
+				goto('/submit');
+			}}
 		>
 			Submit a Vehicle
 		</button>
