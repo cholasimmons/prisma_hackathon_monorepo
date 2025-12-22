@@ -1,59 +1,63 @@
 import { API_BASE_URL } from '$lib/env';
 import type { Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { building } from "$app/environment";
+import { building } from '$app/environment';
 import { authClient } from '$lib/auth-client';
 
 export async function handle({ event, resolve }) {
-  const controller = new AbortController();
-  setTimeout(() => controller.abort(), 3000);
+	const controller = new AbortController();
+	setTimeout(() => controller.abort(), 3000);
 
-  let response: Response;
+	let response: Response;
 
-  const cookie = event.request.headers.get('cookie');
-  // const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
+	const cookie = event.request.headers.get('cookie');
+	// const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
 
-  // console.log("cookie:", cookie)
-  // console.log("sessionToken:", sessionToken)
+	// console.log("cookie:", cookie)
+	// console.log("sessionToken:", sessionToken)
 
-  try {
-    if(cookie) {
-      response = await fetch(`${API_BASE_URL}/auth/get-session`, {
-        headers: {
-          // 'Content-Type': 'application/json',
-          cookie: cookie ?? ''
-        }, method: 'GET', signal: controller.signal, credentials: 'include',
-      });
+	try {
+		if (cookie) {
+			response = await fetch(`${API_BASE_URL}/auth/get-session`, {
+				headers: {
+					// 'Content-Type': 'application/json',
+					cookie: cookie ?? ''
+				},
+				method: 'GET',
+				signal: controller.signal,
+				credentials: 'include'
+			});
 
-      if(!response.ok) {
-        event.locals.user = null;
-        event.locals.session = null;
-        event.locals.apiDown = true; // API unreachable
-        return resolve(event)
-      }
+			// if(!response.ok) {
+			//   event.locals.user = null;
+			//   event.locals.session = null;
+			//   event.locals.apiDown = false; // API unreachable
+			//   return resolve(event)
+			// }
 
-      const data = await response.json();
-      event.locals.user = data?.session.user ?? null;
-      event.locals.session = data?.session.session ?? null;
-      event.locals.apiDown = false; // API reachable, just unauthenticated
+			const data = await response.json();
+			event.locals.user = data?.user ?? null;
+			event.locals.session = data?.session ?? null;
+			event.locals.apiDown = false; // API reachable, just unauthenticated
 
-      console.log("[Hooks] ", data.user.name)
+			// console.log("[Hooks] ", data.user.name)
+			// console.log("[Hooks Locals] ", event.locals.user?.name)
 
-      return resolve(event)
-    } else {
-      event.locals.user = null;
-      event.locals.session = null;
-      event.locals.apiDown = false; // API unreachable
+			return resolve(event);
+		} else {
+			event.locals.user = null;
+			event.locals.session = null;
+			event.locals.apiDown = false; // API unreachable
 
-      return resolve(event)
-    }
-  } catch (error) {
-    event.locals.user = null;
-    event.locals.session = null;
-    event.locals.apiDown = true; // API unreachable
+			return resolve(event);
+		}
+	} catch (error) {
+		event.locals.user = null;
+		event.locals.session = null;
+		event.locals.apiDown = true; // API unreachable
 
-    return resolve(event)
-  }
+		return resolve(event);
+	}
 }
 
 // const handle: Handle = async ({ event, resolve }) => {

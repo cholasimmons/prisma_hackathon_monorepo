@@ -46,12 +46,11 @@
 	let error = $state<string | null>(null);
 	let hasSearched = $state(false);
 
-
 	// Debounce helper
 	let debounceTimer: number;
 
 	async function search() {
-	  hasSearched = true;
+		hasSearched = true;
 		loading = true;
 		error = null;
 
@@ -94,8 +93,8 @@
 	}
 
 	function handleVehicleClick(vehicle: Vehicle) {
-      goto(`/vehicle/${vehicle.plate}`);
-    }
+		goto(`/vehicle/${vehicle.plate}`);
+	}
 
 	// Cleanup on unmount
 	onMount(() => {
@@ -120,8 +119,9 @@
 		<!-- Search Bar -->
 		<div class="relative mb-6">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
-			<input id="search-reg"
-			    name="search-reg"
+			<input
+				id="search-reg"
+				name="search-reg"
 				type="text"
 				bind:value={rawInput}
 				oninput={handleInput}
@@ -144,11 +144,17 @@
 			</p> -->
 		</div>
 
-		<!-- <VehicleListItem
+		<!--div
+			in:fade={{ duration: 400, delay: 100 }}
+			out:fade={{ duration: 100 }}
+			class="space-y-4 w-full max-w-xl mx-auto"
+		>
+		<VehicleListItem
 			vehicle={{ id: '1234', plate: 'abc123', make: 'Toyota', model: 'Camry', year: 2022, color: '#FF1100', forSale: true }}
 			size="sm"
 			onClick={handleVehicleClick}
-		/> -->
+		/>
+		-->
 
 		<!-- Loading -->
 		{#if loading}
@@ -224,7 +230,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="space-y-4 w-full max-w-md mx-auto"
+				class="space-y-4 w-full max-w-xl mx-auto"
 			>
 				{#each vehicles as vehicle (vehicle.id)}
 					<VehicleListItem {vehicle} onClick={handleVehicleClick} />
