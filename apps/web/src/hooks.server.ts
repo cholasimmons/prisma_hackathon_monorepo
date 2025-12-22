@@ -13,7 +13,7 @@ export async function handle({ event, resolve }) {
   const cookie = event.request.headers.get('cookie');
   // const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
 
-  console.log("cookie:", cookie)
+  // console.log("cookie:", cookie)
   // console.log("sessionToken:", sessionToken)
 
   try {
@@ -37,7 +37,7 @@ export async function handle({ event, resolve }) {
       event.locals.session = data?.session.session ?? null;
       event.locals.apiDown = false; // API reachable, just unauthenticated
 
-      console.log("hooks:", data)
+      console.log("[Hooks] ", data.user.name)
 
       return resolve(event)
     } else {

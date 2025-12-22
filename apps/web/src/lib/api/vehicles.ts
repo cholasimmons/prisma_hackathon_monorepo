@@ -6,12 +6,14 @@ async function searchVehicles(plate: string): Promise<Vehicle[]> {
 	const normalized = plate.trim();
 	if (!normalized) return [];
 
-	const payload = await api.get<Vehicle[]>(
+	const response = await api.get<Vehicle[]>(
 		`/vehicles/search?plate=${encodeURIComponent(normalized)}`
 	);
 
+	const payload = response.data;
+
 	if (!Array.isArray(payload)) {
-		console.error('Unexpected Vehicle API response', payload);
+		// console.error('Unexpected Vehicle API response', payload);
 		return [];
 	}
 
