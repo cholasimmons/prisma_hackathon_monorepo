@@ -82,7 +82,9 @@
 				{#if page.url.pathname !== '/'}
 					<button
 						class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
-						onclick={() => goto('/')}
+						onclick={() => {
+							goto('/');
+						}}
 					>
 						<HouseIcon />
 					</button>

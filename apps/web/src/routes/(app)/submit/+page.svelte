@@ -122,7 +122,9 @@
 
 			<button
 				in:fade={{ duration: 600, delay: 3000 }}
-				onclick={() => goto('/')}
+				onclick={() => {
+					goto('/');
+				}}
 				class="mt-6"
 				style="padding: 6px 18px;">Back Home</button
 			>
