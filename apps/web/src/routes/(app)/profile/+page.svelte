@@ -10,6 +10,7 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { toPossessive } from '$lib/utility/string';
 
 	const { data }: PageProps = $props();
 
@@ -53,7 +54,7 @@
 <main
 	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<PageHeader title={`${data.user!.name}'s Profile`} description="Your active Profile" />
+	<PageHeader title={`${toPossessive(data.user!.name)} Profile`} description="Your active Profile" />
 
 	<div class="flex flex-col items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
 		<img src={data.user!.image} alt={data.user!.name} class="w-32 h-32 rounded-full" />

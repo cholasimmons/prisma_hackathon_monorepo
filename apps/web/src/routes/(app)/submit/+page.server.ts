@@ -36,11 +36,13 @@ export const actions: Actions = {
 			return fail(400, { message: 'Model not acceptable' });
 		}
 
-		const year = Number(data.get('year') ?? '');
+		const year = Number(data.get('year') ?? null);
 		const currentYear = new Date().getFullYear();
-		if (!Number.isInteger(year) || (year >= 1900 && year <= currentYear)) {
+		if (!Number.isInteger(year) || (year <= 1900 && year > currentYear)) {
 			return fail(400, { message: 'Year not acceptable' });
 		}
+
+		const type = String(data.get('type') ?? null).trim();
 
 		const forSale = Boolean(data.get('forSale') === 'on');
 
@@ -57,6 +59,7 @@ export const actions: Actions = {
 				color,
 				model,
 				year,
+				type,
 				forSale,
 				photos
 			}

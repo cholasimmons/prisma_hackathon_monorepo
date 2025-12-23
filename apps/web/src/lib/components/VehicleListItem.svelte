@@ -5,12 +5,11 @@
 	import defaultThumbSvg from '$lib/assets/default-vehicle-thumb.svg';
 
 	import { onMount } from 'svelte';
-	const { vehicle, onClick, size = 'md' }: Props = $props();
+	const { vehicle, onClick }: Props = $props();
 
 	type Props = {
 		vehicle: Vehicle;
 		onClick?: (plateNumber: string) => void;
-		size?: 'sm' | 'md';
 	};
 	// Reactive state for thumbnail
 	let thumbSrc = $state<string | null>(null);
@@ -63,7 +62,7 @@
 <div
 	role="link"
 	tabindex="0"
-	class={`bg-white/70 dark:bg-black/30 border border-gray-300 dark:border-gray-700 rounded-lg hover:shadow-md transition-shadow max-h-24 overflow-hidden cursor-pointer `}
+	class={`bg-white/70 dark:bg-black/30 border border-gray-300 dark:border-gray-700 rounded-lg hover:shadow-xl transition-shadow max-h-28 overflow-hidden cursor-pointer `}
 	onclick={() => {
 		onClick?.(vehicle.plate);
 	}}
@@ -71,7 +70,7 @@
 		e.key === 'Enter' && onClick?.(vehicle.plate);
 	}}
 >
-	<div class="flex flex-row items-center justify-between w-full h-full">
+	<div class="flex flex-row items-center justify-evenly w-full h-full">
 		<!-- Logo -->
 		<div class="shrink-0 text-sm h-full">
 			{#if loadingMake}
@@ -79,11 +78,11 @@
 				<div
 					class="flex items-center justify-center w-6 h-6 border-2 border-gray-300 border-t-amber-500 rounded-full animate-spin"
 				></div>
-			{:else}
+			{:else if makeSrc}
 				<img
 					src={makeSrc}
 					alt={vehicle.make}
-					class="w-24 object-cover object-center bg-center"
+					class="p-1 w-20 object-fit object-center bg-center fill-red-500"
 					loading="lazy"
 				/>
 			{/if}
@@ -91,52 +90,49 @@
 
 		<!-- Main info -->
 		<div
-			class={`flex flex-row min-w-0 items-center justify-between grow ${size === 'sm' ? 'px-4' : 'px-6'} `}
+			class={`flex flex-row min-w-0 items-center justify-between grow `}
+			style="border-top: 4px solid {vehicle.color}"
 		>
-			<div class="flex flex-col shrink gap-2 items-start">
-				<span
-					class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
-				>
-					{vehicle.plate}
-				</span>
-				{#if vehicle.forSale}
-					<span
-						class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
-					>
-						🏷️ For Sale
-					</span>
-				{/if}
-				<span
-					class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium"
-					style="background-color: {vehicle.color}"
-				>
-					{colorName}
-				</span>
+			<div class="flex flex-col shrink gap-2 items-start pl-2">
+
 			</div>
 
-			<div class="flex flex-col grow items-center flex-wrap text-gray-900 dark:text-gray-100">
-				<h3 class="text-lg sm:text-2xl font-bold truncate m-0 p-0">
+			<div class="flex flex-col grow items-center flex-wrap text-gray-900 dark:text-gray-100 ">
+				<h3 class="text-lg sm:text-2xl font-semibold truncate m-0 p-0">
 					{vehicle.make}
-					{vehicle.model || '—'}
+					{vehicle.model}
 				</h3>
-				{#if vehicle.year}<span>{vehicle.year}</span>{/if}
+				<div>
+				    {#if vehicle.year}<span>{vehicle.year}</span>{/if}&nbsp;
+				    {#if vehicle.type}<span>{vehicle.type}</span>{/if}
+				</div>
+				<span class="text-sm opacity-50">{vehicle.plate}</span>
 			</div>
 
-			<div class="text-xs sm:text-sm text-gray-600 flex gap-2 flex-wrap">&nbsp;</div>
+			<div class="text-xs sm:text-sm text-gray-600 flex gap-2 flex-wrap pr-4">
+    			{#if vehicle.forSale}
+    				<span
+    					class="inline-flex items-center p-1 rounded-full hover:bg-amber-600 font-medium"
+    					title="Vehicle is for sale"
+    				>
+    					🏷️
+    				</span>
+    			{/if}
+			</div>
 		</div>
 
 		<!-- Right side thumbnail -->
-		<div class="w-36 h-24 overflow-hidden shrink-0 flex items-center justify-center">
+		<div class="w-24 overflow-hidden shrink-0 flex items-center justify-center">
 			{#if loadingThumb}
 				<!-- Circular loader -->
 				<div
 					class="flex items-center justify-center w-6 h-6 border-2 border-gray-300 border-t-amber-500 rounded-full animate-spin"
 				></div>
-			{:else}
+			{:else if thumbSrc}
 				<img
 					src={thumbSrc}
 					alt={`Photo of ${vehicle.make} ${vehicle.model || 'vehicle'}`}
-					class="w-full h-full object-cover fill-gray-800 bg-white"
+					class="p-2 h-full object-fit fill-gray-800"
 					loading="lazy"
 				/>
 			{/if}

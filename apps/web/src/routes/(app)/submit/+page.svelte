@@ -11,7 +11,9 @@
 	import { ThumbsUp } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { VehicleType, VEHICLE_TYPE_VALUES } from '$lib/models/vehicle.model';
 
+	let vehicleType = $state<VehicleType | ''>('');
 	let vehicleImages: File[] = [];
 
 	let _submitting = $state(false);
@@ -223,6 +225,29 @@
 						placeholder="Year"
 						class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium"
 					/>
+				</div>
+
+				<!-- Vehicle Type -->
+				<div
+					class="items-center gap-3 h-10 mt-6 sm:mt-0 justify-center md:justify-end"
+				>
+					<label for="type" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
+						Type
+					</label>
+					<select
+						id="type"
+						name="type"
+						bind:value={vehicleType}
+						class="border rounded px-3 py-2">
+
+						<option value="" disabled>Select vehicle type</option>
+
+						{#each VEHICLE_TYPE_VALUES as type}
+							<option value={type}>
+								{type.charAt(0).toUpperCase() + type.slice(1)}
+							</option>
+						{/each}
+                    </select>
 				</div>
 
 				<!-- For Sale -->

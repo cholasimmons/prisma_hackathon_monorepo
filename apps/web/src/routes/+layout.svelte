@@ -41,8 +41,8 @@
 		dark = !dark;
 		applyTheme(dark ? 'dark' : 'light');
 	}
-	function about() {
-		toast.success('a Simmons Studio project');
+	function gotoAbout() {
+		goto('/about');
 	}
 
 	onMount(async () => {
@@ -101,7 +101,7 @@
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
 				{#if page.data?.user}
 					<button
-						class="border-red-900 border-2 text-red-400 px-6 py-1 rounded-2xl cursor-pointer"
+						class="px-6 py-1"
 						onclick={() => logout()}>Logout</button
 					>
 				{:else if page.url.pathname.startsWith('/login')}
@@ -116,6 +116,7 @@
 						in:fade={{ duration: 400, delay: 250 }}
 						out:fade={{ duration: 200 }}
 						class="txt-btn"
+						tabindex="0"
 						onclick={() => gotoLogin()}>Login</button
 					>
 				{/if}
@@ -131,7 +132,7 @@
 				</button>
 				<button
 					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
-					onclick={() => about()}
+					onclick={() => gotoAbout()}
 				>
 					<CircleQuestionMark />
 				</button>

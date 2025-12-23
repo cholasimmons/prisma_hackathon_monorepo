@@ -20,7 +20,7 @@ export async function getMakeLogo(make: string): Promise<string> {
 		return logoCache.get(key)!;
 	}
 
-	const url = `/logos/${key}.webp`;
+	const url = `/logos/${key}.svg`;
 
 	// HEAD request is cheap and avoids downloading image twice
 	const exists = await fetch(url, { method: 'HEAD' })

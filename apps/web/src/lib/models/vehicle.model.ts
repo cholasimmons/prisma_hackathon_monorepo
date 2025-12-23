@@ -8,6 +8,7 @@ interface Vehicle {
 	photos?: VehiclePhoto[] | null;
 	color: string;
 	year?: number | null;
+	type?: string | null;
 	forSale: boolean | null;
 	updateAt?: Date;
 }
@@ -20,8 +21,27 @@ interface VehicleSubmission {
 	photos?: VehiclePhoto[] | null;
 	color: string;
 	year?: number | null;
+	type?: string | null;
 	forSale?: boolean | null;
 }
+
+export enum VehicleType {
+	PICKUP = 'pickup',
+	TRUCK = 'truck',
+	MOTORBIKE = 'motorbike',
+	QUADBIKE = 'quadbike',
+	SEMI = 'semi',
+	TRAILER = 'trailer',
+	SUV = 'suv',
+	VAN = 'van',
+	BUS = 'bus',
+	SEDAN = 'sedan',
+	LIMOUSINE = 'limousine',
+	CONVERTIBLE = 'convertible',
+	COUPE = 'coupe'
+}
+// Helpful for UI iteration
+export const VEHICLE_TYPE_VALUES = Object.values(VehicleType);
 
 // Search response shape (recommended for backend to return this)
 interface VehicleSearchResult {

@@ -108,16 +108,16 @@
 
 <main class="min-h-full min-w-full p-8 sm:px-6 items-start flex flex-col justify-center">
 	<div class="w-full mx-auto text-center">
-		<div class="mb-10">
-			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-18 h-18 mx-auto" />
+		<div class="mb-8">
+			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
 		</div>
 
-		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-4">
+		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-2">
 			Vehicle Search
 		</h1>
 
 		<!-- Search Bar -->
-		<div class="relative mb-6">
+		<div class="relative mb-4">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
 			<input
 				id="search-reg"
@@ -129,7 +129,7 @@
 				onkeydown={handleKeyDown}
 				placeholder="ADB 3104"
 				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full max-w-sm p-1 rounded-2xl shadow-md
+				class="w-full max-w-sm p-1 rounded-4xl shadow-md
 				 border-gray-300
 				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 				bg-gray-500 dark:bg-gray-700
@@ -149,12 +149,12 @@
 			out:fade={{ duration: 100 }}
 			class="space-y-4 w-full max-w-xl mx-auto"
 		>
-		<VehicleListItem
-			vehicle={{ id: '1234', plate: 'abc123', make: 'Toyota', model: 'Camry', year: 2022, color: '#FF1100', forSale: true }}
-			size="sm"
-			onClick={handleVehicleClick}
-		/>
-		-->
+    		<VehicleListItem
+    			vehicle={{ id: '1234', plate: 'ABC 123', make: 'Toyota', model: 'Camry', year: 2022, color: '#FF1100', type: 'Sedan', forSale: true }}
+    			onClick={handleVehicleClick}
+    		/>
+		</div-->
+
 
 		<!-- Loading -->
 		{#if loading}
