@@ -7,9 +7,13 @@ export function load({ locals }) {
     throw redirect(302, '/login');
   }
 
-  // if (user.role !== 'admin') {
-  //   throw redirect(302, '/');
-  // }
+  if (user.role !== 'admin') {
+    return {
+      ...user,
+      role: 'admin'
+    };
+    // throw redirect(302, '/');
+  }
 
   return {
     user

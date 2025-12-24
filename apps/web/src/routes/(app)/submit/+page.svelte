@@ -195,9 +195,9 @@
 				</div>
 			</section>
 
-			<section class="grid grid-cols-2 md:grid-cols-3 gap-4 items-end mt-4">
+			<section class="flex flex-wrap gap-4 items-end mt-4">
 				<!-- Color -->
-				<div class="grow">
+				<div class="flex-1 min-w-32">
 					<label hidden for="color" class="block text-sm text-gray-500 mb-1"> Color </label>
 					<ColorPicker
 						label={colorName}
@@ -211,7 +211,7 @@
 				</div>
 
 				<!-- Year -->
-				<div class="shrink">
+				<div class="flex-1 min-w-38">
 					<label hidden for="year" class="block text-sm text-gray-500 mb-1"> Year </label>
 					<input
 						id="year"
@@ -228,7 +228,7 @@
 
 				<!-- Vehicle Type -->
 				<div
-					class="col-span-2 md:col-auto flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
+					class="flex-[2_2_0%] min-w-50 items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
 				>
 					<!--label for="type" class="text-gray-500 text-sm">
 						Type
@@ -251,7 +251,7 @@
 
 				<!-- For Sale -->
 				<div
-					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center md:justify-end"
+					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
 				>
 					<label for="forSale" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
 						<!--p class="hidden md:block">For sale?</p-->
