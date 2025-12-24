@@ -3,15 +3,15 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import toast, { Toaster } from 'svelte-french-toast';
 	import { page } from '$app/state';
+	import { fade } from 'svelte/transition';
 
 	// Supports weights 100-900
-	import '@fontsource-variable/montserrat';
-	import '@fontsource/rubik-mono-one';
+	// import '@fontsource-variable/montserrat';
+	// import '@fontsource/rubik-mono-one';
 
 	import { onMount } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
 	import { goto, refreshAll } from '$app/navigation';
-	import { fade } from 'svelte/transition';
 	import {
 		LucideLightbulb,
 		LightbulbOffIcon,
@@ -53,7 +53,8 @@
 			initTheme();
 			dark = document.documentElement.classList.contains('dark');
 
-			preloadMakeLogos();
+			// preloadMakeLogos();
+			document.documentElement.classList.add('hydrated');
 		} catch (err) {
 			// rejectLogos(err);
 		}
@@ -139,9 +140,11 @@
 			</div>
 		</header>
 
-		<div class="grow flex flex-col w-full pt-4">
-			{@render children()}
-		</div>
+		{#key page.url.pathname}
+    		<div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }} class="grow flex flex-col w-full pt-4">
+    			{@render children()}
+    		</div>
+		{/key}
 
 		<footer class="text-center p-3">
 			<a href="https://simmons.studio">

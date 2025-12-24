@@ -59,7 +59,7 @@
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Search failed';
 			error = message; // local
-			toast.error(message); // global
+			// toast.error(message); // global
 		} finally {
 			loading = false;
 		}
@@ -174,9 +174,9 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="bg-red-50 border-l-4 border-red-500 p-4 rounded"
+				class="mx-auto bg-red-50 border-l-4 border-red-500 p-4 rounded-lg w-full max-w-md"
 			>
-				<div class="flex">
+				<div class="flex items-center">
 					<div class="shrink-0">
 						<svg
 							class="h-5 w-5 text-red-400"
@@ -192,8 +192,8 @@
 						</svg>
 					</div>
 					<div class="ml-3 text-start">
-						<p class="text-sm text-red-700 font-medium">Error:</p>
-						<p class="text-sm text-red-600">{error}</p>
+						<!--p class="text-sm text-red-700 font-medium">Error:</p-->
+						<p class="text-sm text-red-600 py-3">{error}</p>
 					</div>
 				</div>
 			</div>

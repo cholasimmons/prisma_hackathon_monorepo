@@ -100,7 +100,7 @@
 		<button
 			type="submit"
 			disabled={_signingIn}
-			class="w-full rounded-lg bg-black dark:bg-amber-800 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium  text-white  hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 		>
 			{_signingIn ? 'Signing in…' : 'Sign in'}
 		</button>

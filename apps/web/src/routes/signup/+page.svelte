@@ -48,7 +48,7 @@
 
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div
-			class="grid grid-cols-1 gap-4 md:grid-cols-2 text-gray-800 dark:text-gray-300 text-lg md:text-2xl"
+			class="grid grid-cols-2 gap-4  text-gray-800 dark:text-gray-300 text-lg md:text-2xl"
 		>
 			<div class="space-y-1">
 				<label for="firstname" class="text-sm font-medium">First Name</label>
@@ -97,36 +97,39 @@
 				/>
 			</div>
 
-			<div class="relative space-y-1 items-center">
+			<div class="space-y-1">
 				<label for="confirmPassword" class="text-sm font-medium">Confirm Password</label>
-				<input
-					id="confirmPassword"
-					name="confirmPassword"
-					type={_showConfirmPassword ? 'text' : 'password'}
-					required
-					class="w-full rounded-lg border px-3 py-2 text-lg md:text-xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
-				/>
+				<div class="relative">
+    				<input
+    					id="confirmPassword"
+    					name="confirmPassword"
+    					type={_showConfirmPassword ? 'text' : 'password'}
+    					required
+    					class="w-full rounded-lg border px-3 py-2 text-lg md:text-xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
+    				/>
 
-				<!-- Eye icon button -->
-				<button
-					type="button"
-					onclick={() => (_showConfirmPassword = !_showConfirmPassword)}
-					class="absolute right-3 top-0 bottom-0 my-auto h-6 w-6 flex items-center justify-center text-gray-500 hover:text-gray-700"
-				>
-					{#if _showConfirmPassword}
-						<EyeClosedIcon />
-					{:else}
-						<EyeIcon />
-					{/if}
-				</button>
+    				<!-- Eye icon button -->
+    				<button
+    					type="button"
+    					onclick={() => (_showConfirmPassword = !_showConfirmPassword)}
+    					class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                        style="border:none; focus:outline-none; outline:none;"
+    				>
+    					{#if _showConfirmPassword}
+    						<EyeClosedIcon />
+    					{:else}
+    						<EyeIcon />
+    					{/if}
+    				</button>
+				</div>
 			</div>
 		</div>
 
 		<p class="text-sm font-medium">
-			By signing up, you agree to our <a href="/terms" class="text-amber-600 hover:underline"
+			By signing up, you agree to our <a href="/legal/terms" class="text-amber-600 hover:underline"
 				>Terms of Service</a
 			>
-			and <a href="/privacy" class="text-amber-600 hover:underline">Privacy Policy</a>.
+			and <a href="/legal/privacy" class="text-amber-600 hover:underline">Privacy Policy</a>.
 		</p>
 
 		<div class="flex justify-center">

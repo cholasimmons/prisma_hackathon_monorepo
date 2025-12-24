@@ -2,9 +2,10 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @custom-variant dark (&:where(.dark, .dark *));
+@import '../../static/fonts.css';
 
 body {
-	font-family: 'Montserrat Variable', sans-serif;
+	font-family: 'Montserrat', sans-serif;
 }
 
 /*:root {
@@ -16,6 +17,10 @@ body {
 	--bg: #0a0a0a;
 	--fg: #fafafa;
 }*/
+html:not(.hydrated) * {
+  transition: none !important;
+}
+
 
 .plates {
 	font-family: 'Jersey 25', ui-monospace, monospace, 'Courier New', Courier;
@@ -59,7 +64,7 @@ select {
 }
 button {
     transition: all 0.2s ease-in-out; /* smooth focus effect */
-    @apply bg-gray-600/40 text-gray-800 dark:text-gray-300 cursor-pointer;
+    @apply cursor-pointer;
     @apply px-2 py-2 rounded-xl;
     @apply hover:dark:text-amber-500 hover:dark:bg-gray-600/40 hover:bg-amber-600 hover:text-white;
     @apply focus:outline-none focus:ring-1 focus:ring-amber-600 focus:border-amber-600 ;

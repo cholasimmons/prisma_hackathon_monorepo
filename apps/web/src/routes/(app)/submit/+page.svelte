@@ -229,7 +229,7 @@
 
 				<!-- Vehicle Type -->
 				<div
-					class="items-center gap-3 h-10 mt-6 sm:mt-0 justify-center md:justify-end"
+					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
 				>
 					<label for="type" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
 						Type

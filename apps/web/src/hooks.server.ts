@@ -1,8 +1,4 @@
 import { API_BASE_URL } from '$lib/env';
-import type { Handle } from '@sveltejs/kit';
-import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { building } from '$app/environment';
-import { authClient } from '$lib/auth-client';
 
 export async function handle({ event, resolve }) {
 	const controller = new AbortController();
@@ -11,10 +7,6 @@ export async function handle({ event, resolve }) {
 	let response: Response;
 
 	const cookie = event.request.headers.get('cookie');
-	// const sessionToken = event.cookies.get('better-auth.session_token') ?? '';
-
-	// console.log("cookie:", cookie)
-	// console.log("sessionToken:", sessionToken)
 
 	try {
 		if (cookie) {
