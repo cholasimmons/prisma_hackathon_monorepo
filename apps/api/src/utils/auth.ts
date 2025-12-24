@@ -41,7 +41,8 @@ const auth = betterAuth({
         path: "/",
         maxAge: 60 * 60 * 24 * 30 // 30 days
       }
-    }
+    },
+
   },
   trustedOrigins: ["https://plates.simmons.studio", "https://api.plates.simmons.studio"],
   plugins: [openAPI(), adminPlugin()],

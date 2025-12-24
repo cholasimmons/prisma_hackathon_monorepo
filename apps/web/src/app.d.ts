@@ -11,6 +11,7 @@ declare global {
 				email: string;
 				emailVerified: boolean;
 				name: string;
+				role?: string | null;
 				image?: string | null | undefined | undefined;
 			} | null;
 			session: {

@@ -141,7 +141,7 @@
 		</header>
 
 		{#key page.url.pathname}
-    		<div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }} class="grow flex flex-col w-full pt-4">
+    		<div in:fade={{ duration: 150 }} out:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4">
     			{@render children()}
     		</div>
 		{/key}

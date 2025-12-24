@@ -204,7 +204,6 @@
 						bind:hex={colorHex}
 						components={ChromeVariant}
 						sliderDirection="horizontal"
-						nullable
 						--input-size="36px"
 						--focus-color="amber"
 					/>
@@ -229,16 +228,16 @@
 
 				<!-- Vehicle Type -->
 				<div
-					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
+					class="col-span-2 md:col-auto flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
 				>
-					<label for="type" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
+					<!--label for="type" class="text-gray-500 text-sm">
 						Type
-					</label>
+					</label-->
 					<select
 						id="type"
 						name="type"
 						bind:value={vehicleType}
-						class="border rounded px-3 py-2">
+						class="border rounded px-3 py-2 w-full" style="width: 100%">
 
 						<option value="" disabled>Select vehicle type</option>
 
@@ -252,11 +251,11 @@
 
 				<!-- For Sale -->
 				<div
-					class="col-span-2 md:col-auto flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center md:justify-end"
+					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center md:justify-end"
 				>
 					<label for="forSale" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
-						<p class="hidden md:block">For sale?</p>
-						<p class="block md:hidden">Is this Vehicle for sale?</p>
+						<!--p class="hidden md:block">For sale?</p-->
+						<p>Is this Vehicle for sale?</p>
 					</label>
 					<input id="forSale" type="checkbox" name="forSale" class="h-5 w-5" />
 				</div>
