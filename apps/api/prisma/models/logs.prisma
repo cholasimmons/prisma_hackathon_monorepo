@@ -1,11 +1,57 @@
 model AuditEvent {
   id        String   @id @default(cuid())
   actorId   String?             // user performing the action (null for system)
-  eventType String              // e.g. "vehicle.submit", "vehicle.revoke"
-  entity    String?             // e.g. "plate:ABC123"
+
+  ipAddress    String?
+  userAgent    String?
+
+  route        String?
+  method       String?
+
+  type      String              // e.g. "vehicle.submit", "vehicle.revoke"
+  entity    String?             // (Module) e.g. "plate:ABC123"
+  entityId  String?             // vehicleId, userId, submissionId etc
   metadata  Json?
   createdAt DateTime @default(now())
 
   @@schema("logs")
   @@map("audit_events")
+  @@index([type])
+  @@index([actorId])
+  @@index([createdAt])
+}
+
+enum EventType {
+  AUTH_REGISTER
+  AUTH_LOGIN
+  AUTH_LOGOUT
+  AUTH_PASSWORD_RESET
+  AUTH_PASSWORD_INCORRECT
+
+  VEHICLE_CREATE
+  VEHICLE_READ
+  VEHICLE_UPDATE
+  VEHICLE_APPROVE
+  VEHICLE_DELETE
+
+  SUBMISSION_CREATE
+  SUBMISSION_READ
+  SUBMISSION_UPDATE
+  SUBMISSION_APPROVE
+  SUBMISSION_DELETE
+
+  USER_CREATE
+  USER_READ
+  USER_UPDATE
+  USER_DELETE
+  USER_BAN
+  USER_SUSPEND
+
+  PERMISSION_DENIED
+  RATE_LIMIT
+
+  SYSTEM_ERROR
+
+  @@schema("logs")
+  @@map("event_types")
 }

@@ -35,11 +35,10 @@
 		"vite": "^7.3.0"
 	},
 	"dependencies": {
-		"@fontsource-variable/montserrat": "^5.2.8",
-		"@fontsource/rubik-mono-one": "^5.2.8",
-		"@lucide/svelte": "^0.561.0",
+		"@lucide/svelte": "^0.562.0",
 		"better-auth": "^1.4.7",
 		"color-namer": "^1.4.0",
+		"layerchart": "^1.0.12",
 		"svelte-french-toast": "^1.2.0"
 	}
 }

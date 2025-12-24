@@ -15,6 +15,7 @@ import {
   vehiclesController,
   fileController,
   logosController,
+  auditController,
 } from "~/modules/index";
 import staticPlugin from "@elysiajs/static";
 
@@ -79,8 +80,9 @@ const app = new Elysia({
   .use(vehiclesController)
   .use(fileController)
   .use(logosController)
+  .use(auditController)
 
-  .get("/", () => "Hello Stranger")
+  .get("/", () => "Hello you sneaky Car Lover")
 
   .ws("/ws", {
     // 1. Define the schema for incoming messages

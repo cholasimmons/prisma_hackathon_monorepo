@@ -12,7 +12,7 @@
 
 	onMount(async () => {
 		try {
-			await api.get('/oauth/apple');
+			await api.get('/oauth/microsoft');
 			goto('/');
 		} catch (e) {
 			console.error(e);
@@ -24,8 +24,8 @@
 <main
 	class="mx-auto max-w-lg px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<PageHeader title="Apple" description="OAuth" />
+	<PageHeader title="Microsoft" description="OAuth" />
 
 	<p class="animate-pulse my-18">Redirecting...</p>
-	<h1><Icon icon={AppleIcon} width="64" height="64" /></h1>
+	<h1><Icon icon={MicrosoftIcon} width="64" height="64" /></h1>
 </main>
