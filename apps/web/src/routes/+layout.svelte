@@ -5,10 +5,6 @@
 	import { page } from '$app/state';
 	import { fade } from 'svelte/transition';
 
-	// Supports weights 100-900
-	// import '@fontsource-variable/montserrat';
-	// import '@fontsource/rubik-mono-one';
-
 	import { onMount } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
 	import { goto, refreshAll } from '$app/navigation';
@@ -20,7 +16,6 @@
 		TriangleAlert
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client.js';
-	import { preloadMakeLogos } from '$lib/cache/preload-logos.js';
 
 	let { children, data } = $props();
 	let dark = $state(true);
@@ -77,7 +72,7 @@
 		</div>
 	{:else}
 		<header
-			class="container mx-auto max-w-7xl px-8 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
+			class="container mx-auto max-w-7xl px-6 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
 		>
 			<div class="grow space-x-4 flex flex-row items-center">
 				{#if page.url.pathname !== '/'}
@@ -141,7 +136,7 @@
 		</header>
 
 		{#key page.url.pathname}
-    		<div in:fade={{ duration: 150 }} out:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4">
+    		<div transition:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4">
     			{@render children()}
     		</div>
 		{/key}
