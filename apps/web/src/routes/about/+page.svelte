@@ -2,6 +2,7 @@
 	import toast from 'svelte-french-toast';
 	import { CircleHelpIcon } from '@lucide/svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import LegalRow from '$lib/components/LegalRow.svelte';
 </script>
 
 <main
@@ -32,11 +33,7 @@
             class="h-8 hidden dark:block"
         />
 
-        <div class="flex items-center justify-center mt-12">
-            <a class="" href="/legal/terms">Terms & Conditions</a>
-            <span class="mx-2">|</span>
-            <a class="" href="/legal/privacy">Privacy Policy</a>
-        </div>
+        <LegalRow />
 	</div>
 
 </main>

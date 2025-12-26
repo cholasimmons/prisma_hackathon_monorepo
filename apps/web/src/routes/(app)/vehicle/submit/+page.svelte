@@ -196,9 +196,9 @@
 				</div>
 			</section>
 
-			<section class="grid grid-cols-2 gap-4 items-end mt-8">
+			<section class="grid grid-cols-2 gap-4 mt-8">
 				<!-- Color -->
-				<div class="min-w-32">
+				<div>
 					<label hidden for="color" class="block text-sm text-gray-500 mb-1"> Color </label>
 					<ColorPicker
 						label={colorName}
@@ -212,11 +212,11 @@
 				</div>
 
 				<!-- Year -->
-				<div class="min-w-38">
+				<div>
 					<label hidden for="year" class="block text-sm text-gray-500 mb-1"> Year </label>
 					<input
 						id="year"
-						type="number"
+						type="text"
 						inputmode="numeric"
 						name="year"
 						min="1900"
@@ -252,7 +252,7 @@
 
 				<!-- For Sale -->
 				<div
-					class="col-span-2 md:col-span-3 flex items-center gap-3 h-12 mt-4 sm:mt-0 justify-center text-center"
+					class="col-span-2 flex items-center gap-3 h-12 mt-4 sm:mt-0 justify-center text-center"
 				>
 					<label for="forSale" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
 						<!--p class="hidden md:block">For sale?</p-->
@@ -263,7 +263,7 @@
 			</section>
 
 			<!-- Image Uploader -->
-			<section class="block w-full mt-8">
+			<section class="block w-full mt-12">
 				<ImageUploader accept="image/*" maxImages={1} onChange={handleImageChange} />
 			</section>
 
@@ -271,7 +271,7 @@
 				type="submit"
 				disabled={_submitting}
 				autocapitalize="on"
-				class="w-full mt-8 rounded-lg bg-black dark:bg-amber-800 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+				class="w-full mt-12 rounded-lg bg-black dark:bg-amber-800 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 			>
 				{_submitting ? 'Submitting…' : 'Submit Vehicle'}
 			</button>

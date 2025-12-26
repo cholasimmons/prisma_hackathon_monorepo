@@ -4,6 +4,6 @@ export function load({ locals }) {
   return {
     user: locals.user ?? null,
     session: locals.session ?? null,
-    apiDown: locals.apiDown
+    apiDown: locals.apiDown ?? false
   };
 };

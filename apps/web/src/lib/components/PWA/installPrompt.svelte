@@ -90,20 +90,24 @@
 
 {#if showInstallPrompt}
   <div class="install-prompt">
-    <div class="prompt-content">
-      <button class="close-btn" onclick={dismissPrompt}>
+    <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-4 shadow-lg max-w-xs relative">
+      <button class="absolute top-2 right-2 text-2xl cursor-pointer text-gray-500 hover:text-gray-400 py-1 px-2" onclick={dismissPrompt}>
         ×
       </button>
-      <div class="prompt-icon">
-        📱
+      <div class="text-4xl text-center mb-2">
+        🛞
       </div>
-      <h3>Install App</h3>
-      <p>Get quick access from your home screen</p>
-      <div class="prompt-actions">
-        <button class="install-btn" onclick={installApp}>
+      <h3 class="mb-0 text-lg text-center text-gray-800 dark:text-gray-200">Install App</h3>
+      <p class="mb-6 text-gray-600 dark:text-gray-400 text-base text-center">to your home screen</p>
+      <div class="flex justify-between gap-2">
+        <button class="flex bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded cursor-pointer font-medium"
+            style="padding: 8px 16px"
+           onclick={installApp}>
           Install
         </button>
-        <button class="later-btn" onclick={dismissPrompt}>
+        <button class="flex text-gray-500 px-4 py-2 rounded cursor-pointer"
+           style="padding: 8px 16px"
+          onclick={dismissPrompt}>
           Maybe Later
         </button>
       </div>
@@ -131,94 +135,11 @@
     }
   }
 
-  .prompt-content {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    max-width: 300px;
-    position: relative;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #999;
-    line-height: 1;
-    padding: 4px 8px;
-  }
-
-  .close-btn:hover {
-    color: #333;
-  }
-
-  .prompt-icon {
-    font-size: 32px;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
-    text-align: center;
-  }
-
-  p {
-    margin: 0 0 16px 0;
-    color: #666;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .prompt-actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .install-btn {
-    flex: 1;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-
-  .install-btn:hover {
-    background: #0056b3;
-  }
-
-  .later-btn {
-    flex: 1;
-    background: #f0f0f0;
-    color: #333;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .later-btn:hover {
-    background: #e0e0e0;
-  }
-
   @media (max-width: 640px) {
     .install-prompt {
       bottom: 10px;
       right: 10px;
       left: 10px;
-    }
-
-    .prompt-content {
-      max-width: 100%;
     }
   }
 </style>

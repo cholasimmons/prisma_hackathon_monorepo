@@ -176,6 +176,7 @@
 </main>
 
 <InstallPrompt />
+
 <Toaster position="bottom-center" />
 
 {#await import('$lib/components/PWA/ReloadPrompt.svelte') then { default: ReloadPrompt}}

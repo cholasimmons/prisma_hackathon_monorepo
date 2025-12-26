@@ -20,22 +20,13 @@ export async function handle({ event, resolve }) {
 				credentials: 'include'
 			});
 
-			// if(!response.ok) {
-			//   event.locals.user = null;
-			//   event.locals.session = null;
-			//   event.locals.apiDown = false; // API unreachable
-			//   return resolve(event)
-			// }
-
 			const data = await response.json();
 			event.locals.user = data?.user ?? null;
 			event.locals.session = data?.session ?? null;
 			event.locals.apiDown = false; // API reachable, just unauthenticated
 
-			// console.log("[Hooks] ", data.user.name)
-			// console.log("[Hooks Locals] ", event.locals.user?.name)
-			console.log('Session User:', event.locals.user);
-			console.log('Session:', event.locals.session);
+			// console.log('Session User:', event.locals.user);
+			// console.log('Session:', event.locals.session);
 
 			return resolve(event);
 		} else {
