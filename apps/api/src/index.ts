@@ -19,6 +19,7 @@ import {
 } from "~/modules/index";
 import staticPlugin from "@elysiajs/static";
 import db from "./utils/database/client";
+import { cache } from "./utils/cache";
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
@@ -114,20 +115,28 @@ const app = new Elysia({
     },
   })
 
-  .get("/stats", async ({ status }: Context) => {
-    const users = await db.user.findMany();
-    const vehicles = await db.vehicle.findMany();
-    const submissions = await db.vehicleSubmission.findMany();
-    const photos = await db.vehiclePhoto.findMany();
+  .get("/stats", async ({ status, session }:any) => {
+      const cached = await cache.get("stats");
+      if(cached)
+        return status(200, { data: cached, success: true, message: "Cached Stats fetched successfully" });
 
-    const data = {
-      users: users.length,
-      vehicles: vehicles.length,
-      submissions: submissions.length,
-      photos: photos.length,
-    };
+      const users = await db.user.findMany();
+      const vehicles = await db.vehicle.findMany();
+      const submissions = await db.vehicleSubmission.findMany();
+      const photos = await db.vehiclePhoto.findMany();
 
-    return status(200, { data, success: true, message: "Stats fetched successfully" });
+      const data = {
+        users: users.length,
+        vehicles: vehicles.length,
+        submissions: submissions.length,
+        photos: photos.length,
+      };
+
+      await cache.set("stats", data, 60 * 60 * 6);
+
+      return status(200, { data, success: true, message: "Stats fetched successfully" });
+  }, {
+    auth: true
   })
 
   .get("/health", ({ status }: Context) => {
@@ -146,30 +155,14 @@ const app = new Elysia({
   })
 
   .options("*", ({ status }) => status(204))
-  .onError(({ set }) => {
-    set.headers["Access-Control-Allow-Origin"] =
-      process.env.ORIGIN_URL || "http://localhost:5173";
-    set.headers["Access-Control-Allow-Methods"] =
-      "GET, POST, PUT, PATCH, DELETE, OPTIONS";
-    set.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-  })
-
-  // doing CORS' job! 🤦‍♂️
-  // .onAfterHandle(({ request, set }) => {
-  //   const origin = request.headers.get("origin");
-  //   console.log(`onAfterHandle origin: ${origin}`);
-
-  //   if (origin === process.env.ORIGIN_URL || origin === "http://localhost:3000") {
-  //     set.headers["Access-Control-Allow-Origin"] = origin;
-  //     set.headers["Access-Control-Allow-Methods"] =
-  //       "GET, POST, PUT, PATCH, DELETE, OPTIONS";
-  //     set.headers["Access-Control-Allow-Headers"] =
-  //       "Content-Type, Authorization";
-  //     set.headers["x-powered-by"] = "Simmons Multimedia";
-  //   }
+  // .onError(({ set }) => {
+  //   set.headers["Access-Control-Allow-Origin"] =
+  //     process.env.ORIGIN_URL || "http://localhost:5173";
+  //   set.headers["Access-Control-Allow-Methods"] =
+  //     "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+  //   set.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
   // })
 
-  // .onStart(systemBoot)
   .onStop(systemOff);
 
 systemBoot().then(() => {

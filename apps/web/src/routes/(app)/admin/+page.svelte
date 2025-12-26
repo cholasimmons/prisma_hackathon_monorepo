@@ -20,6 +20,7 @@
 		api.get('/stats')
 			.then(response => response.data)
 			.then(data => {
+				console.log("Received:",data);
 				_users = data.users;
 				_vehicles = data.vehicles;
 				_submissions = data.submissions;

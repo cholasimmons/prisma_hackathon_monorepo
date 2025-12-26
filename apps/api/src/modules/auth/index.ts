@@ -15,8 +15,9 @@ const authController = new Elysia({
   .use(betterAuth)
 
   .get("/", () => "Auth")
+
   .get("/me", async ({ status, session }) => {
-    const cached = await cache.get<User>(CacheKeys.user.byId(session.userId));
+    const cached = await cache.get<PublicUser>(CacheKeys.user.byId(session.userId));
     if(cached) return status(200, { data: cached, success: true, message: "Cached User retrieved" });
 
     const data: User | null = await db.user.findUnique({
@@ -34,6 +35,7 @@ const authController = new Elysia({
   }, {
     auth: true
   })
+
   .get("/health", ({ status }) => {
     const data = {
       module: "Auth",

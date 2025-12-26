@@ -238,12 +238,12 @@
 						id="type"
 						name="type"
 						bind:value={vehicleType}
-						class="border rounded px-3 py-2 w-full" style="width: 100%">
+						class="border rounded px-3 py-2 w-full text-xl" style="width: 100%">
 
-						<option value="" disabled>Select vehicle type</option>
+						<option value="" class="text-xl" disabled>Select vehicle type</option>
 
 						{#each VEHICLE_TYPE_VALUES as type}
-							<option value={type}>
+							<option value={type} class="text-xl">
 								{type.charAt(0).toUpperCase() + type.slice(1)}
 							</option>
 						{/each}
