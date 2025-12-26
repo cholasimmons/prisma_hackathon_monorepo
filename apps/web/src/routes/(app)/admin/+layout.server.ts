@@ -1,23 +1,16 @@
+import { BUN_ENV } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 
 export function load({ locals }) {
-  const user = locals.user;
-  // const user = { id: '1', email: 'admin@example.com', role: 'admin', name: 'Frank Admin' };
-
-
-  if (!user) {
+  if(BUN_ENV === 'production') {
+    if (!locals.user || locals.user.role !== 'admin') {
+      return { user: null }
+      // throw redirect(302, '/login');
+    }
+    return { user: locals.user };
+  } else if(BUN_ENV === 'development') {
+    return { user: { id: '1', email: 'admin@example.com', role: 'admin', name: 'Frank Admin' } };
+  } else {
     throw redirect(302, '/login');
   }
-
-  if (user.role !== 'admin') {
-    return {
-      ...user,
-      role: 'admin'
-    };
-    // throw redirect(302, '/');
-  }
-
-  return {
-    user
-  };
 };

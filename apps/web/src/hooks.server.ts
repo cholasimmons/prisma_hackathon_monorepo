@@ -34,6 +34,8 @@ export async function handle({ event, resolve }) {
 
 			// console.log("[Hooks] ", data.user.name)
 			// console.log("[Hooks Locals] ", event.locals.user?.name)
+			console.log('Session User:', event.locals.user);
+			console.log('Session:', event.locals.session);
 
 			return resolve(event);
 		} else {

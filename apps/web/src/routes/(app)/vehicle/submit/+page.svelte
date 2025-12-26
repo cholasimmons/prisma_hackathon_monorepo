@@ -12,6 +12,7 @@
 	import { goto } from '$app/navigation';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { VehicleType, VEHICLE_TYPE_VALUES } from '$lib/models/vehicle.model';
+	import { page } from '$app/state';
 
 	let vehicleType = $state<VehicleType | ''>('');
 	let vehicleImages: File[] = [];
@@ -24,7 +25,7 @@
 		return colorHex ? hexToColorName(colorHex) : 'Black';
 	});
 
-	let rawInput = $state<string>('');
+	let rawInput = $state<string>(page.url.searchParams.get("plate") ?? '');
 
 	// Derived clean value (always valid)
 	const cleanPlate = $derived.by(() => formatPlateInput(rawInput));
@@ -195,9 +196,9 @@
 				</div>
 			</section>
 
-			<section class="flex flex-wrap gap-4 items-end mt-4">
+			<section class="grid grid-cols-2 gap-4 items-end mt-8">
 				<!-- Color -->
-				<div class="flex-1 min-w-32">
+				<div class="min-w-32">
 					<label hidden for="color" class="block text-sm text-gray-500 mb-1"> Color </label>
 					<ColorPicker
 						label={colorName}
@@ -211,7 +212,7 @@
 				</div>
 
 				<!-- Year -->
-				<div class="flex-1 min-w-38">
+				<div class="min-w-38">
 					<label hidden for="year" class="block text-sm text-gray-500 mb-1"> Year </label>
 					<input
 						id="year"
@@ -228,7 +229,7 @@
 
 				<!-- Vehicle Type -->
 				<div
-					class="flex-[2_2_0%] min-w-50 items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
+					class="col-span-2 items-center gap-3 mt-4 sm:mt-0 justify-center"
 				>
 					<!--label for="type" class="text-gray-500 text-sm">
 						Type
@@ -251,18 +252,18 @@
 
 				<!-- For Sale -->
 				<div
-					class="col-span-2 md:col-span-3 flex items-center gap-3 h-10 mt-6 sm:mt-0 justify-center"
+					class="col-span-2 md:col-span-3 flex items-center gap-3 h-12 mt-4 sm:mt-0 justify-center text-center"
 				>
 					<label for="forSale" class="text-gray-800 dark:text-gray-300 text-lg font-medium">
 						<!--p class="hidden md:block">For sale?</p-->
 						<p>Is this Vehicle for sale?</p>
 					</label>
-					<input id="forSale" type="checkbox" name="forSale" class="h-5 w-5" />
+					<input id="forSale" type="checkbox" name="forSale" class="shrink-0 h-5 w-5 aspect-square" />
 				</div>
 			</section>
 
 			<!-- Image Uploader -->
-			<section class="block w-full mt-4">
+			<section class="block w-full mt-8">
 				<ImageUploader accept="image/*" maxImages={1} onChange={handleImageChange} />
 			</section>
 

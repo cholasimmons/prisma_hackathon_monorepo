@@ -3,14 +3,12 @@
 	import { api, type ApiResponse } from '$lib/api/client';
 	import { mySubmittedVehicles } from '$lib/api/vehicles';
 	import { hexToColorName } from '$lib/color/colors';
-	import type { AuthUser } from '$lib/models/auth.model';
 	import type { UserProfile } from '$lib/models/user.model';
 	import type { VehicleSubmission } from '$lib/models/vehicle.model';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
-	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { toPossessive } from '$lib/utility/string';
+	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -21,6 +19,12 @@
 	let _profile = $state<UserProfile | null>();
 	let _fetchingSubmissions = $state(false);
 	let _fetchingProfile = $state(false);
+	let _avatar = $state('/images/default-avatar.png');
+
+	function _gotoSubmitVehicle() {
+		// Implement logic to submit a new vehicle
+		goto('/vehicle/submit');
+	}
 
 	let _fetchSubmissions = async () => {
 		try {
@@ -34,59 +38,86 @@
 	};
 
 	let _fetchProfile = async () => {
+	let response: ApiResponse<UserProfile> | null = null;
 		try {
 			_fetchingProfile = true;
-			const response: ApiResponse<UserProfile> = await api.get<UserProfile>('/auth/me');
+			response = await api.get<UserProfile>('/auth/me');
+			console.log("auth/me", response);
 			_profile = response.data;
 		} catch (error) {
-			console.error('Error fetching User Profile:', error);
+			console.error(response?.message ?? 'Error fetching User Profile:', error);
 		} finally {
 			_fetchingProfile = false;
 		}
 	};
 
+	function _gotoAdminDashboard() {
+		goto('/admin');
+	}
+
 	onMount(() => {
 		_fetchSubmissions();
 		_fetchProfile();
+		_avatar = data.user?.image || '/images/default-avatar.png';
 	});
 </script>
 
-<main
-	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
->
-	<PageHeader title={`${toPossessive(data.user!.name)} Profile`} description="Your active Profile" />
+<main class="mx-auto p-8 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8">
+	<!--PageHeader title={`${toPossessive(data.user!.name)} Profile`} /-->
 
-	<div class="flex flex-col items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
-		<img src={data.user!.image} alt={data.user!.name} class="w-32 h-32 rounded-full" />
-		<h2 class="text-xl font-bold">{data.user!.name}</h2>
-		<p>{data.user!.email}</p>
-		{#if _fetchingProfile}
-			<p class="text-gray-500 animate-pulse">Loading Profile...</p>
-		{:else if _profile}
-			<p class="text-base text-gray-500">{_profile.role}</p>
-		{:else}
-			<p class="text-sm text-gray-500">Profile not Found</p>
-		{/if}
+	<div class="grid grid-cols-1 md:grid-cols-2 items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
+		<div class="flex flex-col items-center justify-center">
+			<img in:fade={{ duration: 300 }} src={_avatar} alt={data.user!.name} class="w-34 h-34 rounded-full" />
+		</div>
 
-		<small class="rounded-full px-4 py-2"
-			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
-		>
+		<div class="flex flex-col items-center md:items-start justify-start space-y-2">
+		    <h2 class="text-2xl font-semibold m-0">{data.user!.name}</h2>
+            <p>{data.user!.email}</p>
+
+      		{#if _fetchingProfile}
+     			<p class="flex space-x-2 items-center justify-center text-gray-500 text-sm">
+                    <Spinner /> <span>Loading Profile...</span>
+                </p>
+      		{:else if _profile}
+     			<p class="text-base text-gray-500">{_profile.role}</p>
+      		{:else}
+     			<p class="text-sm text-gray-500">Profile not Found</p>
+      		{/if}
+
+      		<small class={`rounded-full px-3 py-1 ${data.user!.emailVerified ? 'bg-green-900' : 'bg-pink-900'} text-gray-200`}
+     			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
+      		>
+
+            {#if data.user?.role === 'admin'}
+                <button class="txt-btn mt-8 md:mt-2"
+                    aria-label="View Admin Dashboard"
+                    onclick={_gotoAdminDashboard}
+                >
+                    Open Dashboard
+                </button>
+            {/if}
+		</div>
 	</div>
 
-	<hr class="border-gray-300 dark:border-gray-600 w-full" />
+	<section class="container mx-auto max-w-xl">
+	    <hr class="border-gray-300 dark:border-gray-600" />
+	</section>
 
 	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>
-	<p class="mb-8 md:text-sm">Pending / Approved submissions</p>
+	<p class="mb-8 md:text-sm">Your Pending / Approved submissions</p>
 
 	{#if _fetchingSubmissions}
-		<p class="text-gray-600 dark:text-gray-400 animate-ping">Collecting Submissions...</p>
+		<p class="flex space-x-2 items-center justify-center text-amber-800 dark:text-amber-600">
+    		<Spinner />
+    		<span>Fetching your submissions...</span>
+		</p>
 	{:else if submissions && submissions.length > 0}
 		<ul class="space-y-4">
 			{#each submissions as submission}
 				<li class="flex items-center space-x-4">
 					<img
 						src={submission.photos?.[0].url}
-						alt={submission.make}
+						alt={submission.photos?.length + ' photos for ' + submission.make}
 						class="w-16 h-16 rounded-md"
 					/>
 					<div class="text-gray-700 dark:text-gray-300">
@@ -102,18 +133,17 @@
 			{/each}
 		</ul>
 	{:else}
-		<p class="text-gray-600 dark:text-gray-400">No submissions yet</p>
+		<p in:fade={{ duration: 300 }} class="text-gray-600 dark:text-gray-400">No submissions yet.
+    		<button in:fade={{ duration: 600, delay: 600 }} class="mt-4 py-1 px-6 text-sm" onclick={_fetchSubmissions}>
+    			Re-fetch?
+    		</button>
+		</p>
 
-		<button in:fade={{ duration: 600 }} class="mt-8 py-2 px-4 rounded" onclick={_fetchSubmissions}>
-			Refetch
-		</button>
 
 		<button
 			in:fade={{ duration: 600, delay: 3000 }}
-			class="mt-4 font-bold py-2 px-4 rounded"
-			onclick={() => {
-				goto('/submit');
-			}}
+			class="mt-4 txt-btn"
+			onclick={_gotoSubmitVehicle}
 		>
 			Submit a Vehicle
 		</button>

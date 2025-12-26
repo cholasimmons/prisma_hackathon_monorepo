@@ -26,7 +26,7 @@ async function searchVehicles(plate: string): Promise<Vehicle[]> {
 }
 
 async function mySubmittedVehicles(): Promise<VehicleSubmission[] | null> {
-	const response = await api.get<VehicleSubmission[]>(`/vehicles/submissions}`);
+	const response = await api.get<VehicleSubmission[]>(`/vehicles/submissions`);
 
 	const payload = response.data;
 

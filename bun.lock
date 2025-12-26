@@ -47,6 +47,8 @@
         "color-namer": "^1.4.0",
         "layerchart": "^1.0.12",
         "svelte-french-toast": "^1.2.0",
+        "vite-plugin-pwa": "^1.2.0",
+        "workbox-window": "^7.4.0",
       },
       "devDependencies": {
         "@iconify/svelte": "^5.1.0",

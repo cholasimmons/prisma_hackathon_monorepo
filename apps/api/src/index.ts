@@ -18,9 +18,12 @@ import {
   auditController,
 } from "~/modules/index";
 import staticPlugin from "@elysiajs/static";
+import db from "./utils/database/client";
 
+// Useful constants
 const PORT = Number(process.env.PORT || 3000);
 const ENV = process.env.BUN_ENV ?? process.env.NODE_ENV;
+const allowedOrigins = process.env.ORIGIN_URL?.split(',')
 
 const app = new Elysia({
   websocket: {
@@ -30,7 +33,7 @@ const app = new Elysia({
 })
   .use(
     cors({
-      origin: [process.env.ORIGIN_URL ?? "http://localhost:3001"],
+      origin: process.env.NODE_ENV === 'development' ? ["http://localhost:3001"] : allowedOrigins,
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [
@@ -40,7 +43,7 @@ const app = new Elysia({
         "x-client-plate-normalized",
       ],
       credentials: true,
-      maxAge: 600,
+      maxAge: 3600,
       preflight: true,
       // exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
     }),
@@ -110,6 +113,23 @@ const app = new Elysia({
       console.log("Client disconnected");
     },
   })
+
+  .get("/stats", async ({ status }: Context) => {
+    const users = await db.user.findMany();
+    const vehicles = await db.vehicle.findMany();
+    const submissions = await db.vehicleSubmission.findMany();
+    const photos = await db.vehiclePhoto.findMany();
+
+    const data = {
+      users: users.length,
+      vehicles: vehicles.length,
+      submissions: submissions.length,
+      photos: photos.length,
+    };
+
+    return status(200, { data, success: true, message: "Stats fetched successfully" });
+  })
+
   .get("/health", ({ status }: Context) => {
     const info = {
       status: "ok",

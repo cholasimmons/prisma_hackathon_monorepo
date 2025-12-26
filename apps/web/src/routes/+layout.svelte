@@ -15,10 +15,14 @@
 		HouseIcon,
 		TriangleAlert
 	} from '@lucide/svelte';
-	import { authClient } from '$lib/auth-client.js';
+	import { authClient } from '$lib/auth-client';
+	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
+
 
 	let { children, data } = $props();
 	let dark = $state(true);
+
+
 
 	function logout() {
 		authClient.signOut().then(() => {
@@ -42,9 +46,6 @@
 
 	onMount(async () => {
 		try {
-			// const { registerSW } = await import('virtual:pwa-register');
-			// registerSW({ immediate: true });
-
 			initTheme();
 			dark = document.documentElement.classList.contains('dark');
 
@@ -54,12 +55,16 @@
 			// rejectLogos(err);
 		}
 	});
+
+
+
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<title>Vehicle Directory</title>
 </svelte:head>
+
 
 <main class="flex flex-col justify-start min-h-dvh min-w-dvw bg-gray-200 dark:bg-gray-800">
 	{#if data.apiDown}
@@ -71,13 +76,22 @@
 			</div>
 		</div>
 	{:else}
-		<header
-			class="container mx-auto max-w-7xl px-6 py-4 text-start text-gray-600 dark:text-gray-400 flex flex-row items-center"
-		>
+	<header
+        class="container mx-auto sticky top-0 z-30 max-w-4xl px-8 py-2
+                text-start text-gray-600 dark:text-gray-400
+                flex flex-row items-center backdrop-blur-lg
+                after:absolute after:left-0 after:right-0 after:bottom-0
+                after:h-0.5 after:content-['']
+                after:bg-linear-to-r
+                after:from-transparent
+                after:to-transparent
+                after:via-gray-500 dark:after:via-gray-500"
+        >
+
 			<div class="grow space-x-4 flex flex-row items-center">
 				{#if page.url.pathname !== '/'}
 					<button
-						class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
+						class="px-2 py-1"
 						onclick={() => {
 							goto('/');
 						}}
@@ -97,7 +111,7 @@
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
 				{#if page.data?.user}
 					<button
-						class="px-6 py-1"
+					class="txt-btn"
 						onclick={() => logout()}>Logout</button
 					>
 				{:else if page.url.pathname.startsWith('/login')}
@@ -117,7 +131,6 @@
 					>
 				{/if}
 				<button
-					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-1.5 py-1 cursor-pointer items-center"
 					onclick={toggleTheme}
 				>
 					{#if dark}
@@ -141,10 +154,19 @@
     		</div>
 		{/key}
 
-		<footer class="text-center p-3">
+		<footer class="p-3 text-center ">
+		<!-- container mx-auto sticky bottom-0 max-w-4xl p3
+                text-center text-gray-600 dark:text-gray-400
+                flex flex-row items-center justify-center backdrop-blur-md
+                after:absolute after:left-0 after:right-0 after:top-0
+                after:h-0.5 after:content-['']
+                after:bg-linear-to-r
+                after:from-transparent
+                after:to-transparent
+                after:via-gray-500 dark:after:via-gray-500"> -->
 			<a href="https://simmons.studio">
 				<small
-					class="px-6 py-1 text-gray-600 dark:text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
+					class="text-center px-6 py-1 text-gray-600 dark:text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
 				>
 					Simmons Studio
 				</small>
@@ -153,4 +175,9 @@
 	{/if}
 </main>
 
+<InstallPrompt />
 <Toaster position="bottom-center" />
+
+{#await import('$lib/components/PWA/ReloadPrompt.svelte') then { default: ReloadPrompt}}
+  <ReloadPrompt />
+{/await}

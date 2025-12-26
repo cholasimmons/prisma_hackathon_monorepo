@@ -23,6 +23,9 @@ const auth = betterAuth({
   //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
   //   },
   // },
+  session: {
+    updateAge: 60 * 60 * 24 * 30 // 30 days
+  },
   advanced: {
     disableOriginCheck: false,
     disableCSRFCheck: false,
@@ -45,7 +48,7 @@ const auth = betterAuth({
 
   },
   trustedOrigins: ["https://plates.simmons.studio", "https://api.plates.simmons.studio"],
-  plugins: [openAPI(), adminPlugin()],
+  plugins: [openAPI(), adminPlugin({adminRoles: ["admin"]})],
 });
 
 let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>;

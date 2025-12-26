@@ -8,6 +8,7 @@
 	import { cubicIn, cubicInOut } from 'svelte/easing';
 	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
 	import { formatPlateInput } from '$lib/vehicles/plate';
+	import { CircleXIcon } from '@lucide/svelte';
 
 	let rawInput = $state<string>('');
 
@@ -19,13 +20,6 @@
 
 	// Optional: warn once if user pastes >12 chars
 	$effect(() => {
-		const id = setTimeout(() => {
-			if (rawInput !== cleanPlate) {
-				rawInput = cleanPlate;
-			}
-		}, 300); // slight delay → lets space “stick” briefly
-		// return () => clearTimeout(id);
-
 		// Debounced search
 		clearTimeout(searchTimeout);
 		if (cleanPlate.length >= 2) {
@@ -66,8 +60,7 @@
 	}
 
 	function submitVehicle() {
-		// Implement logic to submit a new vehicle
-		goto('/submit');
+		goto(`/vehicle/submit?plate=${cleanPlate}`);
 	}
 
 	function handleInput(e: any) {
@@ -96,6 +89,15 @@
 		goto(`/vehicle/${plateNumber}`);
 	}
 
+	function _resetForm() {
+		rawInput = '';
+		handleBlur();
+		vehicles = [];
+		loading = false;
+		error = null;
+		hasSearched = false;
+	}
+
 	// Cleanup on unmount
 	onMount(() => {
 		return () => clearTimeout(debounceTimer);
@@ -106,9 +108,9 @@
 	<title>Vehicle Search</title>
 </svelte:head>
 
-<main class="min-h-full min-w-full p-8 sm:px-6 items-start flex flex-col justify-center">
-	<div class="w-full mx-auto text-center">
-		<div class="mb-8">
+<main class="min-h-full w-full px-8 sm:px-6 items-start flex flex-col justify-center">
+	<div class="w-full text-center">
+		<div class="mb-6">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
 		</div>
 
@@ -117,31 +119,39 @@
 		</h1>
 
 		<!-- Search Bar -->
-		<div class="relative mb-4">
+		<div class="mb-4">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
-			<input
-				id="search-reg"
-				name="search-reg"
-				type="text"
-				bind:value={rawInput}
-				oninput={handleInput}
-				onblur={handleBlur}
-				onkeydown={handleKeyDown}
-				placeholder="ADB 3104"
-				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-				class="w-full max-w-sm p-1 rounded-4xl shadow-md
-				 border-gray-300
-				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
-				bg-gray-500 dark:bg-gray-700
-				placeholder:text-gray-300 dark:placeholder:text-gray-500 placeholder:font-normal placeholder:text-center
-				plates text-7xl text-center text-gray-100 dark:text-gray-300"
-				autocomplete="off"
-				autoCapitalize="characters"
-				inputmode="text"
-			/>
-			<!-- <p id="search-help" class="mt-2 text-sm text-gray-500 text-center">
-				Enter a vehicle registration number to search
-			</p> -->
+			<div class="relative max-w-md mx-auto">
+    			<input
+    				id="search-reg"
+    				name="search-reg"
+    				type="text"
+    				bind:value={rawInput}
+    				oninput={handleInput}
+    				onblur={handleBlur}
+    				onkeydown={handleKeyDown}
+    				placeholder="ADB 3104"
+    				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
+    				class="p-1 rounded-full border-gray-300 w-full
+    				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
+    				placeholder:text-gray-300 dark:placeholder:text-gray-500 placeholder:font-normal placeholder:text-center
+    				plates text-6xl text-center text-gray-100 dark:text-gray-300"
+    				autocomplete="off"
+    				autoCapitalize="characters"
+    				inputmode="text"
+    			/>
+      	        <button
+                   in:fade={{ duration: 400, delay: 100 }}
+                   out:fade={{ duration: 200 }}
+   					type="button"
+   					onclick={_resetForm}
+                    class:hidden={rawInput === ''}
+   					class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                       style="border:none; focus:outline-none; outline:none;"
+   				>
+   						<CircleXIcon />
+   				</button>
+			</div>
 		</div>
 
 		<!--div
@@ -161,7 +171,7 @@
 			<div
 				in:fade={{ duration: 300, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="mx-auto space-y-4 w-full max-w-md"
+				class="mx-auto space-y-4 max-w-md"
 			>
 				{#each { length: 3 } as _, i (i)}
 					<div class="bg-white p-4 rounded-lg shadow animate-pulse">
@@ -220,8 +230,9 @@
 				<p class="mt-1 text-gray-500">Check the registration number and search again.</p>
 				<button
 					in:scale={{ duration: 800, start: 0.8, easing: cubicIn, delay: 1600 }}
-					class="mt-6 px-4 py-2 rounded-full bg-amber-600 text-white hover:bg-amber-800 transition-colors cursor-pointer"
-					onclick={() => submitVehicle()}
+					style="padding: 4px 16px"
+					class="txt-btn mt-6"
+					onclick={submitVehicle}
 				>
 					Add a Vehicle
 				</button>
@@ -239,7 +250,7 @@
 		{:else}
 			<!-- Initial state: no search yet -->
 			<div
-				in:fade={{ duration: 400, delay: 3000 }}
+				in:fade={{ duration: 400, delay: 2000 }}
 				out:fade={{ duration: 100 }}
 				class="text-center py-4 text-gray-500 w-full max-w-md mx-auto"
 			>

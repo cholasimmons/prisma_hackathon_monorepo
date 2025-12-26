@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 
-	import { CarIcon, LayoutDashboardIcon, MailboxIcon, UsersIcon } from '@lucide/svelte';
+	import { CarIcon, LayoutDashboardIcon, LucideTriangleAlert, MailboxIcon, UsersIcon } from '@lucide/svelte';
+	import { page } from '$app/state';
 
 	const { children, data } = $props();
 	let open = $state(false);
@@ -20,13 +21,23 @@
 </script>
 
 <div class="min-h-full flex">
+    {#if data.user?.role !== 'admin'}
+        <div class="flex flex-1 flex-col w-full text-gray-600 dark:text-gray-300 my-18">
+            <div class="flex flex-col items-center justify-center h-full">
+                <LucideTriangleAlert width="64" height="64" />
+                <p class="text-xl font-bold mt-6">Access Denied</p>
+                <p class="text-gray-500">You do not have permission to access this page.</p>
+            </div>
+        </div>
+    {:else}
+
+
 	<!-- Sidebar (lg+) -->
-	<aside class="hidden lg:flex h-full w-64 flex-col bg-gray-300 dark:bg-gray-900">
+	<aside class="hidden lg:flex h-full w-64 flex-col bg-gray-300 dark:bg-gray-900 sticky top-16 self-start">
 		<nav class="space-y-1 text-gray-800 dark:text-gray-200">
 			{#each links as link}
-				<a
+				<a class:active={page.url.pathname === link.href}
 					href={link.href}
-					class="flex items-center rounded px-8 py-6 text-lg hover:bg-black/10 dark:hover:bg-white/10"
 				>
 					<link.icon class="h-5 w-5 shrink-0 mr-4" aria-hidden="true" />
 					{link.label}
@@ -38,7 +49,7 @@
 	<div class="flex flex-1 flex-col w-full">
 		<!-- Top bar (md to lg) -->
 		<header
-			class="hidden md:flex lg:hidden h-14 border-b border-gray-500 px-4 items-center text-gray-800 dark:text-gray-200"
+			class="hidden md:flex lg:hidden mx-auto h-14 px-4 items-center text-gray-800 dark:text-gray-200"
 		>
 			<nav class="flex gap-4">
 				{#each links as link}
@@ -108,4 +119,24 @@
 			{@render children()}
 		</main>
 	</div>
+	{/if}
 </div>
+
+
+
+<style>
+    aside > nav > a {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        padding: 24px 24px;
+        font-size: 16px;
+        transition: background-color 0.2s ease-in-out;
+    }
+    aside > nav > a.active {
+        color: #fff;
+        border-right-width: 4px;
+        border-right-color: #fff;
+        border-radius: 0;
+    }
+</style>
