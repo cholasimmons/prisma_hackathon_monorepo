@@ -10,6 +10,7 @@
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User } from '@lucide/svelte';
+	import toast from 'svelte-french-toast';
 
 	const { data }: PageProps = $props();
 
@@ -17,7 +18,7 @@
 	// let colorName = $derived.by(() => (colorHex ? hexToColorName(colorHex) : 'Black'));
 
 	let submissions: VehicleSubmission[] | null = $state<VehicleSubmission[] | null>([]);
-	let _profile = $state<UserProfile | null>();
+	let profile = $state<UserProfile | null>(null);
 	let _fetchingSubmissions = $state(false);
 	let _fetchingProfile = $state(false);
 	let _avatar = $state('/images/default-avatar.png');
@@ -40,13 +41,19 @@
 		await uploadAvatar(file);
 	}
 
-	async function uploadAvatar(file: File) {
+	async function uploadAvatar(file: File | Blob) {
+	    console.log("beginning to upload:", file)
+	    console.log(typeof file)
 		uploading = true;
 
 		const form = new FormData();
 		form.append('avatar', file);
 
+		console.log("form:", form)
+
 		const res = await api.post<string>('/users/avatar', form);
+
+		console.log("form POST response:", res)
 
 		if (!res) {
 			alert('Failed to upload avatar');
@@ -54,8 +61,10 @@
 			return;
 		}
 
+		toast.success('Image uploaded 🤗');
+
 		_avatar = res.data; // update locally
-		// _profile = { ..._profile, image: res.data };
+		profile = { ...profile, image: res.data } as UserProfile;
 		uploading = false;
 	}
 
@@ -81,7 +90,7 @@
 			_fetchingProfile = true;
 			response = await api.get<UserProfile>('/auth/me');
 			console.log("auth/me", response);
-			_profile = response.data;
+			profile = response.data as UserProfile;
 			_avatar = response.data?.image ? response.data.image : '/images/default-avatar.png';
 		} catch (error) {
 			console.error(response?.message ?? 'Error fetching User Profile:', error);
@@ -95,6 +104,7 @@
 	}
 
 	onMount(() => {
+		profile = data.user as UserProfile;
 		_fetchSubmissions();
 		_fetchProfile();
 		_avatar = data.user?.image || '/images/default-avatar.png';

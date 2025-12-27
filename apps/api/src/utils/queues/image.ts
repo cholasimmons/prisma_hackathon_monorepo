@@ -20,8 +20,6 @@ const imageWorker = createWorker('imageQueue', async (job: Job) => {
         // Put your actual logic here
         console.log(`[Queue]: 📷 Processing image: ${file.name}`);
 
-
-
         // Convert File to ArrayBuffer
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);

@@ -69,6 +69,7 @@ async function request<T>(
 			try {
 				responseBody = await response.json();
 			} catch (e) {
+			  console.error(e)
 				throw new Error(`Invalid JSON response from ${url}`);
 			}
 

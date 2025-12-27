@@ -87,7 +87,8 @@ const usersController = new Elysia({
     const buffer = Buffer.from(content);
 
     // Create unique filename
-    const filepath = `${BucketNames.users}/debug-${Date.now()}`;
+    const extension = "txt";
+    const filepath = `${BucketNames.users}/debug-${Date.now()}.${extension}`;
 
     // Upload to S3
     const s3File = s3.file(filepath);
@@ -101,7 +102,12 @@ const usersController = new Elysia({
       expiresIn: 60 * 60 * 24 // 1 day
     });
 
-    return status(200, { data: downloadUrl, success: true, message: `${uploadSizeB * 1024}KB text file uploaded.` });
+    const data = {
+      downloadUrl,
+      uploadSizeKB: uploadSizeB / 1024,
+    }
+
+    return status(200, { data, success: true, message: `${uploadSizeB / 1024}KB text file uploaded.` });
   }, {
     body: t.Object({
       text: t.Optional(t.String())
