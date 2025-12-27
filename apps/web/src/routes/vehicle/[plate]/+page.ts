@@ -8,9 +8,6 @@ export const load: PageLoad = (async ({ params, fetch }) => {
 	  throw error(400, 'Vehicle plate number is required');
 	}
 
-	console.log('page.ts params:', params);
-	console.log('page.ts params plate:', params.plate);
-
 	// const response = await api.get<Vehicle>(`/vehicles/${encodeURIComponent(plate)}`);
 	// const vehicle = response.data;
 

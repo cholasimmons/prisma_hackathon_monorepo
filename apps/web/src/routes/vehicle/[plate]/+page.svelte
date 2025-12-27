@@ -34,27 +34,27 @@
 
 		try {
 			const response = await api.get<Vehicle>("/vehicles/"+plate);
-			const vehicle = response.data;
-			console.log(vehicle);
+			_vehicle = response.data;
+			console.log(_vehicle);
 
-			if (vehicle) {
+			if (_vehicle) {
 				// 🔤 Make → lowercase
-				makeLower = vehicle.make.toLowerCase();
-				colorName = hexToColorName(vehicle.color);
+				makeLower = _vehicle.make.toLowerCase();
+				colorName = hexToColorName(_vehicle.color);
 
 				// Try to load logo from `/logos/toyota.svg`, etc.
-				const logoPath = `/logos/${vehicle.make}`;
+				const logoPath = `/logos/${_vehicle.make}.svg`;
 
-				res = await api.raw(logoPath, { method: 'HEAD' });
-				if (res.ok) {
-					makeLogoUrl = logoPath;
-					const response = await res.json();
-					serverMessage = response.message;
-				} else {
-					// Fallback to PNG
-					const pngRes = await api.raw(`/logos/${vehicle.make}`, { method: 'HEAD' });
-					if (pngRes.ok) makeLogoUrl = `/logos/${vehicle.make}`;
-				}
+				// res = await api.raw(logoPath, { method: 'HEAD' });
+				// if (res.ok) {
+				// 	makeLogoUrl = logoPath;
+				// 	const _response = await res.json();
+				// 	serverMessage = _response.message;
+				// } else {
+				// 	// Fallback to PNG
+				// 	const pngRes = await api.raw(`/logos/${vehicle.make}`, { method: 'HEAD' });
+				// 	if (pngRes.ok) makeLogoUrl = `/logos/${vehicle.make}`;
+				// }
 			}
 			_loading = false;
 		} catch (e) {
@@ -66,6 +66,7 @@
 			}
 			toast.error(err);
 		} finally {
+		    _loading = false;
 			logoLoading = false;
 		}
 	});
