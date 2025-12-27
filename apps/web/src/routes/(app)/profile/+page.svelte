@@ -9,6 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
+	import { Edit2Icon, Edit, Edit2, Edit3 } from '@lucide/svelte';
 
 	const { data }: PageProps = $props();
 
@@ -20,6 +21,42 @@
 	let _fetchingSubmissions = $state(false);
 	let _fetchingProfile = $state(false);
 	let _avatar = $state('/images/default-avatar.png');
+
+	// User image upload
+	let fileInput!: HTMLInputElement;
+	let uploading = $state(false);
+
+	function triggerFileSelect() {
+		fileInput.click();
+	}
+
+	async function onFileSelected(e: Event) {
+		const file = (e.target as HTMLInputElement).files?.[0];
+		if (!file) return;
+
+		const confirmed = confirm('Replace your current avatar?');
+		if (!confirmed) return;
+
+		await uploadAvatar(file);
+	}
+
+	async function uploadAvatar(file: File) {
+		uploading = true;
+
+		const form = new FormData();
+		form.append('avatar', file);
+
+		const res = await api.post<string>('/users/avatar', form);
+
+		if (!res) {
+			alert('Failed to upload avatar');
+			uploading = false;
+			return;
+		}
+
+		_avatar = res.data; // update locally
+		uploading = false;
+	}
 
 	function _gotoSubmitVehicle() {
 		// Implement logic to submit a new vehicle
@@ -44,6 +81,7 @@
 			response = await api.get<UserProfile>('/auth/me');
 			console.log("auth/me", response);
 			_profile = response.data;
+			_avatar = response.data?.image ? response.data.image : '/images/default-avatar.png';
 		} catch (error) {
 			console.error(response?.message ?? 'Error fetching User Profile:', error);
 		} finally {
@@ -66,8 +104,40 @@
 	<!--PageHeader title={`${toPossessive(data.user!.name)} Profile`} /-->
 
 	<div class="grid grid-cols-1 md:grid-cols-2 items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
-		<div class="flex flex-col items-center justify-center">
-			<img in:fade={{ duration: 300 }} src={_avatar} alt={data.user!.name} class="w-34 h-34 rounded-full" />
+		<div class="relative group w-34 h-34">
+    		<div class="flex flex-col items-center justify-center">
+                    <button
+                       	type="button" disabled={uploading}
+                       	class="relative group w-34 h-34 rounded-full p-0 border-0 bg-transparent
+                        	       focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+                        	       focus-visible:ring-gray-400"
+                       	onclick={uploading ? null : triggerFileSelect}
+                    >
+                        <img in:fade={{ duration: 400 }} src={data.user?.image ?? _avatar} alt={data.user?.name}
+                            class="w-full h-full rounded-full object-cover" />
+
+                        <!-- Overlay -->
+                       	<span class="absolute bottom-1 right-1 bg-transparent text-white
+               		       p-1 rounded-full opacity-50 group-hover:opacity-100
+               		       transition" aria-hidden="true"
+                       	>
+                            {#if uploading}
+                                <Spinner size={20} />
+                            {:else}
+                          		<Edit size={14} />
+                            {/if}
+                        </span>
+
+                        <input
+                      		bind:this={fileInput}
+                      		type="file"
+                      		accept="image/*"
+                      		class="hidden"
+                      		onchange={onFileSelected}
+                       	/>
+                    </button>
+
+    		</div>
 		</div>
 
 		<div class="flex flex-col items-center md:items-start justify-start space-y-2">

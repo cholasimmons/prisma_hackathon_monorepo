@@ -7,6 +7,7 @@
 	import { fade } from 'svelte/transition';
 	import UserModal from '$lib/components/Modals/UserModal.svelte';
 	import UserDataTable from '$lib/components/Tables/UserDataTable.svelte';
+	import toast from "svelte-french-toast";
 
 	let selectedUser = $state<UserProfile | null>(null);
 
@@ -35,12 +36,14 @@
 	}
 
 	function _fetchUsers() {
-	loading = true;
+	  loading = true;
 	  try {
-			api.get<UserProfile[]>('/auth/users').then(response => {
+			api.get<UserProfile[]>('/users').then(response => {
 				users = response.data;
+				toast.success(users.length+' Users found');
 			}).catch(error => {
 				error = error.message ?? error;
+				toast.error(error);
 			}).finally(() => {
 				loading = false;
 			});

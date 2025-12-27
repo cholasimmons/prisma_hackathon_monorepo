@@ -2,19 +2,19 @@ import { Elysia, t } from "elysia";
 import VehicleService from "./service";
 import { betterAuth } from "~/middleware/betterauth";
 import { cache } from "~/utils/cache";
-import { strip } from "~/utils/strip";
 import {
   PublicVehicle,
-  PublicVehicleFields,
   PublicVehicleSubmission,
-  PublicVehicleSubmissionFields,
 } from "./model";
-import { Vehicle, VehicleSubmission } from "@/generated/prisma/client";
 
 const vehiclesController = new Elysia({
   prefix: "/vehicles",
 })
   .use(betterAuth)
+  .state({
+    single: 'Vehicle',
+    plural: 'Vehicles'
+  })
 
   .group('/admin', (secure) => secure
     // Get final vehicles
@@ -112,6 +112,9 @@ const vehiclesController = new Elysia({
   .get(
     "/:plate",
     async ({ status, params: { plate }, set }) => {
+      console.log("param plate:", plate);
+      console.log("decoded param plate:", decodeURIComponent(plate));
+
       const vehicle: PublicVehicle | null =
         await VehicleService.getVehicleByPlate(plate, true);
 

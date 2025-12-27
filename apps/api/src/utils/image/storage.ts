@@ -5,6 +5,7 @@ enum BucketNames {
   images = "images",
   logos = "logos",
   vehicles = "vehicles",
+  users = "users",
 }
 
 export { nameFile, BucketNames };

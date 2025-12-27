@@ -3,6 +3,7 @@ import db from "~/utils/database/client";
 import { cache } from "~/utils/cache/index";
 
 const requiredEnvVars = [
+  "ORIGIN_URL",
   // Database Variables
   "DATABASE_URL",
   // "DATABASE_USER",
@@ -11,6 +12,7 @@ const requiredEnvVars = [
   // "DATABASE_PORT", // Optional: Can have a default
   // "DATABASE_HOST", // Optional: Often 'localhost'
   "NODE_ENV",
+  "BUN_ENV",
   "PORT",
   "BETTER_AUTH_SECRET",
   "BETTER_AUTH_URL",

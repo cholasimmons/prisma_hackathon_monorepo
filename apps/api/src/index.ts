@@ -12,10 +12,11 @@ import { rateLimit } from "elysia-rate-limit";
 import { systemBoot, systemOff } from "~/utils/system";
 import {
   authController,
+  usersController,
   vehiclesController,
   fileController,
   logosController,
-  auditController,
+  auditController
 } from "~/modules/index";
 import staticPlugin from "@elysiajs/static";
 import db from "./utils/database/client";
@@ -34,7 +35,7 @@ const app = new Elysia({
 })
   .use(
     cors({
-      origin: process.env.NODE_ENV === 'development' ? ["http://localhost:3001"] : allowedOrigins,
+      origin: process.env.NODE_ENV === 'production' ? allowedOrigins : ["http://localhost:3001"],
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [
@@ -44,7 +45,7 @@ const app = new Elysia({
         "x-client-plate-normalized",
       ],
       credentials: true,
-      maxAge: 3600,
+      maxAge: 60 * 60 * 24,
       preflight: true,
       // exposeHeaders: ["content-type", "authorization", "host", "user-agent", "origin"]
     }),
@@ -81,6 +82,7 @@ const app = new Elysia({
   .use(staticPlugin({ indexHTML: false }))
   .use(betterAuth)
   .use(authController)
+  .use(usersController)
   .use(vehiclesController)
   .use(fileController)
   .use(logosController)

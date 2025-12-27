@@ -1,6 +1,6 @@
 import { EventType } from "@/generated/prisma/enums";
 
-export const CacheKeys = {
+const CacheKeys = {
   user: {
     all: "users:all",
     byId: (id: string | number) => `user:${id}`,
@@ -45,3 +45,9 @@ export const CacheKeys = {
     version: "misc:version",
   },
 } as const;
+
+const RedisEvents = {
+  processImage: 'image:process',
+} as const;
+
+export { CacheKeys, RedisEvents }

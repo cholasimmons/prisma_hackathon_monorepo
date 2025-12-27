@@ -14,6 +14,9 @@ model Vehicle {
   /// @prismabox.input.hide
   updatedAt      DateTime @updatedAt
 
+  @@index([plate(sort:Asc)])
+  @@index([make(sort:Asc)])
+  @@index([year])
   @@schema("vehicles")
   @@map("vehicles")
 }
@@ -38,6 +41,10 @@ model VehicleSubmission {
   /// @prismabox.input.hide
   updatedAt      DateTime @updatedAt
 
+  @@index([plate])
+  @@index([make])
+  @@index([year])
+  @@index([createdAt(sort:Desc)])
   @@schema("vehicles")
   @@map("vehicle_submissions")
   @@unique([plate, submittedById]) // user can only submit once per plate
@@ -72,6 +79,9 @@ model VehiclePhoto {
   /// @prismabox.input.hide
   updatedAt      DateTime @updatedAt
 
+  @@index([createdAt(sort:Desc)])
+  @@index([submittedVehicleId(sort:Desc)])
+  @@index([vehicleId(sort:Desc)])
   @@schema("vehicles")
   @@map("vehicle_photos")
 }

@@ -6,7 +6,7 @@ import { cache } from "~/utils/cache";
 import { CacheKeys } from "~/utils/cache/keys";
 import db from "~/utils/database/client";
 import { strip } from "~/utils/strip";
-import { PublicUser, PublicUserFields } from "./model";
+import { PublicUser, PublicUserFields } from "../users/model";
 
 const authController = new Elysia({
   prefix: "/auth",
@@ -32,22 +32,6 @@ const authController = new Elysia({
     await cache.set<PublicUser>(CacheKeys.user.byId(session.userId), cleanUser);
 
     return status(200, { data: cleanUser, success: true, message: "User retrieved" });
-  }, {
-    auth: true
-  })
-
-  .get('/users', async ({ status, session }) => {
-    const cached = await cache.get<PublicUser[]>(CacheKeys.user.all);
-    if(cached) return status(200, { data: cached, success: true, message: "Cached Users retrieved" });
-
-    const data: User[] | null = await db.user.findMany();
-    if (!data) return status(404, { success: false, message: "Users not found" });
-
-    const cleanUsers = strip(data, PublicUserFields);
-
-    await cache.set<PublicUser[]>(CacheKeys.user.all, cleanUsers);
-
-    return status(200, { data: cleanUsers, success: true, message: "Users retrieved" });
   }, {
     auth: true
   })
