@@ -46,7 +46,7 @@
 		const form = new FormData();
 		form.append('avatar', file);
 
-		const res = await api.post<string>('/users/avatar', form);
+		const res = await api.post<string>('/users/avatar', { body: form }, { headers: { 'Content-Type': 'multipart/form-data' } });
 
 		if (!res) {
 			alert('Failed to upload avatar');
