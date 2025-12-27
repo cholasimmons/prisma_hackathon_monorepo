@@ -21,10 +21,7 @@ const usersController = new Elysia({
     plural: 'Users'
   })
 
-  .get("/", ({ store }) => store.plural)
-
-
-  .get('/users', async ({ status, session }) => {
+  .get('/', async ({ status, session }) => {
     const cached = await cache.get<PublicUser[]>(CacheKeys.user.all);
     if (cached) return status(200, { data: cached, success: true, message: "Cached Users retrieved" });
 

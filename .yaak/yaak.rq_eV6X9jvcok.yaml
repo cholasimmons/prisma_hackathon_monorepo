@@ -1,0 +1,26 @@
+type: http_request
+model: http_request
+id: rq_eV6X9jvcok
+createdAt: 2025-12-27T15:57:17.774481700
+updatedAt: 2025-12-27T15:57:49.805357800
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "text": "Yaak text test"
+    }
+bodyType: application/json
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: SXw6XJx2ux
+method: POST
+name: /users/upload-test
+sortPriority: 4000.001
+url: ${[ base_url ]}/users/upload-test
+urlParameters: []

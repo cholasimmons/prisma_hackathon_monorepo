@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_D6rjhWvPuN
+createdAt: 2025-12-27T15:58:09.556687800
+updatedAt: 2025-12-27T15:59:24.151370
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body:
+  text: |-
+    {
+      "text": "Yaak text test"
+    }
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: /users/
+sortPriority: 4000.002
+url: ${[ base_url ]}/users
+urlParameters: []
