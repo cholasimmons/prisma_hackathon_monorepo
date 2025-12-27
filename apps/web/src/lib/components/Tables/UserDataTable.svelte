@@ -2,7 +2,7 @@
     import { createRender, createTable, Render, Subscribe } from '@humanspeak/svelte-headless-table';
 	import { addColumnFilters, addColumnOrder, addSortBy, addPagination, addTableFilter } from '@humanspeak/svelte-headless-table/plugins';
 	import { readable } from 'svelte/store';
-	import AvatarCell from '$lib/components/AvatarCell.svelte';
+	import AvatarCell from '$lib/components/Tables/AvatarCell.svelte';
 	import type { UserProfile } from '$lib/models/user.model';
 	import { CircleAlertIcon, CircleCheckIcon, ShieldCheckIcon, User } from '@lucide/svelte';
 	import { fade } from 'svelte/transition';

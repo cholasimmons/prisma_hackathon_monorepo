@@ -33,7 +33,7 @@ export default defineConfig({
     },
 	  workbox: {
 	    // globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,txt,woff2}'],
-			globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,jpg,jpeg,woff2}'],
+			globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,jpg,jpeg,woff2}', '**/*.webmanifest'], // Use ** to search subdirectories],
       globIgnores: ['**/node_modules/**', '**/sw.js', '**/workbox-*.js'],
 			runtimeCaching: [
       {
