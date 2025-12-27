@@ -122,6 +122,9 @@
 		<div class="mb-4">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
 			<div class="relative max-w-md mx-auto">
+			    <img src="/images/CoatOfArms.webp" alt="" class="w-12 h-12 mx-auto
+   					absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                />
     			<input
     				id="search-reg"
     				name="search-reg"
@@ -134,8 +137,9 @@
     				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
     				class="p-1 rounded-full border-gray-300 w-full
     				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
-    				placeholder:text-gray-300 dark:placeholder:text-gray-500 placeholder:font-normal placeholder:text-center
-    				plates text-6xl text-center text-gray-100 dark:text-gray-300"
+    				placeholder:text-gray-500  placeholder:font-normal placeholder:text-center
+    				plates text-6xl md:text-7xl text-center text-gray-800 dark:text-gray-800"
+                    style="background-color: #DDD; color: #222"
     				autocomplete="off"
     				autoCapitalize="characters"
     				inputmode="text"
@@ -146,10 +150,10 @@
    					type="button"
    					onclick={_resetForm}
                     class:hidden={rawInput === ''}
-   					class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+   					class="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
                        style="border:none; focus:outline-none; outline:none;"
    				>
-   						<CircleXIcon />
+   						<CircleXIcon size={36} />
    				</button>
 			</div>
 		</div>

@@ -146,25 +146,31 @@
 		>
 			<!-- PLATE (Hero Field) -->
 			<section class="text-center">
-				<input
-					name="plate"
-					placeholder="ADB 3104"
-					bind:value={rawInput}
-					oninput={handleInput}
-					type="text"
-					aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-					class="w-full max-w-lg p-1 rounded-2xl
-                    placeholder:font-normal placeholder:text-center
-    				plates text-6xl text-center"
-					required
-					disabled={_submitting}
-					autocomplete="off"
-					autocorrect="off"
-					autocapitalize="characters"
-					inputmode="text"
-					spellcheck="false"
-					maxlength="12"
-				/>
+    			<div class="relative w-full mx-auto">
+    			    <img src="/images/CoatOfArms.webp" alt="" class="w-12 h-12 mx-auto
+       					absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center"
+                    />
+    				<input
+    					name="plate"
+    					placeholder="ADB 3104"
+    					bind:value={rawInput}
+    					oninput={handleInput}
+    					type="text"
+    					aria-label="Enter vehicle registration (letters, numbers, optional single space)"
+    					class="w-full max-w-lg p-1 rounded-2xl
+                        placeholder:font-normal placeholder:text-center
+        				plates text-6xl md:text-7xl text-center"
+                        style="background-color: #DDD; color: #222"
+    					required
+    					disabled={_submitting}
+    					autocomplete="off"
+    					autocorrect="off"
+    					autocapitalize="characters"
+    					inputmode="text"
+    					spellcheck="false"
+    					maxlength="12"
+    				/>
+                </div>
 			</section>
 
 			<!-- MAKE + MODEL -->
@@ -177,6 +183,7 @@
 						inputmode="text"
 						placeholder="Toyota"
 						autocapitalize="words"
+						autocomplete="on"
 						class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-300 dark:bg-gray-600 focus:border-amber-600 focus:ring focus:outline-none text-xl font-medium"
 						disabled={_submitting}
 					/>
@@ -189,6 +196,7 @@
 						name="model"
 						inputmode="text"
 						autocapitalize="words"
+						autocomplete="on"
 						placeholder="Corolla"
 						class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium"
 						disabled={_submitting}

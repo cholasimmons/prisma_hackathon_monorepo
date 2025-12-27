@@ -33,7 +33,10 @@
 
 	async function onFileSelected(e: Event) {
 		const file = (e.target as HTMLInputElement).files?.[0];
-		if (!file) return;
+		if (!file || !(file instanceof File)) {
+		    toast.error('Invalid file selected');
+			return;
+		}
 
 		const confirmed = confirm('Replace your current avatar?');
 		if (!confirmed) return;

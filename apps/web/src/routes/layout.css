@@ -23,9 +23,9 @@ html:not(.hydrated) * {
 
 
 .plates {
-	font-family: 'Jersey 25', ui-monospace, monospace, 'Courier New', Courier;
+	font-family: 'HeavyEquipment', ui-monospace, monospace, 'Courier New', Courier;
 	/* font-family: 'Rubik Mono One', ui-monospace, monospace, 'Courier New', Courier; */
-	font-weight: 400;
+	font-weight: 600;
 	font-style: normal;
 }
 
