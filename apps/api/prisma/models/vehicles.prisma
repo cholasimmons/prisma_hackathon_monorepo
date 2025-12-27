@@ -90,6 +90,7 @@ enum VehicleType {
   coupe
   limousine
   convertible
+  hatchback
 
   @@schema("vehicles")
   @@map("vehicle_types")

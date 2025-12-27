@@ -16,6 +16,32 @@ const vehiclesController = new Elysia({
 })
   .use(betterAuth)
 
+  .group('/admin', (secure) => secure
+    // Get final vehicles
+    .get(
+      "/",
+      async ({ status, query }) => {
+        const vehicles = await VehicleService.searchVehicles({
+          make: query.make,
+          year: query.year ? query.year : undefined,
+          limit: query.limit ? query.limit : 10,
+          color: query.color,
+          model: query.model ? query.model : undefined,
+          plate: query.plate,
+        }, true);
+      }, {
+        query: t.Object({
+          make: t.Optional(t.String()),
+          year: t.Optional(t.Numeric()),
+          limit: t.Optional(t.Numeric()),
+          color: t.Optional(t.String()),
+          model: t.Optional(t.String()),
+          plate: t.Optional(t.String()),
+        }),
+      }
+    )
+  )
+
   // Get final vehicles
   .get(
     "/",
@@ -84,10 +110,10 @@ const vehiclesController = new Elysia({
 
   // Get vehicle by ID
   .get(
-    "/:id",
-    async ({ status, params: { id }, set }) => {
+    "/:plate",
+    async ({ status, params: { plate }, set }) => {
       const vehicle: PublicVehicle | null =
-        await VehicleService.getVehicleById(id);
+        await VehicleService.getVehicleByPlate(plate, true);
 
       if (!vehicle) {
         return status(404, "Vehicle not found");
@@ -95,11 +121,11 @@ const vehiclesController = new Elysia({
 
       // Add cache headers for client-side caching
       set.headers["Cache-Control"] = "public, max-age=60";
-      return status(200, vehicle);
+      return status(200, { data: vehicle, message: plate+' found', success: true });
     },
     {
       params: t.Object({
-        id: t.String(),
+        plate: t.String(),
       }),
     },
   )

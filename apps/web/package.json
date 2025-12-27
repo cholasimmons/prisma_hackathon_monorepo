@@ -35,6 +35,7 @@
 		"vite": "^7.3.0"
 	},
 	"dependencies": {
+		"@humanspeak/svelte-headless-table": "^6.0.1",
 		"@lucide/svelte": "^0.562.0",
 		"better-auth": "^1.4.7",
 		"color-namer": "^1.4.0",

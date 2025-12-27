@@ -138,6 +138,37 @@ abstract class VehicleService {
     return vehicle;
   }
 
+  static async getVehicleByPlate(
+    plate: string,
+    isActive?: boolean,
+  ): Promise<PublicVehicle | null> {
+    // 1. Try cache first
+    const cached = await cache.get<PublicVehicle>(CacheKeys.vehicles.byPlate(plate));
+    if (cached) {
+      console.log(`✅ Cache HIT for vehicle ${plate}`);
+      return cached;
+    }
+
+    console.log(`❌ Cache MISS for vehicle ${plate}`);
+
+    const vehicle = await db.vehicle.findUnique({
+      where: { plate, isActive },
+    });
+
+    if (!vehicle) {
+      return null;
+    }
+
+    const cleanVehicle = strip(vehicle, PublicVehicleFields);
+
+    await cache.set<PublicVehicle>(
+      CacheKeys.vehicles.byPlate(plate),
+      cleanVehicle,
+      60 * 10, // 10 minutes
+    );
+    return vehicle;
+  }
+
   /**
    * Get vehicle with image URL
    */
@@ -231,7 +262,7 @@ abstract class VehicleService {
         data: {
           photos: {
             create: {
-              photo: path,
+              url: path,
               uploadSizeKb: size,
             },
           },

@@ -2,6 +2,7 @@ import { EventType } from "@/generated/prisma/enums";
 
 export const CacheKeys = {
   user: {
+    all: "users:all",
     byId: (id: string | number) => `user:${id}`,
     permissions: (id: string | number) => `user:${id}:permissions`,
     profile: (id: string | number) => `user:${id}:profile`,

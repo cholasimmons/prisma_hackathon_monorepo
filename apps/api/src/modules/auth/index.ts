@@ -36,6 +36,22 @@ const authController = new Elysia({
     auth: true
   })
 
+  .get('/users', async ({ status, session }) => {
+    const cached = await cache.get<PublicUser[]>(CacheKeys.user.all);
+    if(cached) return status(200, { data: cached, success: true, message: "Cached Users retrieved" });
+
+    const data: User[] | null = await db.user.findMany();
+    if (!data) return status(404, { success: false, message: "Users not found" });
+
+    const cleanUsers = strip(data, PublicUserFields);
+
+    await cache.set<PublicUser[]>(CacheKeys.user.all, cleanUsers);
+
+    return status(200, { data: cleanUsers, success: true, message: "Users retrieved" });
+  }, {
+    auth: true
+  })
+
   .get("/health", ({ status }) => {
     const data = {
       module: "Auth",

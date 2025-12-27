@@ -10,7 +10,8 @@ interface Vehicle {
 	year?: number | null;
 	type?: string | null;
 	forSale: boolean | null;
-	updateAt?: Date;
+	isActive: boolean;
+	updatedAt?: Date;
 }
 
 interface VehicleSubmission {
@@ -38,7 +39,8 @@ export enum VehicleType {
 	SEDAN = 'sedan',
 	LIMOUSINE = 'limousine',
 	CONVERTIBLE = 'convertible',
-	COUPE = 'coupe'
+	COUPE = 'coupe',
+	HATCHBACK = 'hatchback',
 }
 // Helpful for UI iteration
 export const VEHICLE_TYPE_VALUES = Object.values(VehicleType);

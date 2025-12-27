@@ -1,0 +1,18 @@
+type: http_request
+model: http_request
+id: rq_SxtwQHjN3w
+createdAt: 2025-12-26T17:02:35.664721100
+updatedAt: 2025-12-26T17:13:41.176793400
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: /vehicles/:plate
+sortPriority: 6000.003000000001
+url: ${[ base_url ]}/vehicles/GRZ 1 Z
+urlParameters: []
