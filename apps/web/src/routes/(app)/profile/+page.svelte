@@ -46,7 +46,7 @@
 		const form = new FormData();
 		form.append('avatar', file);
 
-		const res = await api.post<string>('/users/avatar', { body: form }, { headers: { 'Content-Type': 'multipart/form-data' } });
+		const res = await api.post<string>('/users/avatar', form);
 
 		if (!res) {
 			alert('Failed to upload avatar');
@@ -55,6 +55,7 @@
 		}
 
 		_avatar = res.data; // update locally
+		// _profile = { ..._profile, image: res.data };
 		uploading = false;
 	}
 
@@ -75,7 +76,7 @@
 	};
 
 	let _fetchProfile = async () => {
-	let response: ApiResponse<UserProfile> | null = null;
+	    let response: ApiResponse<UserProfile> | null = null;
 		try {
 			_fetchingProfile = true;
 			response = await api.get<UserProfile>('/auth/me');
@@ -113,7 +114,7 @@
                         	       focus-visible:ring-gray-400"
                        	onclick={uploading ? null : triggerFileSelect}
                     >
-                        <img in:fade={{ duration: 400 }} src={data.user?.image ?? _avatar} alt={data.user?.name}
+                        <img in:fade={{ duration: 400 }} src={_avatar} alt={data.user?.name}
                             class="w-full h-full rounded-full object-cover" />
 
                         <!-- Overlay -->

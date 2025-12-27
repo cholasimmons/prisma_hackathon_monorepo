@@ -9,7 +9,7 @@ import s3 from '~/utils/s3';
 import db from '../database/client';
 
 const addImageJob = async (userId: string, file: File, filepath: string, ext?: string) =>
-    imageQueue.add(RedisEvents.processImage, { userId, file, filepath, ext });
+    await imageQueue.add(RedisEvents.processImage, { userId, file, filepath, ext });
 
 // Worker for this queue
 const imageWorker = createWorker('imageQueue', async (job: Job) => {

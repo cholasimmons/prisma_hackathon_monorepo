@@ -74,10 +74,10 @@ abstract class UserService {
       const extension = imageFile.name.split(".").pop() || "jpg";
       const filepath = `${BucketNames.users}/${userId}/avatar-${Date.now()}.${extension}`;
 
-      const upload = await addImageJob(userId, imageFile, filepath, extension);
+      await addImageJob(userId, imageFile, filepath, extension);
 
       console.log(
-        `📸 Uploading optimized image for User ${userId} to S3: ${filepath}.`, upload
+        `📸 Uploading optimized image for User ${userId} to S3: ${filepath}.`
       );
 
       return { path: filepath };
