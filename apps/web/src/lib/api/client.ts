@@ -47,9 +47,10 @@ async function request<T>(
 	const { timeout = 10_000, retries = 2, headers = {}, body } = options;
 
 	const url = new URL(path, PUBLIC_API_BASE_URL).href;
+	const isFormData = body instanceof FormData;
 
 	const baseHeaders: HeadersInit = {
-		'Content-Type': 'application/json',
+	  ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
 		credentials: 'include',
 		...headers
 	};
@@ -59,7 +60,7 @@ async function request<T>(
 			const fetchPromise = fetch(url, {
 				method,
 				headers: baseHeaders,
-				body: body ? JSON.stringify(body) : undefined
+				body: isFormData ? body : body ? JSON.stringify(body) : undefined
 			});
 
 			const response = await timeoutPromise(fetchPromise, timeout);

@@ -6,16 +6,13 @@
 	import type { Vehicle } from '$lib/models/vehicle.model';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { hexToColorName } from '$lib/color/colors';
+	import Spinner from '$lib/components/Loaders/Spinner.svelte';
+	import { fade, scale } from 'svelte/transition';
 
 	let _loading = $state(true);
 	let _vehicle = $state<Vehicle | null>(null);
+	let _selectedPhoto = $state<string | null>(null);
 
-	$effect(() => {
-		document.title = `Vehicle Details`;
-	});
-
-	const { plate } = page.params;
-	// const { data } = $props();
 
 	let makeLower: string | null = $state(null);
 	let colorName: string = $state('Unknown');
@@ -24,18 +21,21 @@
 	let makeLogoUrl = $state<string | null>(null);
 	let logoLoading = $state(true);
 
-	onMount(async () => {
-		let res: Response | null = null;
-		let serverMessage = '';
+	$effect(() => {
+		document.title = `Vehicle Details`;
+	});
 
-		console.log('encoded plate:', `/vehicles/${encodeURIComponent(plate!)}`);
-		console.log('regular plate:', plate);
-		console.log('concatenated plate:', "/vehicles/"+plate);
+	const { plate } = page.params;
+	// const { data } = $props();
+
+
+	onMount(async () => {
+	//	let res: Response | null = null;
+		let serverMessage = '';
 
 		try {
 			const response = await api.get<Vehicle>("/vehicles/"+plate);
 			_vehicle = response.data;
-			console.log(_vehicle);
 
 			if (_vehicle) {
 				// 🔤 Make → lowercase
@@ -43,7 +43,8 @@
 				colorName = hexToColorName(_vehicle.color);
 
 				// Try to load logo from `/logos/toyota.svg`, etc.
-				const logoPath = `/logos/${_vehicle.make}.svg`;
+				const logoPath = `/logos/${makeLower}.svg`;
+				makeLogoUrl = logoPath;
 
 				// res = await api.raw(logoPath, { method: 'HEAD' });
 				// if (res.ok) {
@@ -70,6 +71,14 @@
 			logoLoading = false;
 		}
 	});
+
+	function openPhoto(url: string) {
+      _selectedPhoto = url;
+    }
+
+    function closePhoto() {
+      _selectedPhoto = null;
+    }
 </script>
 
 <svelte:head>
@@ -79,84 +88,99 @@
 <main
 	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
 >
+    <!-- Plate (large) -->
+	<PageHeader title={plate ?? ' Loading Vehicle profile'} />
+
 	{#if _loading}
-		<div class="h-2 w-36 bg-gray-200 animate-pulse rounded"></div>
+	    <div class="flex w-full items-center justify-center">
+            <Spinner size={32} />
+        </div>
 	{:else if _vehicle}
-		<!-- Plate (large) -->
-		<PageHeader title={_vehicle.plate} description={_vehicle.make} />
+	    <div class="flex flex-col w-full space-y-6">
+			<!-- Make Logo or Text -->
+            <div class="flex justify-center items-center mb-8">
+                {#if !logoLoading && makeLogoUrl}
+                <img src={makeLogoUrl} alt={_vehicle.make} class="h-12 md:h-16 object-contain" loading="lazy" />
+                {:else if !logoLoading}
+                <span class="text-2xl font-semibold text-gray-800">{_vehicle.make}</span>
+                {:else}
+                <div class="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
+                {/if}
+            </div>
 
-		<!-- Make (with logo or text) -->
-		<div class="flex justify-center items-center mb-10">
-			{#if !logoLoading && makeLogoUrl}
-				<img
-					src={makeLogoUrl}
-					alt={_vehicle.make}
-					class="h-12 md:h-16 object-contain"
-					loading="lazy"
-				/>
-			{:else if !logoLoading}
-				<span class="text-2xl font-semibold text-gray-800">{_vehicle.make}</span>
-			{:else}
-				<div class="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
-			{/if}
-		</div>
 
-		<!-- Photos Grid -->
-		{#if _vehicle.photos && _vehicle.photos.length > 0}
-			<div class="mb-8">
-				<h2 class="text-xl font-bold text-gray-900 mb-4">Photos</h2>
-				<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-					{#each _vehicle.photos as photo, i}
-						<div class="group relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-							<img
-								src={photo.url}
-								alt={`Photo ${i + 1} of ${_vehicle.plate}`}
-								class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-								loading={i < 4 ? 'eager' : 'lazy'}
-								decoding="async"
-							/>
-							<!-- Optional zoom hint -->
-							<div
-								class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-opacity flex items-center justify-center"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-								>
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-									/>
-								</svg>
-							</div>
-						</div>
-					{/each}
-				</div>
-			</div>
-		{/if}
+            <!-- Photos Carousel / Grid -->
+            {#if _vehicle.photos && _vehicle.photos.length > 0}
+                <div class="mb-8">
+                  <h2 class="text-xl font-bold text-gray-900 mb-4">Photos</h2>
 
-		<!-- Vehicle Info -->
-		<div class="bg-white rounded-xl shadow p-6">
-			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-				{#if _vehicle.model}
-					<div><span class="font-medium">Model:</span> {_vehicle.model}</div>
-				{/if}
-				{#if _vehicle.color}
-					<div>
-						<span class="font-medium">Color:</span>
-						<span class="capitalize">{colorName}</span>
-					</div>
-				{/if}
-				{#if _vehicle.year}
-					<div><span class="font-medium">Year:</span> {_vehicle.year}</div>
-				{/if}
-				<div><span class="font-medium">For Sale:</span> {_vehicle.forSale ? 'Yes' : 'No'}</div>
-			</div>
+                  <div class="flex flex-col md:flex-row gap-4">
+                    <!-- Thumbnails -->
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4 gap-3 md:w-1/4">
+                      {#each _vehicle.photos as photo, i}
+                        <button type="button" class="group p-0 m-0 border-0 bg-transparent relative aspect-square overflow-hidden rounded-lg cursor-pointer "
+                             onclick={() => openPhoto(photo.url)}>
+                          <img
+                            src={photo.url}
+                            alt={`Photo ${i + 1} of ${_vehicle.plate}`}
+                            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            loading={i < 4 ? 'eager' : 'lazy'}
+                            decoding="async"
+                          />
+                          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-opacity flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 class="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                          </div>
+                        </button>
+                      {/each}
+                    </div>
+
+                    <!-- Selected Image Preview -->
+                    <div class="md:w-3/4 flex items-center justify-center">
+                      {#if _selectedPhoto}
+                            <img src={_selectedPhoto} alt="Selected" class="w-full h-auto max-h-150 object-contain rounded-lg shadow-lg transition-all duration-300" />
+                      {:else}
+                          <img src={_vehicle.photos[0].url} alt="Preview" class="w-full h-auto max-h-150 object-contain rounded-lg shadow-lg" />
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+            {/if}
+
+            <!-- Vehicle Info Card -->
+            <div class="bg-white rounded-xl shadow p-6">
+                <h2 class="text-lg font-semibold mb-4 text-gray-800">Vehicle Info</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                  {#if _vehicle.model}
+                    <div><span class="font-medium">Model:</span> {_vehicle.model}</div>
+                  {/if}
+                  {#if _vehicle.color}
+                    <div><span class="font-medium">Color:</span> <span class="capitalize">{colorName}</span></div>
+                  {/if}
+                  {#if _vehicle.year}
+                    <div><span class="font-medium">Year:</span> {_vehicle.year}</div>
+                  {/if}
+                  <div><span class="font-medium">For Sale:</span> {_vehicle.forSale ? 'Yes' : 'No'}</div>
+                </div>
+            </div>
+
+
+            <!-- Fullscreen Modal for Selected Photo -->
+            {#if _selectedPhoto}
+                <button
+                  class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 cursor-pointer"
+                  onclick={closePhoto}
+                  transition:fade
+                >
+                  <img src={_selectedPhoto} alt="Full view" class="max-h-full max-w-full object-contain rounded-lg shadow-lg" transition:scale={{ duration: 200 }}/>
+                </button>
+            {/if}
 		</div>
 	{:else}
 		<div class="mt-6 text-center">

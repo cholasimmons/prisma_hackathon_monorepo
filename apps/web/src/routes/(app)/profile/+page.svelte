@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
-	import { Edit2Icon, Edit, Edit2, Edit3 } from '@lucide/svelte';
+	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User } from '@lucide/svelte';
 
 	const { data }: PageProps = $props();
 
@@ -103,7 +103,7 @@
 <main class="mx-auto p-8 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8">
 	<!--PageHeader title={`${toPossessive(data.user!.name)} Profile`} /-->
 
-	<div class="grid grid-cols-1 md:grid-cols-2 items-center justify-center space-y-4 text-gray-600 dark:text-gray-400">
+	<div class="grid grid-cols-1 md:grid-cols-2 place-items-center gap-4 text-gray-600 dark:text-gray-400">
 		<div class="relative group w-34 h-34">
     		<div class="flex flex-col items-center justify-center">
                     <button
@@ -141,20 +141,24 @@
 		</div>
 
 		<div class="flex flex-col items-center md:items-start justify-start space-y-2">
-		    <h2 class="text-2xl font-semibold m-0">{data.user!.name}</h2>
-            <p>{data.user!.email}</p>
+		    <h2 class="text-2xl font-semibold m-0 text-gray-800 dark:text-gray-200">{data.user!.name}</h2>
+            <p class="mb-6">{data.user!.email}</p>
 
       		{#if _fetchingProfile}
      			<p class="flex space-x-2 items-center justify-center text-gray-500 text-sm">
                     <Spinner /> <span>Loading Profile...</span>
                 </p>
-      		{:else if _profile}
-     			<p class="text-base text-gray-500">{_profile.role}</p>
       		{:else}
-     			<p class="text-sm text-gray-500">Profile not Found</p>
+                <p in:fade={{ duration: 300 }} class="text-base {data.user!.role === 'admin' ? 'text-amber-500' : 'text-gray-500'} mb-6">
+                    {#if data.user?.role === 'admin'}
+                        <ShieldCheckIcon size={36} />
+                    {:else}
+                        <User size={36} />
+                    {/if}
+                </p>
       		{/if}
 
-      		<small class={`rounded-full px-3 py-1 ${data.user!.emailVerified ? 'bg-green-900' : 'bg-pink-900'} text-gray-200`}
+      		<small class={`rounded-full border-2 px-3 py-1 ${data.user!.emailVerified ? 'border-green-700 text-green-700 dark:text-green-100' : 'border-pink-700 text-pink-700 dark:text-pink-100'} `}
      			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
       		>
 
@@ -170,7 +174,7 @@
 	</div>
 
 	<section class="container mx-auto max-w-xl">
-	    <hr class="border-gray-300 dark:border-gray-600" />
+	    <hr class="border-gray-400 dark:border-gray-600" />
 	</section>
 
 	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>

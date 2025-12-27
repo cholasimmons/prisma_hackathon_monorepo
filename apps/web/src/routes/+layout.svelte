@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import toast, { Toaster } from 'svelte-french-toast';
+	import { Toaster } from 'svelte-french-toast';
 	import { page } from '$app/state';
 	import { fade } from 'svelte/transition';
 
@@ -141,7 +141,7 @@
 				</button>
 				<button
 					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
-					onclick={() => gotoAbout()}
+					onclick={gotoAbout}
 				>
 					<CircleQuestionMark />
 				</button>
@@ -149,7 +149,7 @@
 		</header>
 
 		{#key page.url.pathname}
-    		<div transition:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4">
+    		<div in:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4">
     			{@render children()}
     		</div>
 		{/key}
