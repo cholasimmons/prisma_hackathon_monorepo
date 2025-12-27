@@ -28,8 +28,12 @@
 		let res: Response | null = null;
 		let serverMessage = '';
 
+		console.log('encoded plate:', `/vehicles/${encodeURIComponent(plate!)}`);
+		console.log('regular plate:', plate);
+		console.log('concatenated plate:', "/vehicles/"+plate);
+
 		try {
-			const response = await api.get<Vehicle>(`/vehicles/${plate!}`);
+			const response = await api.get<Vehicle>("/vehicles/"+plate);
 			const vehicle = response.data;
 			console.log(vehicle);
 
