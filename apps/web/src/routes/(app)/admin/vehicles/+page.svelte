@@ -1,11 +1,14 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { api } from "$lib/api/client";
 	import Spinner from "$lib/components/Loaders/Spinner.svelte";
 	import VehicleModal from "$lib/components/Modals/VehicleModal.svelte";
 	import PageHeader from "$lib/components/PageHeader.svelte";
 	import VehicleDataTable from "$lib/components/Tables/VehicleDataTable.svelte";
 	import type { Vehicle } from "$lib/models/vehicle.model";
+	import { LucidePlus } from "@lucide/svelte";
 	import { onMount } from "svelte";
+	import toast from "svelte-french-toast";
 	import { fade } from "svelte/transition";
 
 	let selectedVehicle = $state<Vehicle | null>(null);
@@ -41,6 +44,7 @@
 				vehicles = response.data;
 			}).catch(error => {
 				error = error.message ?? error;
+				toast.error(error);
 			}).finally(() => {
 				loading = false;
 			});
@@ -62,6 +66,8 @@
     <PageHeader
 		title="Admin | Vehicles"
 		description="Manage aggregated vehicles."
+		endIcon={LucidePlus}
+		endAction={() => { goto('/vehicle/submit') }}
 	/>
 
     <div class="flex flex-col w-full space-y-2 ">

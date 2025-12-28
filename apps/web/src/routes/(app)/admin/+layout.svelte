@@ -33,7 +33,7 @@
 
 
 	<!-- Sidebar (lg+) -->
-	<aside class="hidden lg:flex h-full w-64 flex-col bg-gray-300 dark:bg-gray-900 sticky top-16 self-start">
+	<aside class="hidden lg:flex min-h-screen w-64 flex-col bg-gray-300 dark:bg-gray-900 sticky top-16 self-start ">
 		<nav class="space-y-1 text-gray-800 dark:text-gray-200">
 			{#each links as link}
 				<a class:active={page.url.pathname === link.href}

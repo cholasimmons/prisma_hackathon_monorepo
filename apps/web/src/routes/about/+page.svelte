@@ -6,16 +6,16 @@
 </script>
 
 <main
-	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
+	class="mx-auto dark:text-gray-400 flex flex-col min-h-full container max-w-3xl items-center justify-start space-y-8"
 >
 	<PageHeader title="About Plates" />
 
 	<CircleHelpIcon />
 
-	<div class="flex flex-col items-center justify-center space-y-4 mt-8 text-gray-800 dark:text-gray-200">
+	<div class="flex flex-col items-center justify-center space-y-4 mt-8 text-gray-800 dark:text-gray-200 w-full">
 		<p>
 			Plates is a simple crowd-sourced vehicle database built with SvelteKit, Tailwind CSS & 💖.
-			<br/>It's designed to be responsive, simple, and easy to use.
+			It's designed to be responsive, simple, and easy to use.
 		</p>
 		<img src="/images/Simmons_S_Logo_SM_2025_2.png" alt="Simmons Studio logo" class="w-20 h-20" />
 		<p>
@@ -32,6 +32,11 @@
             alt="Simmons Multimedia"
             class="h-8 hidden dark:block"
         />
+
+        <p>
+            Please report any bugs or issues to <a href="mailto:apps@simmons.studio">apps@simmons.studio</a> or <a href="https://github.com/cholasimmons/prisma_hackathon_monorepo/issues">GitHub</a>.
+            Feature suggestions are also welcome.
+		</p>
 
         <LegalRow />
 	</div>

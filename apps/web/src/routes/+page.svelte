@@ -7,34 +7,9 @@
 	import { fade, scale } from 'svelte/transition';
 	import { cubicIn, cubicInOut } from 'svelte/easing';
 	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
-	import { formatPlateInput } from '$lib/vehicles/plate';
-	import { CircleXIcon } from '@lucide/svelte';
+	import PlatesInput from '$lib/components/PlatesInput.svelte';
 
-	let rawInput = $state<string>('');
-
-	// Derived clean value (always valid)
-	const cleanPlate = $derived.by(() => formatPlateInput(rawInput));
-
-	// ✅ Side effects in $effect — debounced search + toast on truncate
-	let searchTimeout: NodeJS.Timeout;
-
-	// Optional: warn once if user pastes >12 chars
-	$effect(() => {
-		// Debounced search
-		clearTimeout(searchTimeout);
-		if (cleanPlate.length >= 2) {
-			searchTimeout = setTimeout(search, 600);
-		} else {
-			vehicles = [];
-			hasSearched = false;
-		}
-
-		if (rawInput.length > 12 && cleanPlate.length <= 12) {
-			// user typed >12, but we truncated → notify once
-			toast.error('Max 12 characters', { duration: 1200, icon: '⚠️' });
-		}
-	});
-
+	let numberPlate = $state<string>('');
 	let vehicles = $state<Vehicle[]>([]);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
@@ -43,13 +18,14 @@
 	// Debounce helper
 	let debounceTimer: number;
 
-	async function search() {
-		hasSearched = true;
+	async function search(plate: string) {
+		hasSearched = false;
 		loading = true;
 		error = null;
 
 		try {
-			vehicles = await searchVehicles(cleanPlate.toLowerCase());
+			vehicles = await searchVehicles(plate);
+			hasSearched = true;
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Search failed';
 			error = message; // local
@@ -60,42 +36,28 @@
 	}
 
 	function submitVehicle() {
-		goto(`/vehicle/submit?plate=${cleanPlate}`);
+		goto(`/vehicle/submit?plate=${numberPlate}`);
 	}
 
-	function handleInput(e: any) {
+	function onPlateChange(plate: string) {
+		numberPlate = plate;
+
 		clearTimeout(debounceTimer);
-		debounceTimer = window.setTimeout(search, 900);
-		// Let user type freely, but visually enforce rules
-		const input = e.target as HTMLInputElement;
-		input.value = cleanPlate;
-		// Keep $state in sync
-		rawInput = input.value;
-	}
 
-	function handleBlur() {
-		// Clean up *after* they’re done typing
-		rawInput = cleanPlate.trim();
-	}
-
-	function handleKeyDown(e: any) {
-		if (e.key === 'Escape') {
-			rawInput = '';
-			handleBlur();
+		if (plate.length < 2) {
+			vehicles = [];
+			error = null;
+			hasSearched = false;
+			return;
 		}
+
+		debounceTimer = window.setTimeout(() => {
+			search(plate);
+		}, 600);
 	}
 
 	function handleVehicleClick(plateNumber: string) {
 		goto(`/vehicle/${plateNumber}`);
-	}
-
-	function _resetForm() {
-		rawInput = '';
-		handleBlur();
-		vehicles = [];
-		loading = false;
-		error = null;
-		hasSearched = false;
 	}
 
 	// Cleanup on unmount
@@ -108,54 +70,21 @@
 	<title>Vehicle Search</title>
 </svelte:head>
 
-<main class="min-h-full w-full px-8 sm:px-6 items-start flex flex-col justify-center">
-	<div class="w-full text-center">
+<main class="min-h-full w-full items-center flex flex-col justify-start">
+	<div class="max-w-sm md:max-w-md mx-auto w-full text-center">
 		<div class="mb-6">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
 		</div>
 
-		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-2">
+		<h1 class="text-2xl font-normal text-center text-gray-900 dark:text-gray-100 mb-4">
 			Vehicle Search
 		</h1>
 
 		<!-- Search Bar -->
 		<div class="mb-4">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
-			<div class="relative max-w-md mx-auto">
-			    <img src="/images/CoatOfArms.webp" alt="" class="w-12 h-12 mx-auto
-   					absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center"
-                />
-    			<input
-    				id="search-reg"
-    				name="search-reg"
-    				type="text"
-    				bind:value={rawInput}
-    				oninput={handleInput}
-    				onblur={handleBlur}
-    				onkeydown={handleKeyDown}
-    				placeholder="ADB 3104"
-    				aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-    				class="p-1 rounded-full border-gray-300 w-full
-    				focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
-    				placeholder:text-gray-500  placeholder:font-normal placeholder:text-center
-    				plates text-6xl md:text-7xl text-center text-gray-800 dark:text-gray-800"
-                    style="background-color: #DDD; color: #222"
-    				autocomplete="off"
-    				autoCapitalize="characters"
-    				inputmode="text"
-    			/>
-      	        <button
-                   in:fade={{ duration: 400, delay: 100 }}
-                   out:fade={{ duration: 200 }}
-   					type="button"
-   					onclick={_resetForm}
-                    class:hidden={rawInput === ''}
-   					class="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
-                       style="border:none; focus:outline-none; outline:none;"
-   				>
-   						<CircleXIcon size={36} />
-   				</button>
-			</div>
+			<PlatesInput mode="search" name="plate"
+				onChange={onPlateChange} />
 		</div>
 
 		<!--div
@@ -168,7 +97,6 @@
     			onClick={handleVehicleClick}
     		/>
 		</div-->
-
 
 		<!-- Loading -->
 		{#if loading}
@@ -188,7 +116,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="mx-auto bg-red-50 border-l-4 border-red-500 p-4 rounded-lg w-full max-w-md"
+				class="mx-auto bg-red-50 border-l-4 border-red-500 p-4 rounded-lg w-full"
 			>
 				<div class="flex items-center">
 					<div class="shrink-0">
@@ -215,7 +143,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-2 w-full max-w-md mx-auto"
+				class="text-center py-2 w-full mx-auto"
 			>
 				<svg
 					class="mx-auto h-12 w-12 text-gray-400"
@@ -245,7 +173,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="space-y-4 w-full max-w-xl mx-auto"
+				class="space-y-4 w-full mx-auto"
 			>
 				{#each vehicles as vehicle (vehicle.id)}
 					<VehicleListItem {vehicle} onClick={handleVehicleClick} />
@@ -256,7 +184,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 2000 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-4 text-gray-500 w-full max-w-md mx-auto"
+				class="text-center py-4 text-gray-500 w-full mx-auto"
 			>
 				Enter a registration number to begin searching.
 			</div>

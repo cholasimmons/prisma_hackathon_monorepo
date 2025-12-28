@@ -8,8 +8,9 @@
 	import UserModal from '$lib/components/Modals/UserModal.svelte';
 	import UserDataTable from '$lib/components/Tables/UserDataTable.svelte';
 	import toast from "svelte-french-toast";
-
-	let selectedUser = $state<UserProfile | null>(null);
+	import { UserPlusIcon, UserPlus } from "@lucide/svelte";
+	import { goto } from "$app/navigation";
+	import AddUserModal from "$lib/components/Modals/AddUserModal.svelte";
 
 	const data = $state<UserProfile[]>([
 	  { id: '1', email: 'user1@example.com', name: 'User One', role: 'admin', image: null, emailVerified: true, banned: true, banReason: 'Insulting Admins', banExpires: new Date('2026-01-01T00:00:00Z'), createdAt: new Date('2023-01-01T00:00:00Z'), updatedAt: new Date('2023-01-01T00:00:00Z') },
@@ -26,7 +27,12 @@
 	  { id: '12', email: 'user12@example.com', name: 'User Twelve', role: 'user', image: null, emailVerified: false, banned: false, banReason: '', banExpires: null, createdAt: new Date('2023-12-01T00:00:00Z'), updatedAt: new Date('2023-12-01T00:00:00Z') },
 	]);
 
+	// Users
 	let users = $state<UserProfile[]>(data);
+	let selectedUser = $state<UserProfile | null>(null);
+	let showAddUserModal = $state<boolean>(false);
+	let addingUser = $state<boolean>(false);
+	let addedUser = $state<boolean>(false);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 
@@ -59,12 +65,14 @@
 
 
 <main
-	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-stretch justify-start space-y-8"
 >
 
     <PageHeader
 		title="Admin | Users"
 		description="Manage users on the platform."
+		endIcon={UserPlusIcon}
+		endAction={() => { showAddUserModal = true; }}
 	/>
 
     <div class="flex flex-col w-full space-y-2 ">
@@ -74,7 +82,7 @@
                 <Spinner size={32} />
             </div>
         {:else if users.length > 0}
-            <div in:fade={{ duration: 500 }} class="w-full">
+            <div in:fade={{ duration: 500 }} class="flex w-full overflow-hidden">
                 <UserDataTable data={users} onClick={handleTableClick} />
             </div>
         {:else}
@@ -118,4 +126,8 @@
 
 {#if selectedUser}
     <UserModal user={selectedUser} onClose={() => selectedUser = null} />
+{/if}
+
+{#if showAddUserModal}
+    <AddUserModal onClose={() => showAddUserModal = false} />
 {/if}

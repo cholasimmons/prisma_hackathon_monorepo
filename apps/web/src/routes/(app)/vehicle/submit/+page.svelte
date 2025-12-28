@@ -13,6 +13,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { VehicleType, VEHICLE_TYPE_VALUES } from '$lib/models/vehicle.model';
 	import { page } from '$app/state';
+	import PlatesInput from '$lib/components/PlatesInput.svelte';
 
 	let vehicleType = $state<VehicleType | ''>('');
 	let vehicleImages: File[] = [];
@@ -24,19 +25,6 @@
 	let colorName = $derived.by(() => {
 		return colorHex ? hexToColorName(colorHex) : 'Black';
 	});
-
-	let rawInput = $state<string>(page.url.searchParams.get("plate") ?? '');
-
-	// Derived clean value (always valid)
-	const cleanPlate = $derived.by(() => formatPlateInput(rawInput));
-
-	function handleInput(e: any) {
-		// Let user type freely, but visually enforce rules
-		const input = e.target as HTMLInputElement;
-		input.value = cleanPlate;
-		// Keep $state in sync
-		rawInput = input.value;
-	}
 
 	const handleEnhance = () => {
 		// form submission finished
@@ -89,26 +77,30 @@
 		const form = e.currentTarget as HTMLFormElement;
 		const formData = new FormData(form);
 
-		// Append images manually
-		vehicleImages.forEach((file) => {
-			formData.append('image', file);
-		});
-
 		// Optional: do client-side validation
 		if (vehicleImages.length > 3) {
 			alert('Max 3 images allowed');
 			return;
 		}
 
+		// Append images manually
+		vehicleImages.forEach((file, i) => {
+			formData.append(`image-${i}`, file);
+		});
+
 		// Send form data to your API
-		const res = await api.post<VehicleSubmission>('/vehicles', { formData });
+		const res = await api.post<VehicleSubmission>('/vehicles', formData);
 
 		if (res.success) {
 			toast.success(res.message ?? 'Vehicle submitted successfully');
 		} else {
-			toast.error(res.message ?? 'Failed to submit vehicle');
+			toast.error(res.message ?? 'Could not submit vehicle');
 		}
 	}
+
+	// function inputChange(plate: string){
+	//   console.log(plate)
+	// }
 </script>
 
 <main
@@ -146,31 +138,8 @@
 		>
 			<!-- PLATE (Hero Field) -->
 			<section class="text-center">
-    			<div class="relative w-full mx-auto">
-    			    <img src="/images/CoatOfArms.webp" alt="" class="w-12 h-12 mx-auto
-       					absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center"
-                    />
-    				<input
-    					name="plate"
-    					placeholder="ADB 3104"
-    					bind:value={rawInput}
-    					oninput={handleInput}
-    					type="text"
-    					aria-label="Enter vehicle registration (letters, numbers, optional single space)"
-    					class="w-full max-w-lg p-1 rounded-2xl
-                        placeholder:font-normal placeholder:text-center
-        				plates text-6xl md:text-7xl text-center"
-                        style="background-color: #DDD; color: #222"
-    					required
-    					disabled={_submitting}
-    					autocomplete="off"
-    					autocorrect="off"
-    					autocapitalize="characters"
-    					inputmode="text"
-    					spellcheck="false"
-    					maxlength="12"
-    				/>
-                </div>
+    			<PlatesInput mode="input" />
+
 			</section>
 
 			<!-- MAKE + MODEL -->

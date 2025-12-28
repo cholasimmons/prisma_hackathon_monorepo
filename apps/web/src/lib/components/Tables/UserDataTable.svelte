@@ -77,12 +77,12 @@
            hasNextPage, } = page;
 </script>
 
-<div class="overflow-x-auto">
-    <table {...$tableAttrs} class="min-w-full">
+<div class="relative w-full overflow-x-auto">
+    <table {...$tableAttrs} class="min-w-full table-fixed">
         <thead>
             {#each $headerRows as headerRow}
                 <Subscribe rowAttrs={headerRow.attrs()}>
-                    <tr>
+                    <tr class="cursor-pointer">
                         {#each headerRow.cells as cell}
                             <Subscribe
                                 attrs={cell.attrs()} let:attrs
@@ -108,7 +108,7 @@
                         onclick={() => onClick(row.original)}>
                         {#each row.cells as cell (cell.id)}
                             <Subscribe attrs={cell.attrs()} let:attrs>
-                                <td in:fade={{ duration: 200 * $pageIndex }} {...attrs}>
+                                <td in:fade={{ duration: 200 * $pageIndex }} {...attrs} class="truncate max-w-xs">
                                     <Render of={cell.render()} />
                                 </td>
                             </Subscribe>

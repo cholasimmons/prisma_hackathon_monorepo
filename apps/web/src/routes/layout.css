@@ -7,6 +7,12 @@
 body {
 	font-family: 'Montserrat', sans-serif;
 }
+img {
+  user-select: none; /* disables text selection */
+  pointer-events: auto; /* optional if you want clicks */
+  -webkit-user-drag: none; /* Safari/Chrome */
+  user-drag: none; /* standard */
+}
 
 /*:root {
 	--bg: white;
@@ -21,36 +27,12 @@ html:not(.hydrated) * {
   transition: none !important;
 }
 
-
 .plates {
 	font-family: 'HeavyEquipment', ui-monospace, monospace, 'Courier New', Courier;
-	/* font-family: 'Rubik Mono One', ui-monospace, monospace, 'Courier New', Courier; */
-	font-weight: 600;
+	font-weight: 700;
 	font-style: normal;
 }
 
-.plate-input {
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	font-weight: 400;
-	/* optional: simulate embossed plate */
-	text-shadow: 6px 6px 6px rgba(0, 0, 0, 0.1);
-}
-.dark .plate-input--reflective & {
-	background: linear-gradient(to bottom, #fff, #ededed);
-	opacity: 0.5;
-	border-width: 2px;
-	box-shadow:
-		inset 0 1px 3px rgba(255, 255, 255, 0.8),
-		0 2px 4px rgba(0, 0, 0, 0.1);
-}
-:not(.dark) .plate-input--reflective & {
-	background: linear-gradient(to bottom, #666, #333);
-	border-width: 1px;
-	box-shadow:
-		inset 0 1px 3px rgba(0,0,0, 0.8),
-		0 2px 4px rgba(0, 0, 0, 0.1);
-}
 input,
 textarea,
 select {

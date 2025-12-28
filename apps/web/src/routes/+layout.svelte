@@ -77,15 +77,15 @@
 		</div>
 	{:else}
 	<header
-        class="container mx-auto sticky top-0 z-30 max-w-4xl px-4 md:px-8 py-2
-                text-start text-gray-600 dark:text-gray-400
-                flex flex-row items-center backdrop-blur-lg
-                after:absolute after:left-0 after:right-0 after:bottom-0
-                after:h-0.5 after:content-['']
-                after:bg-linear-to-r
-                after:from-transparent
-                after:to-transparent
-                after:via-gray-500 dark:after:via-gray-500"
+        class="container mx-auto sticky top-0 z-30 max-w-4xl px-2 sm:px-4 md:px-8 py-2
+            text-start text-gray-600 dark:text-gray-400
+            flex flex-row items-center backdrop-blur-lg
+            after:absolute after:left-0 after:right-0 after:bottom-0
+            after:h-0.5 after:content-['']
+            after:bg-linear-to-r
+            after:from-transparent
+            after:to-transparent
+            after:via-gray-500 dark:after:via-gray-500"
         >
 
 			<div class="grow space-x-4 flex flex-row items-center">
@@ -149,7 +149,7 @@
 		</header>
 
 		{#key page.url.pathname}
-    		<div in:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4 px-4 md:px-8">
+    		<div in:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-4 px-2 sm:px-4 md:px-8">
     			{@render children()}
     		</div>
 		{/key}
