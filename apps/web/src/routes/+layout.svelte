@@ -110,9 +110,7 @@
 						class="txt-btn"
 						onclick={() => gotoSignup()}>Sign Up</button
 					>
-				{:else if data?.user}
-					<button onclick={() => gotoProfile()}>{data.user.name}</button>
-				{:else}
+				{:else if !data?.user}
 					<button
 						in:fade={{ duration: 400, delay: 100 }}
 						class="txt-btn"
@@ -137,7 +135,7 @@
 		</header>
 
 		{#key page.url.pathname}
-			<div in:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-6 px-2 sm:px-4 md:px-8">
+			<div in:fade={{ duration: 150 }} class="grow flex flex-col w-full pt-6 px-4 md:px-8">
 				{@render children()}
 			</div>
 		{/key}
