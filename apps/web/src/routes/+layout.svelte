@@ -106,12 +106,20 @@
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
 				{#if !data?.user && page.url.pathname.startsWith('/login')}
 					<button
-						in:fade={{ duration: 400, delay: 250 }}
-						out:fade={{ duration: 200 }}
+						in:fade={{ duration: 400, delay: 100 }}
 						class="txt-btn"
 						onclick={() => gotoSignup()}>Sign Up</button
 					>
+				{:else if data?.user}
+					<button onclick={() => gotoProfile()}>{data.user.name}</button>
+				{:else}
+					<button
+						in:fade={{ duration: 400, delay: 100 }}
+						class="txt-btn"
+						onclick={() => gotoLogin()}>Log In</button
+					>
 				{/if}
+
 				<button onclick={toggleTheme}>
 					{#if dark}
 						<LucideMoon />
