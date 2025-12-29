@@ -20,13 +20,13 @@
 
 		return async ({ result, update }: any) => {
 			if (result?.type === 'success') {
-				const { email, password, rememberMe } = result.data?.user;
+				const { email, password, rememberMe, callbackUrl } = result.data?.user;
 
 				const res = await authClient.signIn.email({
 					email,
 					password,
 					rememberMe,
-					callbackURL: '/'
+					callbackURL: callbackUrl ?? '/'
 				});
 
 				if (res.error?.message || res.error?.statusText) {
@@ -100,7 +100,7 @@
 		<button
 			type="submit"
 			disabled={_signingIn}
-			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium  text-white  hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 		>
 			{_signingIn ? 'Signing in…' : 'Sign in'}
 		</button>
@@ -114,7 +114,8 @@
 
 	<!-- Social login -->
 	<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mx-auto">
-		<a title="Google is not available"
+		<a
+			title="Google is not available"
 			href="/oauth/google"
 			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
@@ -124,7 +125,7 @@
 
 		<a
 			href="/oauth/microsoft"
-			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={MicrosoftIcon} />
 			<span>Microsoft</span>
@@ -132,7 +133,7 @@
 
 		<a
 			href="/oauth/github"
-			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GithubIcon} />
 			<span>GitHub</span>
@@ -140,7 +141,7 @@
 
 		<a
 			href="/oauth/apple"
-			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={AppleIcon} />
 			<span>Apple</span>

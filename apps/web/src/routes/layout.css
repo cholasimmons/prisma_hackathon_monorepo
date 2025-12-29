@@ -8,10 +8,10 @@ body {
 	font-family: 'Montserrat', sans-serif;
 }
 img {
-  user-select: none; /* disables text selection */
-  pointer-events: auto; /* optional if you want clicks */
-  -webkit-user-drag: none; /* Safari/Chrome */
-  user-drag: none; /* standard */
+	user-select: none; /* disables text selection */
+	pointer-events: auto; /* optional if you want clicks */
+	-webkit-user-drag: none; /* Safari/Chrome */
+	user-drag: none; /* standard */
 }
 
 /*:root {
@@ -24,7 +24,7 @@ img {
 	--fg: #fafafa;
 }*/
 html:not(.hydrated) * {
-  transition: none !important;
+	transition: none !important;
 }
 
 .plates {
@@ -36,48 +36,42 @@ html:not(.hydrated) * {
 input,
 textarea,
 select {
-    outline: none; /* remove browser default */
-    transition: all 0.2s ease-in-out; /* smooth focus effect */
-    @apply bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-300;
-    @apply border border-gray-400 dark:border-gray-500 rounded-xl;
-    @apply px-3 py-2;
-    @apply focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500;
-    @apply placeholder-gray-400 dark:placeholder-gray-500 placeholder:font-medium;
-    /* Reset browser defaults */
-    -webkit-appearance: none;
-    appearance: none;
+	outline: none; /* remove browser default */
+	transition: all 0.2s ease-in-out; /* smooth focus effect */
+	@apply bg-gray-300 text-gray-800 dark:bg-gray-700 dark:text-gray-300;
+	@apply rounded-xl border border-gray-400 dark:border-gray-500;
+	@apply px-3 py-2;
+	@apply focus:border-amber-500 focus:ring-2 focus:ring-amber-500 focus:outline-none;
+	@apply placeholder-gray-400 placeholder:font-medium dark:placeholder-gray-500;
+	/* Reset browser defaults */
+	-webkit-appearance: none;
+	appearance: none;
 
-    /* Ensure consistent line-height */
-    line-height: 1.5;
-
-    /* Remove extra padding on iOS */
-    padding-top: 0;
-    padding-bottom: 0;
+	/* Ensure consistent line-height */
+	line-height: 1.5;
 }
 button {
-    transition: all 0.2s ease-in-out; /* smooth focus effect */
-    @apply cursor-pointer;
-    @apply p-2 rounded-xl;
-    @apply hover:dark:text-amber-500 hover:dark:bg-gray-500/40 hover:bg-amber-500 hover:text-white;
-    @apply focus:outline-none focus:ring-0 focus:border-0 focus-visible:outline-none;
+	transition: all 0.2s ease-in-out; /* smooth focus effect */
+	@apply cursor-pointer;
+	@apply rounded-xl p-2;
+	@apply hover:bg-amber-500 hover:text-white hover:dark:bg-gray-500/40 hover:dark:text-amber-500;
+	@apply focus:border-0 focus:ring-0 focus:outline-none focus-visible:outline-none;
 }
 a {
-    @apply px-2 py-1 rounded-md text-amber-700 dark:text-amber-400 hover:text-black dark:hover:text-white  font-medium transition-colors duration-200;
+	@apply rounded-md px-2 py-1 font-medium text-amber-700 transition-colors duration-200 hover:text-black dark:text-amber-400 dark:hover:text-white;
 }
 
 input:focus,
 textarea:focus,
 select:focus,
 button:focus {
-    @apply ring-2 ring-amber-500; /* Tailwind ring on focus */
-    @apply border-amber-500; /* optional: change border color too */
+	@apply ring-2 ring-amber-500; /* Tailwind ring on focus */
+	@apply border-amber-500; /* optional: change border color too */
 }
 .txt-btn {
 	@apply cursor-pointer rounded-lg border-2 border-gray-600 px-4 py-1 text-gray-600 hover:border-gray-500 hover:bg-gray-500/10 hover:text-gray-500 dark:border-amber-500 dark:text-amber-500 dark:hover:border-amber-400 dark:hover:bg-amber-500/20 dark:hover:text-amber-400;
 }
 /* app.css */
 .card {
-  @apply rounded-xl border border-gray-300/60 dark:border-gray-700
-         bg-white/70 dark:bg-gray-900/70 backdrop-blur
-         p-4 shadow-sm;
+	@apply rounded-xl border border-gray-300/60 bg-white/70 p-4 shadow-sm backdrop-blur dark:border-gray-700 dark:bg-gray-900/70;
 }

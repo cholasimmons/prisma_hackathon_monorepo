@@ -1,4 +1,9 @@
-import { Prisma, Vehicle, VehiclePhoto, VehicleSubmission } from "@/generated/prisma/client";
+import {
+  Prisma,
+  Vehicle,
+  VehiclePhoto,
+  VehicleSubmission,
+} from "@/generated/prisma/client";
 import { cache } from "~/utils/cache";
 import db from "~/utils/database/client";
 import { strip } from "~/utils/strip";
@@ -9,7 +14,10 @@ import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
 import { BucketNames } from "~/utils/image/storage";
 import s3 from "~/utils/s3";
 import { normalizeMake } from "~/utils/vehicles";
-import { addVehicleSubmissionImageUploadJob, addVehicleSubmissionJob } from "~/utils/queues/vehicle";
+import {
+  addVehicleSubmissionImageUploadJob,
+  addVehicleSubmissionJob,
+} from "~/utils/queues/vehicle";
 import { addImageJob } from "~/utils/queues/image";
 
 abstract class VehicleService {
@@ -146,7 +154,9 @@ abstract class VehicleService {
     isActive?: boolean,
   ): Promise<PublicVehicle | null> {
     // 1. Try cache first
-    const cached = await cache.get<PublicVehicle>(CacheKeys.vehicles.byPlate(plate));
+    const cached = await cache.get<PublicVehicle>(
+      CacheKeys.vehicles.byPlate(plate),
+    );
     if (cached) {
       console.log(`✅ Cache HIT for vehicle ${plate}`);
       return cached;
@@ -320,7 +330,7 @@ abstract class VehicleService {
         },
         update: {
           ...body,
-          make: value
+          make: value,
         },
         create: {
           ...body,
@@ -341,25 +351,29 @@ abstract class VehicleService {
 
     if (body.images && body.images.length > 0) {
       photoRecords = await Promise.all(
-        body.images.map(file =>
+        body.images.map((file) =>
           db.vehiclePhoto.create({
             data: {
               submittedVehicleId: submission.id,
-              url: 'pending',
-              uploadSizeKb: Math.ceil(file.size / 1024)
-            }
-          })
-        )
+              url: "pending",
+              uploadSizeKb: Math.ceil(file.size / 1024),
+            },
+          }),
+        ),
       );
 
       // 4. Enqueue image processing jobs
       for (let i = 0; i < photoRecords.length; i++) {
-        await addVehicleSubmissionImageUploadJob(userId, photoRecords[i]!.id, body.images[i]!)
+        await addVehicleSubmissionImageUploadJob(
+          userId,
+          photoRecords[i]!.id,
+          body.images[i]!,
+        );
       }
     }
 
     // Send to Job Queue for vehicle "raffle draw""
-    await addVehicleSubmissionJob(userId, submission.plate)
+    await addVehicleSubmissionJob(userId, submission.plate);
 
     // 2. Invalidate relevant cache entries
     await cache.invalidate([CacheKeys.vehicles.submissionById(submission.id)]);
@@ -392,7 +406,7 @@ abstract class VehicleService {
       const extension = imageFile.name.split(".").pop() || "jpg";
       const filename = `${BucketNames.vehicles}/${vehicleId}/image-${Date.now()}.${extension}`;
 
-      await addImageJob(userId, imageFile, filename, extension)
+      await addImageJob(userId, imageFile, filename, extension);
 
       console.log(
         `📸 Uploaded image for vehicle ${vehicleId} to S3: ${filename}`,

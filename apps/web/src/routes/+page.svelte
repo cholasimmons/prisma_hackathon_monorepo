@@ -83,8 +83,7 @@
 		<!-- Search Bar -->
 		<div class="mb-4">
 			<label for="search-reg" class="sr-only">Enter vehicle registration</label>
-			<PlatesInput mode="search" name="plate"
-				onChange={onPlateChange} />
+			<PlatesInput mode="search" name="plate" onChange={onPlateChange} />
 		</div>
 
 		<!--div
@@ -103,7 +102,7 @@
 			<div
 				in:fade={{ duration: 300, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="mx-auto space-y-4 max-w-md"
+				class="mx-auto space-y-4 w-full"
 			>
 				{#each { length: 3 } as _, i (i)}
 					<div class="bg-white p-4 rounded-lg shadow animate-pulse">
