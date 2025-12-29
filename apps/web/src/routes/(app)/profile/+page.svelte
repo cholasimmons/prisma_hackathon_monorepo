@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { api, type ApiResponse } from '$lib/api/client';
 	import { mySubmittedVehicles } from '$lib/api/vehicles';
 	import { hexToColorName } from '$lib/color/colors';
@@ -114,7 +114,9 @@
 			.signOut()
 			.then(() => {
 				_loggingOut = false;
-				goto('/');
+				invalidateAll().then(() => {
+					goto('/');
+				});
 			})
 			.catch((error) => {
 				console.error('Error logging out:', error);
