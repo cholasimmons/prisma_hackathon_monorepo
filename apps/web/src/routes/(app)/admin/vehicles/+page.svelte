@@ -14,18 +14,18 @@
 	let selectedVehicle = $state<Vehicle | null>(null);
 
 	const data =[
-	  { id: '1', make: 'Toyota', model: 'Camry', year: 2020, color: '#0000FF', plate: 'ABC 123', type: 'sedan', forSale: false, isActive: false, updatedAt: new Date('2023-01-01T00:00:00Z') },
-	  { id: '2', make: 'Honda', model: 'Civic', year: 2021, color: '#FF0000', plate: 'DEF 456', type: 'hatchback', forSale: true, isActive: true, updatedAt: new Date('2023-02-01T00:00:00Z') },
-	  { id: '3', make: 'Ford', model: 'Mustang', year: 2022, color: '#222222', plate: 'GHI 789', type: 'coupe', forSale: true, isActive: true, updatedAt: new Date('2023-03-01T00:00:00Z') },
-	  { id: '4', make: 'Chevrolet', model: 'Silverado', year: 2023, color: '#00FF00', plate: 'JKL 012', type: 'hatchback', forSale: false, isActive: true, updatedAt: new Date('2023-04-01T00:00:00Z') },
-	  { id: '5', make: 'Nissan', model: 'Altima', year: 2024, color: '#FFA500', plate: 'MNO 345', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-05-01T00:00:00Z') },
-	  { id: '6', make: 'BMW', model: 'X5', year: 2025, color: '#FF00FF', plate: 'PQR 678', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-06-01T00:00:00Z') },
-	  { id: '7', make: 'Tesla', model: 'Model S', year: 2026, color: '#00FFFF', plate: 'STU 901', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-07-01T00:00:00Z') },
-	  { id: '8', make: 'Mercedes-Benz', model: 'C-Class', year: 2027, color: '#FFFF00', plate: 'VWX 234', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-08-01T00:00:00Z') },
-	  { id: '9', make: 'Audi', model: 'A4', year: 2028, color: '#FF00FF', plate: 'YZA 567', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-09-01T00:00:00Z') },
-	  { id: '10', make: 'Hyundai', model: 'Elantra', year: 2029, color: '#00FF00', plate: 'BCD 890', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-10-01T00:00:00Z') },
-	  { id: '11', make: 'Toyota', model: 'Corolla', year: 2030, color: '#FF00FF', plate: 'EFG 123', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-11-01T00:00:00Z') },
-	  { id: '12', make: 'Honda', model: 'Accord', year: 2031, color: '#00FF00', plate: 'HIJ 456', type: 'sedan', forSale: true, isActive: true, updatedAt: new Date('2023-12-01T00:00:00Z') },
+	  { id: '1', make: 'Toyota', model: 'Camry', year: 2020, color: '#0000FF', plate: 'ABC 123', type: 'sedan', forSale: false, isActive: false, createdAt: new Date('2025-04-27T00:00:00Z'), confidence: 0.2, submissionCount: 3, updatedAt: new Date('2023-01-01T00:00:00Z') },
+	  { id: '2', make: 'Honda', model: 'Civic', year: 2021, color: '#FF0000', plate: 'DEF 456', type: 'hatchback', forSale: true, isActive: true, createdAt: new Date('2025-04-27T00:00:00Z'), confidence: 0.1, submissionCount: 3, updatedAt: new Date('2023-02-01T00:00:00Z') },
+	  { id: '3', make: 'Ford', model: 'Mustang', year: 2022, color: '#222222', plate: 'GHI 789', type: 'coupe', forSale: true, isActive: true, createdAt: new Date('2025-04-27T00:00:00Z'), confidence: 0.7, submissionCount: 3, updatedAt: new Date('2023-03-01T00:00:00Z') },
+	  { id: '4', make: 'Chevrolet', model: 'Silverado', year: 2023, color: '#00FF00', plate: 'JKL 012', type: 'hatchback', forSale: false, isActive: true, createdAt: new Date('2025-04-27T00:00:00Z'), confidence: 0.633, submissionCount: 3, updatedAt: new Date('2023-04-01T00:00:00Z') },
+	  { id: '5', make: 'Nissan', model: 'Altima', year: 2024, color: '#FFA500', plate: 'MNO 345', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-04-27T00:00:00Z'), confidence: 0.17456, submissionCount: 3, updatedAt: new Date('2023-05-01T00:00:00Z') },
+	  { id: '6', make: 'BMW', model: 'X5', year: 2025, color: '#FF00FF', plate: 'PQR 678', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-01-01T00:00:00Z'), confidence: 0.9, submissionCount: 3, updatedAt: new Date('2023-06-01T00:00:00Z') },
+	  { id: '7', make: 'Tesla', model: 'Model S', year: 2026, color: '#00FFFF', plate: 'STU 901', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-02-01T00:00:00Z'), confidence: 0.237, submissionCount: 3, updatedAt: new Date('2023-07-01T00:00:00Z') },
+	  { id: '8', make: 'Mercedes-Benz', model: 'C-Class', year: 2027, color: '#FFFF00', plate: 'VWX 234', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-03-01T00:00:00Z'), confidence: 1, submissionCount: 3, updatedAt: new Date('2023-08-01T00:00:00Z') },
+	  { id: '9', make: 'Audi', model: 'A4', year: 2028, color: '#FF00FF', plate: 'YZA 567', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-04-01T00:00:00Z'), confidence: 0.27, submissionCount: 3, updatedAt: new Date('2023-09-01T00:00:00Z') },
+	  { id: '10', make: 'Hyundai', model: 'Elantra', year: 2029, color: '#00FF00', plate: 'BCD 890', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2025-05-01T00:00:00Z'), confidence: 0.783, submissionCount: 3, updatedAt: new Date('2023-10-01T00:00:00Z') },
+	  { id: '11', make: 'Toyota', model: 'Corolla', year: 2030, color: '#FF00FF', plate: 'EFG 123', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2023-11-01T00:00:00Z'), confidence: 0.59, submissionCount: 3, updatedAt: new Date('2023-11-01T00:00:00Z') },
+	  { id: '12', make: 'Honda', model: 'Accord', year: 2031, color: '#00FF00', plate: 'HIJ 456', type: 'sedan', forSale: true, isActive: true, createdAt: new Date('2023-12-01T00:00:00Z'), confidence: 0.85, submissionCount: 3, updatedAt: new Date('2023-12-01T00:00:00Z') },
 	];
 
 	let vehicles = $state<Vehicle[]>(data);

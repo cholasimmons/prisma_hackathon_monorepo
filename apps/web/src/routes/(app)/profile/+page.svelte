@@ -11,6 +11,7 @@
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User } from '@lucide/svelte';
 	import toast from 'svelte-french-toast';
+	import { authClient } from '$lib/auth-client';
 
 	const { data }: PageProps = $props();
 
@@ -22,6 +23,7 @@
 	let _fetchingSubmissions = $state(false);
 	let _fetchingProfile = $state(false);
 	let _avatar = $state('/images/default-avatar.png');
+	let _loggingOut = $state(false);
 
 	// User image upload
 	let fileInput!: HTMLInputElement;
@@ -106,6 +108,19 @@
 		goto('/admin');
 	}
 
+	function logout() {
+	  _loggingOut = true;
+		authClient.signOut().then(() => {
+		    _loggingOut = false;
+			goto('/');
+		}).catch((error) => {
+			console.error('Error logging out:', error);
+			_loggingOut = false;
+		}).finally(() => {
+			_loggingOut = false;
+		});
+	}
+
 	onMount(() => {
 		profile = data.user as UserProfile;
 		_fetchSubmissions();
@@ -176,14 +191,24 @@
      			>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
       		>
 
-            {#if data.user?.role === 'admin'}
-                <button class="txt-btn mt-8 md:mt-2"
-                    aria-label="View Admin Dashboard"
-                    onclick={_gotoAdminDashboard}
-                >
-                    Open Dashboard
-                </button>
-            {/if}
+            <div class="flex justify-between items-center">
+                {#if data.user?.role === 'admin'}
+                    <button class="txt-btn mt-8 md:mt-2"
+                        aria-label="View Admin Dashboard"
+                        onclick={_gotoAdminDashboard}
+                    >
+                        Open Dashboard
+                    </button>
+                {/if}
+
+                    <button class="txt-btn mt-8 md:mt-2" disabled={_loggingOut}
+                        aria-label="Log Out"
+                        onclick={logout}
+                    >
+                        {#if _loggingOut} <Spinner /> {:else} Sign Out {/if}
+                    </button>
+            </div>
+
 		</div>
 	</div>
 

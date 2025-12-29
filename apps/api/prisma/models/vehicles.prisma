@@ -10,13 +10,19 @@ model Vehicle {
   type           String?
   forSale        Boolean?
   /// @prismabox.input.hide
+  submissionCount Int @default(0)
+  /// @prismabox.input.hide
+  confidence     Float @default(0)
+  /// @prismabox.input.hide
   isActive       Boolean  @default(true)
+  /// @prismabox.input.hide
+  createdAt      DateTime @default(now())
   /// @prismabox.input.hide
   updatedAt      DateTime @updatedAt
 
   @@index([plate(sort:Asc)])
   @@index([make(sort:Asc)])
-  @@index([year])
+  @@index([createdAt(sort:Asc)])
   @@schema("vehicles")
   @@map("vehicles")
 }
@@ -25,7 +31,7 @@ model VehicleSubmission {
   /// @prismabox.input.hide
   id             String   @id @default(cuid())
   plate          String
-  make           String?
+  make           String
   model          String?
   photos         VehiclePhoto[] @relation("vehicleSubmissionPhotos")
 
@@ -37,14 +43,15 @@ model VehicleSubmission {
   submittedById    String
   submittedBy      User?    @relation(fields: [submittedById], references: [id])
   /// @prismabox.input.hide
+  isActive       Boolean  @default(true)
+  /// @prismabox.input.hide
   createdAt      DateTime @default(now())
   /// @prismabox.input.hide
   updatedAt      DateTime @updatedAt
 
   @@index([plate])
-  @@index([make])
-  @@index([year])
-  @@index([createdAt(sort:Desc)])
+  @@index([make(sort:Asc)])
+  @@index([createdAt(sort:Asc)])
   @@schema("vehicles")
   @@map("vehicle_submissions")
   @@unique([plate, submittedById]) // user can only submit once per plate

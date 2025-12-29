@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 
-	import { CarIcon, LayoutDashboardIcon, LucideTriangleAlert, MailboxIcon, UsersIcon } from '@lucide/svelte';
+	import { CarIcon, GalleryThumbnailsIcon, LayoutDashboardIcon, LucideTriangleAlert, MailboxIcon, UsersIcon } from '@lucide/svelte';
 	import { page } from '$app/state';
 
 	const { children, data } = $props();
@@ -12,7 +12,8 @@
 		{ href: '/admin', label: 'Dashboard', icon: LayoutDashboardIcon },
 		{ href: '/admin/users', label: 'Users', icon: UsersIcon },
 		{ href: '/admin/vehicles', label: 'Vehicles', icon: CarIcon },
-		{ href: '/admin/submissions', label: 'Submissions', icon: MailboxIcon }
+		{ href: '/admin/submissions', label: 'Submissions', icon: MailboxIcon },
+		{ href: '/admin/photos', label: 'Photos', icon: GalleryThumbnailsIcon }
 	];
 
 	onMount(() => {

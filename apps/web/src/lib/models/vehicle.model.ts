@@ -1,4 +1,5 @@
 import type { VehiclePhoto } from './photo.model';
+import type { UserProfile } from './user.model';
 
 interface Vehicle {
 	id: string;
@@ -9,8 +10,11 @@ interface Vehicle {
 	color: string;
 	year?: number | null;
 	type?: string | null;
+	submissionCount: number;
+	confidence: number;
 	forSale: boolean | null;
 	isActive: boolean;
+	createdAt: Date;
 	updatedAt?: Date;
 }
 
@@ -24,6 +28,11 @@ interface VehicleSubmission {
 	year?: number | null;
 	type?: string | null;
 	forSale?: boolean | null;
+
+  submittedById: string;
+  submittedBy?: UserProfile | null;
+  createdAt: Date;
+  updatedAt?: Date;
 }
 
 export enum VehicleType {

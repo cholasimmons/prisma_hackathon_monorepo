@@ -8,5 +8,10 @@ const createQueue  = (name: string) => {
 }
 
 // Example: export a specific queue
-export const emailQueue = createQueue('emailQueue');
-export const imageQueue = createQueue('imageQueue');
+const emailQueue = createQueue('emailQueue');
+const imageQueue = createQueue('imageQueue');
+const vehicleSubmissionQueue = createQueue('vehicleSubmissionQueue');
+const vehicleSubmissionImageUploadQueue = createQueue('vehicleSubmissionImageUploadQueue');
+
+
+export { emailQueue, imageQueue, vehicleSubmissionQueue, vehicleSubmissionImageUploadQueue }

@@ -1,4 +1,4 @@
-import { Prisma, Vehicle, VehicleSubmission } from "@/generated/prisma/client";
+import { Prisma, Vehicle, VehiclePhoto, VehicleSubmission } from "@/generated/prisma/client";
 import { cache } from "~/utils/cache";
 import db from "~/utils/database/client";
 import { strip } from "~/utils/strip";
@@ -8,6 +8,9 @@ import { CacheKeys } from "~/utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
 import { BucketNames } from "~/utils/image/storage";
 import s3 from "~/utils/s3";
+import { normalizeMake } from "~/utils/vehicles";
+import { addVehicleSubmissionImageUploadJob, addVehicleSubmissionJob } from "~/utils/queues/vehicle";
+import { addImageJob } from "~/utils/queues/image";
 
 abstract class VehicleService {
   static async searchVehicles(
@@ -251,6 +254,7 @@ abstract class VehicleService {
   ): Promise<PublicVehicleSubmission | null> {
     // 1. Upload image in S3
     const { path, size } = await VehicleService.handleVehicleImage(
+      userId,
       vehicleId,
       image,
     );
@@ -303,9 +307,11 @@ abstract class VehicleService {
    * Submit vehicle to pool
    */
   static async submitVehicle(
-    body: VehicleSubmissionCreateInput & { image?: File },
+    body: VehicleSubmissionCreateInput & { images?: File[] },
     userId: string,
   ): Promise<PublicVehicleSubmission | null> {
+    const { value } = normalizeMake(body.make);
+
     // 1. Update in database
     const submission: VehicleSubmission | null =
       await db.vehicleSubmission.upsert({
@@ -314,6 +320,7 @@ abstract class VehicleService {
         },
         update: {
           ...body,
+          make: value
         },
         create: {
           ...body,
@@ -329,15 +336,33 @@ abstract class VehicleService {
       return null;
     }
 
+    // 3. Create photo records if user selected images (NO sharp yet)
+    let photoRecords: VehiclePhoto[] | null = null;
+
+    if (body.images && body.images.length > 0) {
+      photoRecords = await Promise.all(
+        body.images.map(file =>
+          db.vehiclePhoto.create({
+            data: {
+              submittedVehicleId: submission.id,
+              url: 'pending',
+              uploadSizeKb: Math.ceil(file.size / 1024)
+            }
+          })
+        )
+      );
+
+      // 4. Enqueue image processing jobs
+      for (let i = 0; i < photoRecords.length; i++) {
+        await addVehicleSubmissionImageUploadJob(userId, photoRecords[i]!.id, body.images[i]!)
+      }
+    }
+
+    // Send to Job Queue for vehicle "raffle draw""
+    await addVehicleSubmissionJob(userId, submission.plate)
+
     // 2. Invalidate relevant cache entries
     await cache.invalidate([CacheKeys.vehicles.submissionById(submission.id)]);
-
-    // 3. If there's an image upload, handle it
-    // if (body.image) {
-    //   await VehicleService.handleVehicleImage(submission.id, body.image);
-    //   // Remove the temporary imageFile property
-    //   delete (submission as any).photos;
-    // }
 
     console.log(
       `🔄 Submitted vehicle ${submission.plate} and invalidated cache`,
@@ -358,29 +383,22 @@ abstract class VehicleService {
    * Handle vehicle image upload to S3
    */
   private static async handleVehicleImage(
+    userId: string,
     vehicleId: string,
     imageFile: File,
   ): Promise<{ path: string; size: number }> {
     try {
       // Create unique filename
       const extension = imageFile.name.split(".").pop() || "jpg";
-      const fileName = `${BucketNames.vehicles}/${vehicleId}/image-${Date.now()}.${extension}`;
+      const filename = `${BucketNames.vehicles}/${vehicleId}/image-${Date.now()}.${extension}`;
 
-      // Upload to S3
-      const s3File = s3.file(fileName);
-      const uploadSizeKb = await s3File.write(imageFile, {
-        type: imageFile.type,
-        // metadata: {
-        //   vehicleId: vehicleId.toString(),
-        //   uploadedAt: new Date().toISOString(),
-        // },
-      });
+      await addImageJob(userId, imageFile, filename, extension)
 
       console.log(
-        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${fileName}`,
+        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${filename}`,
       );
 
-      return { path: fileName, size: uploadSizeKb };
+      return { path: filename, size: imageFile.size };
     } catch (error) {
       console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
       throw error;

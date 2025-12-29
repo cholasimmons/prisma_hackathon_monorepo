@@ -71,7 +71,7 @@
 </svelte:head>
 
 <main class="min-h-full w-full items-center flex flex-col justify-start">
-	<div class="max-w-sm md:max-w-md mx-auto w-full text-center">
+	<div class="max-w-md md:max-w-lg mx-auto w-full text-center">
 		<div class="mb-6">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
 		</div>

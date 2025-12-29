@@ -7,6 +7,10 @@ const PublicVehicleFields = [
   "model",
   "color",
   "year",
+  "forSale",
+  "type",
+  "createdAt",
+  "updatedAt",
 ] as const;
 const PublicVehicleSubmissionFields = [
   "id",
@@ -15,6 +19,8 @@ const PublicVehicleSubmissionFields = [
   "model",
   "color",
   "year",
+  "forSale",
+  "type",
   "createdAt",
   "updatedAt",
 ] as const;

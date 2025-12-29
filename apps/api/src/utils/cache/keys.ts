@@ -48,6 +48,8 @@ const CacheKeys = {
 
 const RedisEvents = {
   processImage: 'image:process',
+  submitVehicle: 'vehicle:submit',
+  submitVehiclePhotos: 'vehicle:submit:photos',
 } as const;
 
 export { CacheKeys, RedisEvents }

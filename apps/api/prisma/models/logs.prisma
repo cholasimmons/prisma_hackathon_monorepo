@@ -1,17 +1,24 @@
 model AuditEvent {
+  /// @prismabox.input.hide
   id        String   @id @default(cuid())
   actorId   String?             // user performing the action (null for system)
 
+  /// @prismabox.input.hide
   ipAddress    String?
+  /// @prismabox.input.hide
   userAgent    String?
 
+  /// @prismabox.input.hide
   route        String?
+  /// @prismabox.input.hide
   method       String?
 
   type      String              // e.g. "vehicle.submit", "vehicle.revoke"
   entity    String?             // (Module) e.g. "plate:ABC123"
   entityId  String?             // vehicleId, userId, submissionId etc
   metadata  Json?
+
+  /// @prismabox.input.hide
   createdAt DateTime @default(now())
 
   @@schema("logs")

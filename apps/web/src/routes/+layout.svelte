@@ -17,6 +17,7 @@
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
+	import AvatarCell from '$lib/components/Tables/AvatarCell.svelte';
 
 
 	let { children, data } = $props();
@@ -24,11 +25,7 @@
 
 
 
-	function logout() {
-		authClient.signOut().then(() => {
-			refreshAll();
-		});
-	}
+
 	function gotoLogin() {
 		goto('/login');
 	}
@@ -42,6 +39,9 @@
 	}
 	function gotoAbout() {
 		goto('/about');
+	}
+	function gotoProfile() {
+		goto('/profile');
 	}
 
 	onMount(async () => {
@@ -102,18 +102,16 @@
 
 				{#if data?.user}
 					<button
-						onclick={() => {
-							goto('/profile');
-						}}>{data.user.name}</button
+						onclick={() => gotoProfile()}
+					>{data.user.name}</button
 					>
 				{/if}
 			</div>
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
-				{#if page.data?.user}
-					<button
-					class="txt-btn"
-						onclick={() => logout()}>Logout</button
-					>
+				{#if page.data?.user && page.data.user.image}
+					<button class="txt-btn" onclick={() => gotoProfile()}>
+					    <AvatarCell src={page.data.user.image} className="w-8 h-8 rounded-" alt={page.data.user.name} />
+					</button>
 				{:else if page.url.pathname.startsWith('/login')}
 					<button
 						in:fade={{ duration: 400, delay: 250 }}

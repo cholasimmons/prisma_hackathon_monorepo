@@ -6,13 +6,11 @@
 	import type { VehicleSubmission } from '$lib/models/vehicle.model';
 	import ColorPicker, { ChromeVariant } from 'svelte-awesome-color-picker';
 	import { hexToColorName } from '$lib/color/colors';
-	import { formatPlateInput } from '$lib/vehicles/plate';
 	import ImageUploader from '$lib/components/ImageUploader.svelte';
 	import { ThumbsUp } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { VehicleType, VEHICLE_TYPE_VALUES } from '$lib/models/vehicle.model';
-	import { page } from '$app/state';
 	import PlatesInput from '$lib/components/PlatesInput.svelte';
 
 	let vehicleType = $state<VehicleType | ''>('');
@@ -34,25 +32,21 @@
 			await update();
 
 			if (result?.type === 'success') {
-				const { plate, make, color, colorName, model, year, forSale } = result.data;
+				const { plate, make, color, model, year, forSale } = result.data;
 
 				const formData = new FormData();
 				formData.append('plate', plate);
 				formData.append('make', make ?? '');
-				formData.append('color', color ?? '');
-				formData.append('model', model ?? '');
-				formData.append('year', String(year ?? ''));
-				formData.append('forSale', forSale ? 'true' : 'false');
+				formData.append('color', color ?? null);
+				formData.append('model', model ?? null);
+				formData.append('year', year ?? null);
+				formData.append('forSale', forSale === 'on' ? 'true' : 'false');
 				formData.append('image', vehicleImages[0]);
 
 				// Append images from your bound ImageUpload component
 				// vehicleImages.forEach((file) => formData.append('image', file));
 
-				const response = await api.post<VehicleSubmission>('/vehicles/submit', formData, {
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				});
+				const response = await api.post<VehicleSubmission>('/vehicles/submit', formData);
 
 				if (response.success === true && response.message) {
 					toast.success(response.message);
@@ -104,7 +98,7 @@
 </script>
 
 <main
-	class="mx-auto px-8 py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="mx-auto py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
 	{#if _submitted}
 		<div
@@ -193,13 +187,12 @@
 					<label hidden for="year" class="block text-sm text-gray-500 mb-1"> Year </label>
 					<input
 						id="year"
+						name="year"
 						type="text"
 						inputmode="numeric"
-						name="year"
-						min="1900"
-						pattern="\d{4}"
-						max={new Date().getFullYear()}
-						placeholder="Year"
+						pattern="^\d{4}$"
+						maxlength="4"
+						placeholder="1998"
 						class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium"
 					/>
 				</div>

@@ -13,7 +13,7 @@
 	const { title, description, endIcon, endAction }: Props = $props();
 </script>
 
-<div class="w-full flex flex-row items-start justify-between mb-8">
+<div class="w-full flex flex-row items-center justify-between mb-8">
     <!-- Start -->
     <div class="block w-8">
     </div>

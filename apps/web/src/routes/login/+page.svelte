@@ -114,9 +114,9 @@
 
 	<!-- Social login -->
 	<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mx-auto">
-		<a
+		<a title="Google is not available"
 			href="/oauth/google"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GoogleIcon} />
 			<span>Google</span>
@@ -124,7 +124,7 @@
 
 		<a
 			href="/oauth/microsoft"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={MicrosoftIcon} />
 			<span>Microsoft</span>
@@ -132,7 +132,7 @@
 
 		<a
 			href="/oauth/github"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GithubIcon} />
 			<span>GitHub</span>
@@ -140,7 +140,7 @@
 
 		<a
 			href="/oauth/apple"
-			class="flex items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="hidden  items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={AppleIcon} />
 			<span>Apple</span>

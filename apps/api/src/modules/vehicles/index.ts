@@ -6,6 +6,10 @@ import {
   PublicVehicle,
   PublicVehicleSubmission,
 } from "./model";
+import { KNOWN_MAKES } from "~/utils/vehicles";
+import { audit } from "src/services/audit";
+import { EventType } from "@/generated/prisma/enums";
+import { ip } from "elysia-ip";
 
 const vehiclesController = new Elysia({
   prefix: "/vehicles",
@@ -15,6 +19,7 @@ const vehiclesController = new Elysia({
     single: 'Vehicle',
     plural: 'Vehicles'
   })
+  .use(ip())
 
   .group('/admin', (secure) => secure
     // Get final vehicles
@@ -164,11 +169,25 @@ const vehiclesController = new Elysia({
     },
   )
 
+  .get('/vehicles/suggest-make', async ({ query }) => {
+    const suggestions = KNOWN_MAKES
+      .filter(make =>
+        make.toLowerCase().includes(query.make.toLowerCase())
+      )
+      .slice(0, 5);
+
+    return suggestions;
+  }, {
+    query: t.Object({
+      make: t.String()
+    })
+  })
+
   // POST
 
   .post(
     "/",
-    async ({ body, status, session }) => {
+    async ({ body, status, session, request, ip }) => {
       const submission = await VehicleService.submitVehicle(
         body,
         session.userId,
@@ -178,24 +197,39 @@ const vehiclesController = new Elysia({
         return status(400, "Invalid vehicle submission");
       }
 
-      return status(200, { success: true, data: submission });
+      await audit.log({
+        actorId: session.userId,
+        type: EventType.SUBMISSION_CREATE,
+        entity: "VehicleSubmission",
+        entityId: submission.id,
+        ipAddress: ip,
+        userAgent: request.headers.get('user-agent') ?? undefined,
+        route: request.url,
+        method: request.method,
+      });
+
+      return status(201, { success: true, data: submission, message: "Vehicle submitted." });
     },
     {
       body: t.Object({
         plate: t.String({
-          maxLength: 8,
-          error: "Plate number seems to be too long",
+          maxLength: 10,
+          error: "Plate number cannot exceed 10 characters",
         }),
-        image: t.Optional(
-          t.File({
-            type: "image",
-            maxSize: "3m",
-          }),
+        images: t.Optional(
+          t.Array(
+            t.File({
+              type: "image",
+              maxSize: "5m",
+            }),
+          )
         ),
-        make: t.Optional(t.String()),
+        make: t.String(),
         model: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
         color: t.Optional(t.String()),
+        type: t.Optional(t.String()),
+        forSale: t.Optional(t.Boolean())
       }),
       auth: true,
     },
