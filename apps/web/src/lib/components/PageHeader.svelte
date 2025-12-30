@@ -15,10 +15,10 @@
 
 <div class="w-full flex flex-row items-center justify-between mb-8">
 	<!-- Start -->
-	<div class="w-8 flex flex-col items-start">&nbsp;</div>
+	<div class="w-8"></div>
 
 	<!-- Main -->
-	<div class="flex flex-col items-center">
+	<div class="flex flex-col items-center text-center">
 		<h1 class="mb-1 dark:text-gray-200 text-2xl">{title}</h1>
 		{#if description}
 			<p class="md:text-sm">{description}</p>

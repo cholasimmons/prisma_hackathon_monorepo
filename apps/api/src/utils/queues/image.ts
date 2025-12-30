@@ -7,7 +7,7 @@ import { Job } from 'bullmq';
 import s3 from '~/utils/s3';
 import { unlink } from 'node:fs/promises';
 
-const addImageJob = async (userId: string, tempPath: string, filepath: string, ext?: string) =>
+const addImageJob = async (userId: string, tempPath: string, filepath: string, ext?: string) => {
     await imageQueue.add(RedisEvents.processImage, { userId, tempPath, filepath, ext }, {
       attempts: 3,
       backoff: {
@@ -15,6 +15,7 @@ const addImageJob = async (userId: string, tempPath: string, filepath: string, e
         delay: 2000
       }
     });
+}
 
 // Worker for this queue
 const imageWorker = createWorker('imageQueue', async (job: Job) => {

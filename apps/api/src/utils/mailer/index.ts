@@ -26,7 +26,7 @@ const mailer = nodemailer.createTransport({
 async function sendMail(recipients: string, subject: string, html: string) {
 // 2. Define email options
 let mailOptions = {
-    from: process.env.SMTP_USER,
+    from: process.env.SMTP_FROM,
     to: recipients, // List of recipients
     subject: subject,
     text: htmlToPlainText(html), // plain text body

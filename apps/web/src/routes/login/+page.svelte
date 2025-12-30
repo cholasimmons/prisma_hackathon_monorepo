@@ -78,7 +78,7 @@
      			redirectTo: data.callbackUrl ?? '/'
     		}, { timeout: 8000 });
 
-    		toast.success('Password reset link sent! 😊');
+    		toast.success('Check your email! 😊');
 		} catch(error){
 		    console.error(error);
 			toast.error('Reset link not sent');
@@ -114,7 +114,7 @@
 <main
 	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-xl items-center justify-start space-y-8"
 >
-	<PageHeader title="Log In" description="Welcome back. Enter your details to proceed." />
+	<PageHeader title="Log In" description="Welcome back. Enter your credentials to proceed." />
 
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="space-y-1">

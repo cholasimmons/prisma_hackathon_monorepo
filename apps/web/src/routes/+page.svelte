@@ -47,6 +47,7 @@
 		if (plate.length < 2) {
 			vehicles = [];
 			error = null;
+			loading = false;
 			hasSearched = false;
 			return;
 		}
@@ -71,7 +72,7 @@
 </svelte:head>
 
 <main class="min-h-full w-full items-center flex flex-col justify-start">
-	<div class="max-w-md md:max-w-lg mx-auto w-full text-center">
+	<div class="max-w-md lg:max-w-lg flex flex-col mx-auto w-full text-center">
 		<div class="mb-6">
 			<img src="./logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
 		</div>

@@ -4,6 +4,12 @@ import { formatPlateInput } from '$lib/vehicles/plate';
 import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
+export function load({ url }) {
+	return {
+		plate: url.searchParams.get('plate')
+	};
+}
+
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		if (!locals.user) {
@@ -38,7 +44,7 @@ export const actions: Actions = {
 
 		const year = Number(data.get('year') ?? null);
 		const currentYear = new Date().getFullYear();
-		if (!Number.isInteger(year) || (year <= 1900 && year > currentYear)) {
+		if (year === null ||!Number.isInteger(year) || (year <= 1900 || year > currentYear)) {
 			return fail(400, { message: 'Year not acceptable' });
 		}
 

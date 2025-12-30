@@ -22,7 +22,7 @@ const auth = betterAuth({
 
     sendResetPassword: async ({ user, url, token }, request) => {
  			const html = `
-				<h2>Password reset</h2>
+				<h2>Plates | Password reset</h2>
 				<p>
  					Reset your password by clicking
  					<a href="${url}">here</a>.
@@ -43,7 +43,7 @@ const auth = betterAuth({
 
     sendVerificationEmail: async ({ user, url, token }, request) => {
       const html = `
-				<h2>Verify your email</h2>
+				<h2>Plates | Verify your email</h2>
 				<p>Hello ${user.name ?? 'there'},</p>
 				<p>
 					Click <a href="${url}">here</a> to verify your email.

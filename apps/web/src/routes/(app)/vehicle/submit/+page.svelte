@@ -12,6 +12,9 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { VehicleType, VEHICLE_TYPE_VALUES } from '$lib/models/vehicle.model';
 	import PlatesInput from '$lib/components/PlatesInput.svelte';
+	import type { PageProps } from './$types';
+
+	let { data, form }: PageProps = $props();
 
 	let vehicleType = $state<VehicleType | ''>('');
 	let vehicleImages: File[] = [];
@@ -132,7 +135,7 @@
 		>
 			<!-- PLATE (Hero Field) -->
 			<section class="text-center">
-    			<PlatesInput mode="input" />
+    			<PlatesInput mode="input" value={data.plate} />
 
 			</section>
 
@@ -174,6 +177,7 @@
 					<ColorPicker
 						label={colorName}
 						bind:hex={colorHex}
+						rgb={null}
 						components={ChromeVariant}
 						sliderDirection="horizontal"
 						--input-size="36px"
@@ -188,10 +192,11 @@
 					<input
 						id="year"
 						name="year"
-						type="text"
+						type="number"
 						inputmode="numeric"
-						pattern="^\d{4}$"
-						maxlength="4"
+						min="1900"
+						max={new Date().getFullYear()}
+						step="1"
 						placeholder="1998"
 						class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium"
 					/>
@@ -251,11 +256,11 @@
 
 <style>
 	:global(:root:not(.dark)) {
-		--cp-bg-color: #1e2939;
+		--cp-bg-color: #CECECE;
 		--cp-border-color: white;
 		--cp-text-color: black;
-		--cp-input-color: #1e2939;
-		--cp-button-hover-color: #1e2939;
+		--cp-input-color: white;
+		--cp-button-hover-color: #DFDFDF;
 	}
 	:global(:root.dark) {
 		--cp-bg-color: #1e2939;
