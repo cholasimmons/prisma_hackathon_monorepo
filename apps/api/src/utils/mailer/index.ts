@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const mailer = nodemailer.createTransport({
 	host: process.env.SMTP_HOST,
 	port: Number(process.env.SMTP_PORT),
-	secure: isProduction, // true ONLY for 465
+	secure: false, // isProduction, // true ONLY for 465
 	auth: {
 		user: process.env.SMTP_USER,
 		pass: process.env.SMTP_PASS

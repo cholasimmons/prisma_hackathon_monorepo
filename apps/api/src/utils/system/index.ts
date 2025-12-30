@@ -26,6 +26,11 @@ const requiredEnvVars = [
   "REDIS_HOST",
   "REDIS_PORT",
   "REDIS_URL",
+  "SMTP_HOST",
+  "SMTP_PORT",
+  "SMTP_USER",
+  "SMTP_PASS",
+  "SMTP_FROM",
 ];
 
 const systemBoot = async () => {
@@ -56,7 +61,9 @@ const systemBoot = async () => {
     }
 
     console.info("| Checking Email transport (Nodemailer)...");
-    await mailer.verify();
+    await mailer.verify().catch((error) => {
+      console.error("| ✖️ Nodemailer", error);
+    });
     // await sendMail(["frank@simmons.studio"], "Prisma API System Booted", null, `<b>Prisma API</b> System booted successfully.`);
     console.log("| ✅ Nodemailer");
 
