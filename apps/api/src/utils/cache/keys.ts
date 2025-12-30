@@ -47,6 +47,7 @@ const CacheKeys = {
 } as const;
 
 const RedisEvents = {
+  sendEmail: 'email:send',
   processImage: 'image:process',
   submitVehicle: 'vehicle:submit',
   submitVehiclePhotos: 'vehicle:submit:photos',

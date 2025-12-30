@@ -1,6 +1,7 @@
 import { checkEnvVariables } from "~/utils/system/env-checker";
 import db from "~/utils/database/client";
 import { cache } from "~/utils/cache/index";
+import { mailer, sendMail } from "../mailer";
 
 const requiredEnvVars = [
   "ORIGIN_URL",
@@ -53,6 +54,11 @@ const systemBoot = async () => {
     } else {
       console.error("| ✖️ Redis");
     }
+
+    console.info("| Checking Email transport (Nodemailer)...");
+    await mailer.verify();
+    // await sendMail(["frank@simmons.studio"], "Prisma API System Booted", null, `<b>Prisma API</b> System booted successfully.`);
+    console.log("| ✅ Nodemailer");
 
     // console.log("👍🏼 System booted.");
   } catch (e) {

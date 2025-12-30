@@ -186,9 +186,9 @@ abstract class VehicleService {
    * Get vehicle with image URL
    */
   static async getVehicleWithImage(
-    id: string,
-  ): Promise<(PublicVehicle & { imageUrl?: string }) | null> {
-    const vehicle = await this.getVehicleById(id);
+    plate: string,
+  ): Promise<(PublicVehicle & { photoUrl?: string }) | null> {
+    const vehicle = await this.getVehicleByPlate(plate);
 
     if (!vehicle) {
       return null;
@@ -438,109 +438,24 @@ abstract class VehicleService {
     return vehicle?.submittedById === userId;
   }
 
-  // static async computeConsensus(plate: string) {
-  //   const submissions = await db.vehicleSubmission.findMany({
-  //     where: { plate },
-  //     orderBy: { createdAt: "asc" },
-  //     include: { photos: true },
-  //   });
+  static async reEvaluateVehicleSubmission(): Promise<boolean> {
+    let submissions: VehicleSubmission[] = [];
 
-  //   if (!submissions.length) return null;
+    const cached = await cache.get<VehicleSubmission[]>(
+      CacheKeys.vehicles.all,
+    );
+    if (cached) submissions = cached;
 
-  //   const fields = ["color", "make", "model", "year"] as const;
+    const vehicles = await db.vehicleSubmission.findMany({
+      where: { isActive: true }
+    });
 
-  //   const result: any = { plate };
+    if(vehicles) submissions = vehicles;
 
-  //   // 1. Majority vote for each attribute
-  //   for (const field of fields) {
-  //     const votes = submissions
-  //       .map((s: VehicleSubmission) => s[field])
-  //       .filter(Boolean);
+    console.log("| Processed ", submissions?.length ?? 0, " vehicle submissions")
 
-  //     if (votes.length === 0) {
-  //       result[field] = null;
-  //       continue;
-  //     }
-
-  //     const freq: Record<string, number> = {};
-  //     for (const v of votes) freq[v!] = (freq[v!] || 0) + 1;
-
-  //     const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
-  //     result[field] = sorted[0][0];
-  //   }
-
-  //   // 2. Determine the best photo by clustering pHashes
-  //   // const photos = submissions.filter((s: VehicleSubmission) => s.photos && s.pHash);
-
-  //   // if (!photos.length) {
-  //   //   result.photos = null;
-  //   // } else {
-  //   //   // TODO: Fix this
-  //   //   result.photos = null; // this.findConsensusPhoto(photos[0]);
-  //   // }
-
-  //   return result;
-  // }
-
-  // private static getMode(list: string[]) {
-  //   if (!list || list.length === 0) return null;
-
-  //   const counts = new Map();
-  //   list.forEach((item) => {
-  //     if (!item) return;
-  //     counts.set(item, (counts.get(item) || 0) + 1);
-  //   });
-
-  //   // find max
-  //   let max = 0;
-  //   let result = null;
-  //   for (const [value, count] of counts.entries()) {
-  //     if (count > max) {
-  //       max = count;
-  //       result = value;
-  //     }
-  //   }
-
-  //   return result;
-  // }
-
-  // private static findConsensusPhoto(
-  //   photos: { photo: string; pHash: string }[],
-  //   ): string | null {
-  //   if (photos.length === 1) return photos[0].photo;
-
-  //   // pick the photo that has the lowest average hamming distance to others
-  //   let bestPhoto = photos[0].photo;
-  //   let bestScore = Infinity;
-
-  //   for (const p of photos) {
-  //     let total = 0;
-
-  //     for (const q of photos) {
-  //       if (p === q) continue;
-  //       total += hammingDistance(p.pHash, q.pHash);
-  //     }
-
-  //     const avg = total / (photos.length - 1);
-  //     if (avg < bestScore) {
-  //       bestScore = avg;
-  //       bestPhoto = p.photo;
-  //     }
-  //   }
-
-  //   return bestPhoto;
-  // }
-
-  // private async saveConsensus(plate: string) {
-  //   const data = await VehicleService.computeConsensus(plate);
-  //   if (!data) return null;
-
-  //   return prisma.vehicle.upsert({
-  //     where: { plate },
-  //     update: data,
-  //     create: data,
-  //   });
-  // }
+    return true;
+  }
 }
 
 export default VehicleService;

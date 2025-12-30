@@ -10,6 +10,7 @@ import { PublicUser, PublicUserFields } from "./model";
 import UserService from "./service";
 import { BucketNames } from "~/utils/image/storage";
 import s3 from "~/utils/s3";
+import { HttpStatusCode } from "elysia-http-status-code";
 
 const usersController = new Elysia({
   prefix: "/users",
@@ -20,6 +21,7 @@ const usersController = new Elysia({
     single: 'User',
     plural: 'Users'
   })
+  .use(HttpStatusCode())
 
   .get('/', async ({ status, session }) => {
     const cached = await cache.get<PublicUser[]>(CacheKeys.user.all);
@@ -47,28 +49,26 @@ const usersController = new Elysia({
   })
 
 
-  .post('/avatar', async ({ status, body, session }) => {
+  .post('/avatar', async ({ status, body, session, httpStatus }) => {
     const file = body.avatar as File;
 
     console.log(body);
 
     if (!file) {
-      throw new Error('No file provided');
+      return (httpStatus.HTTP_204_NO_CONTENT, { message: 'No file provided' });
     }
 
     // validate
     if (!file.type.startsWith('image/')) {
-      throw new Error('Invalid file type');
+      return (httpStatus.HTTP_406_NOT_ACCEPTABLE, { message: 'Invalid file type' });
     }
 
     // upload to MinIO / S3
-    const update: { path: string } | null = await UserService.updateUserImage(session.userId, file);
+    const path: string | null = await UserService.updateUserImage(session.userId, file);
 
-    if (!update) {
-      throw new Error('Failed to upload image');
+    if (!path) {
+      return (httpStatus.HTTP_417_EXPECTATION_FAILED, { message: 'Failed to upload image' });
     }
-
-    const { path } = update;
 
     return status(200, { data: path, success: true, message: 'Image is uploading...' });
   }, {

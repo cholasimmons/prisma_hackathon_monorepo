@@ -10,6 +10,7 @@ import { ip } from "elysia-ip";
 import { Logestic } from "logestic";
 import { rateLimit } from "elysia-rate-limit";
 import { systemBoot, systemOff } from "~/utils/system";
+import { logger } from '@grotto/logysia';
 import {
   authController,
   usersController,
@@ -21,11 +22,19 @@ import {
 import staticPlugin from "@elysiajs/static";
 import db from "./utils/database/client";
 import { cache } from "./utils/cache";
+import { sendMail } from "./utils/mailer";
+import { addEmailJob } from "./utils/queues/email";
+import { audit } from "./services/audit";
+import { EventType } from "./generated/prisma/enums";
+import VehicleService from "./modules/vehicles/service";
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
 const ENV = process.env.BUN_ENV ?? process.env.NODE_ENV;
 const allowedOrigins = process.env.ORIGIN_URL?.split(',')
+  // const unsafePlugins = new Elysia()
+  //   .use(elysiaXSS({}))
+  //   .use(Logestic.preset("commontz"));
 
 const app = new Elysia({
   websocket: {
@@ -61,9 +70,17 @@ const app = new Elysia({
   )
 
   .use(helmet())
-  .use(elysiaXSS({}))
+  // .use(elysiaXSS({}))
   .use(ip())
-  .use(Logestic.preset("commontz"))
+  // .use(Logestic.preset("commontz") as any)
+  .use(logger({
+      logIP: true,
+      writer: {
+          write(msg: string) {
+            console.log(msg)
+          }
+      }
+  }))
   .use(
     rateLimit({
       scoping: "global",
@@ -75,9 +92,18 @@ const app = new Elysia({
   .use(
     cron({
       name: "cron-job",
-      pattern: Patterns.EVERY_5_MINUTES,
-      run: () => console.log("Cron job executed (5 minutes)"),
+      pattern: Patterns.EVERY_30_MINUTES,
+      run: () => console.log("Cron job executed (30 minutes)"),
     }),
+  )
+  .use(
+    cron({
+      name: "cron-job-2",
+      pattern: Patterns.EVERY_DAY_AT_5AM,
+      run: () => {
+        VehicleService.reEvaluateVehicleSubmission();
+      },
+    })
   )
   .use(staticPlugin({ indexHTML: false }))
   .use(betterAuth)
@@ -139,6 +165,25 @@ const app = new Elysia({
       return status(200, { data, success: true, message: "Stats fetched successfully" });
   }, {
     auth: true
+  })
+
+  .post('test-email', async ({ body, status, ip }) => {
+    const { to, subject, html } = body;
+
+    // Job Queue
+    await addEmailJob({ to, subject, html });
+
+    // Audit Log
+    await audit.log({ actorId: "SYSTEM", type: EventType.EMAIL_SEND, entity: 'Email', entityId: '000', ipAddress: ip, userAgent: 'User Agent', route: '/test-email', method: 'POST' });
+
+    return status(200, { success: true, message: "Email sent successfully" });
+  }, {
+    body: t.Object({
+      to: t.String(),
+      subject: t.String(),
+      // text: t.Optional(t.String()),
+      html: t.String()
+    })
   })
 
   .get("/health", ({ status }: Context) => {

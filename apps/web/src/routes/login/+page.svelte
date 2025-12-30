@@ -40,7 +40,8 @@
 				toast.error(result.data?.message ?? 'Unable to sign in');
 			}
 
-			await update();
+			// TODO: Restore update logic if signing form still resets after successful login
+			// await update();
 			_signingIn = false;
 		};
 	};

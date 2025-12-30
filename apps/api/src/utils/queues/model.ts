@@ -8,7 +8,8 @@ interface QueueEmail {
 
 interface QueueImage {
   userId: string,
-  file: File,
+  // file: File,
+  tempPath: string,
   filepath: string,
   ext?: string,
 }
