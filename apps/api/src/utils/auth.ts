@@ -29,7 +29,7 @@ const auth = betterAuth({
 				</p>
  			`;
 
-      await addEmailJob({
+      void addEmailJob({
         to: user.email,
         subject: "Reset your password",
         html
@@ -50,7 +50,7 @@ const auth = betterAuth({
 				</p>
 			`;
 
-      await addEmailJob({
+      void addEmailJob({
         to: user.email,
         subject: "Verify your email address",
         html
