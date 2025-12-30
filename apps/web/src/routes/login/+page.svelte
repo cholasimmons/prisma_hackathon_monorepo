@@ -6,9 +6,26 @@
 	import { goto } from '$app/navigation';
 	import { authClient } from '$lib/auth-client';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Spinner from '$lib/components/Loaders/Spinner.svelte';
+	import { fade } from 'svelte/transition';
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
+	let _sendingLink = $state(false);
+	let _resettingPassword = $state(false);
+
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	let email = $state('');
+	let password = $state('');
+	let isValidEmail = $derived.by(() => {
+	  return emailRegex.test(email)
+	})
+	let isValidPassword = $derived.by(() => {
+        const hasLength = password.length >= 6;
+		// const hasNumber = /\d/.test(password);
+		// const hasUpper = /[A-Z]/.test(password);
+		return hasLength; // && hasNumber && hasUpper;
+	})
 
 	const GoogleIcon = 'flat-color-icons:google';
 	const MicrosoftIcon = 'logos:microsoft-icon';
@@ -45,6 +62,53 @@
 			_signingIn = false;
 		};
 	};
+
+	async function forgotPassword() {
+	    if(!isValidEmail) {
+			toast.error('Invalid email address');
+			return;
+		}
+
+	    _resettingPassword = true;
+
+
+		try{
+    		await authClient.requestPasswordReset({
+     			email,
+     			redirectTo: data.callbackUrl ?? '/'
+    		}, { timeout: 8000 });
+
+    		toast.success('Password reset link sent! 😊');
+		} catch(error){
+		    console.error(error);
+			toast.error('Reset link not sent');
+		} finally {
+		  _resettingPassword = false;
+		}
+	}
+
+	async function sendVerificationLink() {
+	    if(!isValidEmail) {
+			toast.error('Invalid email address');
+			return;
+		}
+
+	    _sendingLink = true;
+
+		try{
+    		await authClient.sendVerificationEmail({
+   			email: email,
+   			callbackURL: data.callbackUrl ?? '/'
+    		}, {timeout: 8000});
+
+    		toast.success('Verification email sent! 😊');
+		} catch(error){
+		    console.error(error);
+			toast.error('Unable to send verification email');
+		} finally {
+		  _sendingLink = false;
+		}
+	}
 </script>
 
 <main
@@ -59,8 +123,9 @@
 				id="email"
 				name="email"
 				type="email"
+				bind:value={email}
 				required
-				disabled={_signingIn}
+				disabled={_signingIn || _sendingLink}
 				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
@@ -71,8 +136,9 @@
 				id="password"
 				name="password"
 				type="password"
+				bind:value={password}
 				required
-				disabled={_signingIn}
+				disabled={_signingIn || _sendingLink}
 				class="w-full rounded-lg border px-3 py-2 text-gray-800 dark:text-gray-800 text-xl font-medium focus:outline-none focus:ring focus:border-amber-600"
 			/>
 		</div>
@@ -83,13 +149,19 @@
 					type="checkbox"
 					id="rememberMe"
 					name="rememberMe"
-					disabled={_signingIn}
+					disabled={_signingIn || _sendingLink}
 					class="w-4 h-4"
 				/>
 				Remember me
 			</label>
 
-			<a href="/forgot-password" class="dark:text-amber-500 hover:underline"> Forgot password? </a>
+			<button onclick={forgotPassword} disabled={!isValidEmail || _resettingPassword}  style="padding: 0.5rem 1rem;">
+				{#if _resettingPassword}
+				    <Spinner size={18} /> Resetting Password…
+				{:else}
+				    Forgot password?
+				{/if}
+			</button>
 		</div>
 
 		<!-- {#if form?.success === false }
@@ -100,25 +172,36 @@
 
 		<button
 			type="submit"
-			disabled={_signingIn}
+			disabled={ !isValidEmail || !isValidPassword || _signingIn || _sendingLink}
 			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 		>
-			{_signingIn ? 'Signing in…' : 'Sign in'}
+			{#if _signingIn} <Spinner size={24} /> Signing in… {:else} Sign in {/if}
 		</button>
 	</form>
 
-	<div class="my-6 flex items-center gap-3 text-sm text-gray-400">
+	<div class="flex my-4 items-center gap-3 text-sm text-gray-400">
+		<button in:fade={{ duration: 1000, delay: (1000 * 10) }} disabled={!isValidEmail || _sendingLink || _signingIn}
+		onclick={sendVerificationLink} style="padding: 0.5rem 1rem">
+			{#if _sendingLink}
+			    <Spinner size={18} /> Sending Verification Link
+			{:else}
+			    Resend Verification Link
+			{/if}
+		</button>
+	</div>
+
+	<div class="hidden my-6 items-center gap-3 text-sm text-gray-400">
 		<div class="h-px flex-1 bg-gray-200"></div>
 		or continue with
 		<div class="h-px flex-1 bg-gray-200"></div>
 	</div>
 
 	<!-- Social login -->
-	<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mx-auto">
+	<div class="hidden grid-cols-2 md:grid-cols-4 gap-4 mx-auto">
 		<a
 			title="Google is not available"
 			href="/oauth/google"
-			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GoogleIcon} />
 			<span>Google</span>
@@ -126,7 +209,7 @@
 
 		<a
 			href="/oauth/microsoft"
-			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={MicrosoftIcon} />
 			<span>Microsoft</span>
@@ -134,7 +217,7 @@
 
 		<a
 			href="/oauth/github"
-			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={GithubIcon} />
 			<span>GitHub</span>
@@ -142,7 +225,7 @@
 
 		<a
 			href="/oauth/apple"
-			class="hidden items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
+			class="items-center justify-center gap-2 rounded-lg border px-4 py-2 hover:bg-gray-100/70 hover:dark:text-gray-800"
 		>
 			<Icon icon={AppleIcon} />
 			<span>Apple</span>

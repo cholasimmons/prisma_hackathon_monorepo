@@ -1,3 +1,5 @@
+/* @css-ignore */
+
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
@@ -11,7 +13,7 @@ img {
 	user-select: none; /* disables text selection */
 	pointer-events: auto; /* optional if you want clicks */
 	-webkit-user-drag: none; /* Safari/Chrome */
-	user-drag: none; /* standard */
+	/* user-drag: none; /* standard */
 }
 
 /*:root {
@@ -52,8 +54,8 @@ select {
 }
 button {
 	transition: all 0.2s ease-in-out; /* smooth focus effect */
-	@apply cursor-pointer;
-	@apply rounded-xl p-2;
+	@apply cursor-pointer rounded-xl p-2;
+	@apply flex items-center justify-center gap-3;
 	@apply hover:bg-amber-500 hover:text-white hover:dark:bg-gray-500/40 hover:dark:text-amber-500;
 	@apply focus:border-0 focus:ring-0 focus:outline-none focus-visible:outline-none;
 }
@@ -67,6 +69,13 @@ select:focus,
 button:focus {
 	@apply ring-2 ring-amber-500; /* Tailwind ring on focus */
 	@apply border-amber-500; /* optional: change border color too */
+}
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+	@apply bg-gray-600 dark:bg-gray-800 text-gray-500 dark:text-gray-500;
+	/* @apply border-2 border-gray-300 dark:border-gray-700 transition-all duration-200; */
 }
 .txt-btn {
 	@apply cursor-pointer rounded-lg border-2 border-gray-600 px-4 py-1 text-gray-600 hover:border-gray-500 hover:bg-gray-500/10 hover:text-gray-500 dark:border-amber-500 dark:text-amber-500 dark:hover:border-amber-400 dark:hover:bg-amber-500/20 dark:hover:text-amber-400;
