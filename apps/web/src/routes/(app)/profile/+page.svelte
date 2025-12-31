@@ -157,8 +157,8 @@
 					onclick={uploading ? null : triggerFileSelect}
 				>
 				    <UserAvatar
-				        avatarUrl={_avatar}
-				        size={128}
+				        src={_avatar}
+				        className="w-24 h-24 rounded-full"
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}

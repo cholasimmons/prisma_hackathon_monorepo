@@ -25,6 +25,7 @@
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
 	import AvatarCell from '$lib/components/Tables/AvatarCell.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	let { children, data } = $props();
 	let dark = $state(true);
@@ -114,10 +115,9 @@
 
 				{#if data?.user && page.data.user.image}
 					<button class="txt-btn" onclick={() => gotoProfile()}>
-						<AvatarCell
+						<UserAvatar
 							src={page.data.user.image}
-							className="w-8 h-8 rounded-"
-							alt={page.data.user.name}
+							className="w-8 h-8 rounded-full"
 						/>
 					</button>
 				{:else if data?.user}

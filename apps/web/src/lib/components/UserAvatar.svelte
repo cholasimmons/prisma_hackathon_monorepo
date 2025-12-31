@@ -1,16 +1,14 @@
 <script lang="ts">
-    let { avatarUrl, size = 128, alt }: { avatarUrl?: string | null, size: number, alt?: string } = $props();
+    let { src, className = 'w-12 h-12 rounded-full', alt }: { src?: string | null, className: string, alt?: string } = $props();
 
-    const src = $derived.by(() => (`https://minio-prisma.vps.simmons.studio/prismabucket/${avatarUrl}`) || '/images/default-avatar.png');
+    const d = $derived.by(() => (`https://minio-prisma.vps.simmons.studio/prismabucket/${src}`) || '/images/default-avatar.png');
     // const src = `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`;
 </script>
 
 <img
-    {src}
+    src={d}
     {alt}
-    class="avatar"
-    width={size}
-    height={size}
+    class={className}
     loading="lazy"
 />
 
