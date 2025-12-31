@@ -69,14 +69,19 @@ abstract class UserService {
       console.log('handleImageUpload() started...')
 
       // Create unique filename
-      const extension = imageFile.name.split(".").pop() || "jpg";
-      const filepath = `${BucketNames.users}/${userId}/avatar-${Date.now()}.${extension}`;
+      const ext = imageFile.name.split(".").pop() ?? "jpg";
+      const filepath = `${BucketNames.users}/${userId}/avatar-${Date.now()}.${ext}`;
+      const tmpDir =
+        Bun.env.TMPDIR ??
+        Bun.env.TEMP ??
+        Bun.env.TMP ??
+        '/tmp';
 
       // 1. Save file to temp disk (or direct S3 raw upload)
-      const tempPath = `/tmp/${crypto.randomUUID()}-${imageFile.name}`;
-      await Bun.write(tempPath, await imageFile.arrayBuffer());
+      const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
+      await Bun.write(tempPath, (await imageFile.arrayBuffer()));
 
-      await addImageJob(userId, tempPath, filepath, extension);
+      await addImageJob(userId, tempPath, filepath, ext);
 
       console.log(
         `📸 Uploading optimized image for User ${userId} to S3: ${filepath}.`

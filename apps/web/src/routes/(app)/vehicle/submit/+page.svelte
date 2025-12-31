@@ -36,7 +36,7 @@
 			await update();
 
 			if (result?.type === 'success') {
-				const { plate, make, color, model, year, forSale } = result.data;
+				const { plate, make, color, model, year, type, forSale } = result.data;
 
 				const formData = new FormData();
 				formData.append('plate', plate);
@@ -44,6 +44,7 @@
 				formData.append('color', color ?? null);
 				formData.append('model', model ?? null);
 				formData.append('year', year ?? null);
+				formData.append('type', type ?? '');
 				formData.append('forSale', forSale === 'on' ? 'true' : 'false');
 				formData.append('image', vehicleImages[0]);
 
@@ -54,6 +55,7 @@
 
 				if (response.success === true && response.message) {
 					toast.success(response.message);
+					goto('/');
 				} else if (response.success === false && response.message) {
 					toast.error(response.message);
 				}

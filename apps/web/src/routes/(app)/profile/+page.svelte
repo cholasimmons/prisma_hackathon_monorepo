@@ -46,14 +46,11 @@
 		await uploadAvatar(file);
 	}
 
-	async function uploadAvatar(file: File | Blob) {
-		console.log('beginning to upload:',typeof file, file);
+	async function uploadAvatar(file: File) {
 		uploading = true;
 
 		const form = new FormData();
 		form.append('avatar', file);
-
-		console.log('form:', form);
 
 		try {
             const res = await api.post<string>('/users/avatar', form);
@@ -61,7 +58,7 @@
             console.log('form POST response:', res);
 
     		if (!res) {
-     			alert('Failed to upload avatar');
+     			alert('Failed to upload to server');
      			uploading = false;
      			return;
     		}
@@ -193,21 +190,21 @@
 
 		<div class="flex flex-col items-center md:items-start justify-start space-y-2">
 			<h2 class="text-2xl font-semibold m-0 text-gray-800 dark:text-gray-200">{data.user!.name}</h2>
-			<p class="mb-6">{data.user!.email}</p>
+			<p class="mb-4">{data.user!.email}</p>
 
 			{#if _fetchingProfile}
 				<p class="flex space-x-2 items-center justify-center text-gray-500 text-sm">
 					<Spinner /> <span>Loading Profile...</span>
 				</p>
 			{:else}
-				<p
+				<p title={data.user?.role === 'admin' ? 'Admin' : null}
 					in:fade={{ duration: 300 }}
-					class="text-base {data.user!.role === 'admin' ? 'text-amber-500' : 'text-gray-500'} mb-6"
+					class="text-base flex items-center justify-center gap-3 {data.user!.role === 'admin' ? 'text-amber-500' : 'text-gray-500'} mb-6"
 				>
 					{#if data.user?.role === 'admin'}
-						<ShieldCheckIcon size={36} />
+						<ShieldCheckIcon size={24} /> Admin
 					{:else}
-						<User size={36} />
+						<User size={24} /> {#if submissions && submissions.length > 0} Contributor {:else} Participant {/if}
 					{/if}
 				</p>
 			{/if}
