@@ -1,5 +1,4 @@
-import { authClient } from '$lib/auth-client';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 
 export const actions: Actions = {
   default: async ({ request }) => {
@@ -12,7 +11,13 @@ export const actions: Actions = {
     const lastname = String(data.get('lastname') ?? '').trim()
     const name = `${firstname} ${lastname}`
 
-    // VALIDATION — always here
+   	const passwordHasLength = password.length >= 6;
+      // const passwordHasNumber = /\d/.test(password);
+      // const passwordHasUpper = /[A-Z]/.test(password);
+		if (!passwordHasLength) {
+			return fail(400, { success: false, email, name, message: 'Invalid password' });
+		}
+
     if (password !== confirmPassword) {
       return fail(400, { success: false, email, name, message: 'Passwords do not match' })
     }
@@ -29,9 +34,7 @@ export const actions: Actions = {
       return fail(400, { success: false, email, name, message: 'Invalid Email' })
     }
 
-    if (password.length < 8) {
-      return fail(400, { success: false, email, name, message: 'Invalid Password' })
-    }
+
 
     return { success: true, message: 'Registration successful', user: { email, name, password } }
 

@@ -54,7 +54,7 @@ select {
 }
 button {
 	transition: all 0.2s ease-in-out; /* smooth focus effect */
-	@apply cursor-pointer rounded-xl p-4 text-lg lg:text-xl;
+	@apply cursor-pointer rounded-xl p-3 text-base lg:text-lg;
 	@apply flex items-center justify-center gap-3;
 	@apply hover:bg-amber-500 hover:text-white hover:dark:bg-gray-500/40 hover:dark:text-amber-500;
 	@apply focus:border-0 focus:ring-0 focus:outline-none focus-visible:outline-none;
@@ -74,7 +74,7 @@ input:disabled,
 textarea:disabled,
 select:disabled,
 button:disabled {
-	@apply bg-gray-600 dark:bg-gray-800 text-gray-500 dark:text-gray-500;
+	@apply bg-gray-400 dark:bg-gray-500 text-gray-950 dark:text-gray-950 cursor-not-allowed;
 	/* @apply border-2 border-gray-300 dark:border-gray-700 transition-all duration-200; */
 }
 .txt-btn {

@@ -12,6 +12,7 @@ import { addEmailJob } from "./queues/email";
 const PREFIX = "/auth";
 
 const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   basePath: PREFIX,
   database: prismaAdapter(db, {
     provider: "postgresql" // or "mysql", "postgresql", ...etc
@@ -21,6 +22,7 @@ const auth = betterAuth({
     requireEmailVerification: true,
 
     sendResetPassword: async ({ user, url, token }, request) => {
+      const link = url; // `${process.env.ORIGIN_URL}/auth/password-reset?token=${token}`;
  			const html = `
 				<h2>Plates | Password reset</h2>
 				<p>
@@ -34,7 +36,11 @@ const auth = betterAuth({
         subject: "Reset your password",
         html
       });
-    }
+    },
+    onPasswordReset: async ({ user }, request) => {
+      // your logic here
+      console.log(`Password for user ${user.email} has been reset.`);
+    },
   },
   emailVerification: {
     sendOnSignUp: true,
@@ -42,11 +48,12 @@ const auth = betterAuth({
     autoSignInAfterVerification: true,
 
     sendVerificationEmail: async ({ user, url, token }, request) => {
+      const link = url; // `${process.env.ORIGIN_URL}/auth/verify-email?token=${token}`;
       const html = `
 				<h2>Plates | Verify your email</h2>
 				<p>Hello ${user.name ?? 'there'},</p>
 				<p>
-					Click <a href="${url}">here</a> to verify your email.
+					<a href="${link}">Click here</a> to verify your email.
 				</p>
 			`;
 

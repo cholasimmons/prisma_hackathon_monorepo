@@ -8,12 +8,16 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { fade } from 'svelte/transition';
+	import { PUBLIC_APP_URL } from '$env/static/public';
+
+	const APP_URL = PUBLIC_APP_URL;
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);
 	let _sendingLink = $state(false);
 	let _resettingPassword = $state(false);
 
+	// Reactive
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	let email = $state('');
 	let password = $state('');
@@ -37,13 +41,14 @@
 
 		return async ({ result, update }: any) => {
 			if (result?.type === 'success') {
-				const { email, password, rememberMe, callbackUrl } = result.data?.user;
+				const { email, password, rememberMe } = result.data?.user;
+				const { callbackURL } = result.data;
 
 				const res = await authClient.signIn.email({
 					email,
 					password,
 					rememberMe,
-					callbackURL: callbackUrl ?? '/'
+					callbackURL: callbackURL ?? (APP_URL + '/')
 				});
 
 				if (res.error?.message || res.error?.statusText) {
@@ -71,11 +76,10 @@
 
 	    _resettingPassword = true;
 
-
 		try{
     		await authClient.requestPasswordReset({
      			email,
-     			redirectTo: data.callbackUrl ?? '/'
+     			redirectTo: (APP_URL + '/auth/reset-password')
     		}, { timeout: 8000 });
 
     		toast.success('Check your email! 😊');
@@ -98,7 +102,7 @@
 		try{
     		await authClient.sendVerificationEmail({
    			email: email,
-   			callbackURL: data.callbackUrl ?? '/'
+   			callbackURL: data.callbackUrl ?? (APP_URL + '/')
     		}, {timeout: 8000});
 
     		toast.success('Verification email sent! 😊');
@@ -179,7 +183,7 @@
 		</button>
 	</form>
 
-	<div class="flex my-4 items-center gap-3 text-sm text-gray-400">
+	<div class="flex my-4 items-center gap-3 text-sm text-gray-500">
 		<button in:fade={{ duration: 1000, delay: (1000 * 10) }} disabled={!isValidEmail || _sendingLink || _signingIn}
 		onclick={sendVerificationLink} style="padding: 0.5rem 1rem">
 			{#if _sendingLink}

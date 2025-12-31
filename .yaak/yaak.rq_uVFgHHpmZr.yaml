@@ -1,0 +1,30 @@
+type: http_request
+model: http_request
+id: rq_uVFgHHpmZr
+createdAt: 2025-12-31T03:17:28.131911900
+updatedAt: 2025-12-31T03:18:28.805118500
+workspaceId: wk_HwJZxYJkYa
+folderId: null
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers: []
+method: GET
+name: /auth/verify-email
+sortPriority: 3000.0020000000004
+url: ${[ base_url ]}/auth/verify-email
+urlParameters:
+- enabled: true
+  name: token
+  value: eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InNpbW1vbnNmcmFua0BnbWFpbC5jb20iLCJpYXQiOjE3NjcxNDU2MDAsImV4cCI6MTc2NzE0OTIwMH0.RYXHHGRhEis-gZeDRRJ9-d0lvqqAWeB1w6TiObyEzXc
+  id: SyivfUaSja
+- enabled: true
+  name: callbackURL
+  value: /vehicles
+  id: ANcy9f8Ku5
+- enabled: true
+  name: ''
+  value: ''
+  id: 3fsTqYFIn3

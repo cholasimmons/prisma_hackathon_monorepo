@@ -1,14 +1,56 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { PageProps } from './$types';
 	import toast from 'svelte-french-toast';
 	import { EyeClosedIcon, EyeOffIcon, EyeIcon } from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { PUBLIC_APP_URL } from '$env/static/public';
 
-	let { data, form }: PageProps = $props();
+	const APP_URL = PUBLIC_APP_URL;
+
 	let _signingUp = $state(false);
 	let _showConfirmPassword = $state(false);
+
+	// Reactive
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+   	let firstname = $state('');
+    let lastname = $state('');
+    let email = $state('');
+    let password = $state('');
+    let confirmPassword = $state('');
+
+    const isValidFirstname = $derived.by(() => {
+      return firstname.length >= 2;
+    });
+
+    const isValidLastname = $derived.by(() => {
+      return lastname.length >= 2;
+    });
+
+    const isValidEmail = $derived.by(() => {
+      return emailRegex.test(email);
+    });
+
+    const isValidPassword = $derived.by(() => {
+      const hasLength = password.length >= 6;
+    		// const hasNumber = /\d/.test(password);
+    		// const hasUpper = /[A-Z]/.test(password);
+      return hasLength; // && hasNumber && hasUpper;
+    });
+
+    const isValidConfirmPassword = $derived.by(() => {
+      const hasLength = password.length >= 6;
+    		// const hasNumber = /\d/.test(password);
+    		// const hasUpper = /[A-Z]/.test(password);
+    		const isEqual = password === confirmPassword;
+      return hasLength && isEqual;
+    });
+
+    const isValidForm = $derived.by(() => {
+      return isValidFirstname && isValidLastname && isValidEmail && isValidPassword && isValidConfirmPassword;
+    })
+
+
 
 	const handleEnhance = () => {
 		// form submission finished
@@ -23,7 +65,7 @@
 					email,
 					password,
 					name,
-					callbackURL: '/login'
+					callbackURL: APP_URL + '/login'
 				});
 
 				if (res.error?.message || res.error?.statusText) {
@@ -49,11 +91,12 @@
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="grid grid-cols-2 gap-4 text-gray-800 dark:text-gray-300 text-lg md:text-2xl">
 			<div class="space-y-1">
-				<label for="firstname" class="text-sm font-medium">First Name</label>
+				<label for="firstname" class={`text-sm font-medium 'text-red-600': !isValidFirstname`}>First Name</label>
 				<input
 					id="firstname"
 					name="firstname"
 					type="text"
+					bind:value={firstname}
 					required
 					class="w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
 				/>
@@ -64,8 +107,9 @@
 					id="lastname"
 					name="lastname"
 					type="text"
+					bind:value={lastname}
 					required
-					class="w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
+					class={`w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium ${!isValidLastname ? 'label-error' : ''}`}
 				/>
 			</div>
 		</div>
@@ -76,6 +120,7 @@
 				id="email"
 				name="email"
 				type="email"
+				bind:value={email}
 				required
 				class="w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
 			/>
@@ -90,6 +135,7 @@
 					id="password"
 					name="password"
 					type="password"
+					bind:value={password}
 					required
 					class="w-full rounded-lg border px-3 py-2 text-lg md:text-xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
 				/>
@@ -102,6 +148,7 @@
 						id="confirmPassword"
 						name="confirmPassword"
 						type={_showConfirmPassword ? 'text' : 'password'}
+						bind:value={confirmPassword}
 						required
 						class="w-full rounded-lg border px-3 py-2 text-lg md:text-xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
 					/>
@@ -133,7 +180,7 @@
 		<div class="flex justify-center">
 			<button
 				type="submit"
-				disabled={_signingUp}
+				disabled={_signingUp || !isValidForm}
 				class="w-full rounded-full md:max-w-sm mx-auto bg-black dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600 md:text-xl disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 			>
 				{_signingUp ? 'Signing up…' : 'Sign up'}
@@ -141,3 +188,10 @@
 		</div>
 	</form>
 </main>
+
+
+<style>
+    .label-error {
+        color: orangered
+    }
+</style>

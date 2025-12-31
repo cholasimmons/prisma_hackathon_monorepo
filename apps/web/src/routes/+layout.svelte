@@ -23,10 +23,10 @@
 	let dark = $state(true);
 
 	function gotoLogin() {
-		goto('/login');
+		goto('/auth/login');
 	}
 	function gotoSignup() {
-		goto('/signup');
+		goto('/auth/signup');
 	}
 
 	function toggleTheme() {
@@ -104,7 +104,7 @@
 				{/if}
 			</div>
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
-				{#if !data?.user && page.url.pathname.startsWith('/login')}
+				{#if !data?.user && page.url.pathname.startsWith('/auth/login')}
 					<button
 						in:fade={{ duration: 400, delay: 100 }}
 						class="txt-btn"

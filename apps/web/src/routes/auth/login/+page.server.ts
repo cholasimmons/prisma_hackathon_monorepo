@@ -1,9 +1,9 @@
-import { authClient } from '$lib/auth-client';
-import { fail, redirect, type Actions } from '@sveltejs/kit';
+import { APP_URL } from '$lib/env';
+import { fail, type Actions } from '@sveltejs/kit';
 
 export function load({ locals, url }) {
 	return {
-		callbackUrl: url.searchParams.get('callbackUrl') ?? '/'
+		callbackURL: url.searchParams.get('callbackURL') ?? (APP_URL + '/')
 	};
 	// if(locals.user) {
 	//   redirect(302, '/');
@@ -13,7 +13,7 @@ export function load({ locals, url }) {
 export const actions: Actions = {
 	default: async ({ request, url }) => {
 		const data = await request.formData();
-		const callbackUrl = url.searchParams.get('callbackUrl') ?? '/';
+		const callbackURL = url.searchParams.get('callbackURL') ?? (APP_URL + '/');
 
 		const email = String(data.get('email') ?? '').trim();
 		const password = String(data.get('password') ?? '').trim();
@@ -24,13 +24,19 @@ export const actions: Actions = {
 			return fail(400, { success: false, email, rememberMe, message: 'Invalid Email' });
 		}
 
-		if (password.length < 8) {
+		const passwordHasLength = password.length >= 6;
+    // const passwordHasNumber = /\d/.test(password);
+    // const passwordHasUpper = /[A-Z]/.test(password);
+		if (!passwordHasLength) {
 			return fail(400, { success: false, email, rememberMe, message: 'Invalid password' });
 		}
 
+
+
 		return {
 			success: true,
-			user: { email, rememberMe, password, callbackUrl },
+			user: { email, rememberMe, password },
+			callbackURL,
 			message: 'Welcome!'
 		};
 	}

@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { getContext, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { searchVehicles } from '$lib/api/vehicles';
 	import type { Vehicle } from '$lib/models/vehicle.model';
-	import { toast } from 'svelte-french-toast';
 	import { goto } from '$app/navigation';
 	import { fade, scale } from 'svelte/transition';
-	import { cubicIn, cubicInOut } from 'svelte/easing';
+	import { cubicIn } from 'svelte/easing';
 	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
 	import PlatesInput from '$lib/components/PlatesInput.svelte';
 
