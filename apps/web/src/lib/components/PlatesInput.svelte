@@ -115,7 +115,6 @@
 		border: 4px solid #BEBEBE;
 		font-weight: 900;
 		line-height: 1.3;
-		box-shadow: inset 0 0 0 4px #333;
 	}
 	#plates-input-container input::placeholder {
 		opacity: 0.35;

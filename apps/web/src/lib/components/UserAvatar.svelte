@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { LucideUser } from "@lucide/svelte";
+
     let { avatarUrl, size = 128, alt }: { avatarUrl: string | null, size: number, alt?: string } = $props();
     const S3_ENDPOINT = import.meta.env.PUBLIC_S3_ENDPOINT;
     const S3_BUCKET = import.meta.env.PUBLIC_S3_BUCKET;
 
     const src = $derived.by(() => `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`);
+    console.log(src);
     // const src = `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`;
 </script>
 
@@ -19,7 +22,9 @@
   />
 {:else}
   <div class="avatar-fallback" style={`width: ${size}px; height: ${size}px`}>
-    <span>👤</span>
+    <span>
+        <LucideUser size={size/3} />
+    </span>
   </div>
 {/if}
 
