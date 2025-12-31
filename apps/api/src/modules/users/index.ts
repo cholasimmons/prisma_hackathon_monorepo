@@ -68,15 +68,7 @@ const usersController = new Elysia({
       return (httpStatus.HTTP_417_EXPECTATION_FAILED, { message: 'Failed to upload image' });
     }
 
-    // Generate presigned URL (expires in 1 hour)
-    const presignedUrl = s3.presign(
-      path, {
-        method: 'GET',
-        expiresIn: 86400, // 1 day
-      }
-    );
-
-    return status(200, { data: presignedUrl, success: true, message: 'Image is uploading...' });
+    return status(200, { data: path, success: true, message: 'Image is uploading...' });
   }, {
     auth: true,
     body: t.Object({

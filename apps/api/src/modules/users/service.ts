@@ -6,6 +6,7 @@ import { CacheKeys } from "~/utils/cache/keys";
 import { BucketNames } from "~/utils/image/storage";
 import { PublicUser, PublicUserFields } from "./model";
 import { addImageJob } from "~/utils/queues/image";
+import s3 from "~/utils/s3";
 
 abstract class UserService {
 
@@ -21,6 +22,17 @@ abstract class UserService {
       userId,
       image,
     );
+
+    // let presignedUrl: string | null = null;
+    // if(path) {
+    //   // Generate presigned URL (expires in 1 hour)
+    //   presignedUrl = s3.presign(
+    //     path, {
+    //       method: 'GET',
+    //       expiresIn: 86400, // 1 day
+    //     }
+    //   );
+    // }
 
     // 2: Update database
     const updatedUser: User | null =
@@ -57,7 +69,7 @@ abstract class UserService {
       updatedStripped,
     );
 
-    return path;
+    return path ?? null;
   }
 
 
@@ -70,7 +82,8 @@ abstract class UserService {
 
       // Create unique filename
       const ext = imageFile.name.split(".").pop() ?? "jpg";
-      const filepath = `${BucketNames.users}/${userId}/avatar-${Date.now()}.${ext}`;
+      const safeFilename = `avatar-${Date.now()}`;
+      const filepath = `${BucketNames.users}/${userId}/${safeFilename}.${ext}`;
       const tmpDir =
         Bun.env.TMPDIR ??
         Bun.env.TEMP ??

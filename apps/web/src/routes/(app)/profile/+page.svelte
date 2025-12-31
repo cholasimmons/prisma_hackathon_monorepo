@@ -12,6 +12,7 @@
 	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User } from '@lucide/svelte';
 	import toast from 'svelte-french-toast';
 	import { authClient } from '$lib/auth-client';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -156,12 +157,16 @@
                         	       focus-visible:ring-gray-400"
 					onclick={uploading ? null : triggerFileSelect}
 				>
-					<img
+				    <UserAvatar
+				        avatarUrl={_avatar}
+				        size={96}
+				    />
+					<!-- <img
 						in:fade={{ duration: 400 }}
 						src={_avatar}
 						alt={data.user?.name}
 						class="w-full h-full rounded-full object-cover"
-					/>
+					/> -->
 
 					<!-- Overlay -->
 					<span
