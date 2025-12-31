@@ -8,7 +8,7 @@ import s3 from '~/utils/s3';
 import { unlink } from 'node:fs/promises';
 
 const addImageJob = async (userId: string, tempPath: string, filepath: string, ext?: string) => {
-    await imageQueue.add(RedisEvents.processImage, { userId, tempPath, filepath, ext }, {
+    await imageQueue.add(RedisEvents.processUserImage, { userId, tempPath, filepath, ext }, {
       attempts: 3,
       backoff: {
         type: 'exponential',
@@ -22,14 +22,9 @@ const imageWorker = createWorker('imageQueue', async (job: Job) => {
     console.log('Image Worker:', job.name);
 
     if(job.name === RedisEvents.processUserImage){
-        const { userId, tempPath, filepath, ext } = job.data as QueueImage;
-        // Put your actual logic here
-        console.log(`[Queue]: 📷 Processing ${ext} image`);
-
-        // Convert File to ArrayBuffer
-        // const arrayBuffer = await file.arrayBuffer();
-        // const buffer = Buffer.from(arrayBuffer);
-
+      const { userId, tempPath, filepath, ext } = job.data as QueueImage;
+      // Put your actual logic here
+      console.log(`[Queue]: 📷 Processing ${ext} image`);
       try {
         const arrayBuffer = await Bun.file(tempPath).arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
@@ -64,8 +59,6 @@ const imageWorker = createWorker('imageQueue', async (job: Job) => {
         console.error('Image processing failed', err);
         throw err; // let BullMQ retry
       }
-
-
     }
 });
 

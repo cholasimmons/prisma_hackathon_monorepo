@@ -52,8 +52,6 @@ const usersController = new Elysia({
   .post('/avatar', async ({ status, body, session, httpStatus }) => {
     const file = body.avatar as File;
 
-    console.log(body);
-
     if (!file) {
       return (httpStatus.HTTP_204_NO_CONTENT, { message: 'No file provided' });
     }
@@ -70,7 +68,15 @@ const usersController = new Elysia({
       return (httpStatus.HTTP_417_EXPECTATION_FAILED, { message: 'Failed to upload image' });
     }
 
-    return status(200, { data: path, success: true, message: 'Image is uploading...' });
+    // Generate presigned URL (expires in 1 hour)
+    const presignedUrl = s3.presign(
+      path, {
+        method: 'GET',
+        expiresIn: 86400, // 1 day
+      }
+    );
+
+    return status(200, { data: presignedUrl, success: true, message: 'Image is uploading...' });
   }, {
     auth: true,
     body: t.Object({
