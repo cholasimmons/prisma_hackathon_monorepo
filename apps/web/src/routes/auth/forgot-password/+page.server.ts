@@ -4,10 +4,12 @@ export const actions: Actions = {
   default: async ({ request }) => {
     const data = await request.formData()
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     const email = String(data.get('email') ?? '').trim()
 
     // VALIDATION — always here
-    if (!email.includes('@') || email.length < 8) {
+    if (!emailRegex.test(email) || email.length < 8) {
       return fail(400, { success: false, email, message: 'Invalid Email' })
     }
 

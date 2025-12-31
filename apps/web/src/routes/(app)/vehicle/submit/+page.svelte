@@ -16,6 +16,7 @@
 
 	let { data, form }: PageProps = $props();
 
+	let plate = $state(data?.plate ?? '');
 	let vehicleType = $state<VehicleType | ''>('');
 	let vehicleImages: File[] = [];
 
@@ -135,8 +136,7 @@
 		>
 			<!-- PLATE (Hero Field) -->
 			<section class="text-center">
-    			<PlatesInput mode="input" value={data.plate} />
-
+    			<PlatesInput mode="input" value={plate} />
 			</section>
 
 			<!-- MAKE + MODEL -->

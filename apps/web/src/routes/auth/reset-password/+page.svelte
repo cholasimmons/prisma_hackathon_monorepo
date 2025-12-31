@@ -8,6 +8,7 @@
 	import { enhance } from '$app/forms';
 
 	let { data } = $props();
+	// let { token, callbackURL } = data;
 	let resetting = $state(false);
 	let success = $state(false);
 
@@ -33,19 +34,20 @@
 
 		return async ({ result, update }: any) => {
 			if (result?.type === 'success') {
-				const { newPassword, token } = result.data?.user;
+				const { newPassword } = result.data?.user;
 				const { message } = result.data;
 
 				const res = await authClient.resetPassword({
 					newPassword,
-					token
+					token: data?.token
 				});
 
 				if (res.error?.message || res.error?.code) {
 					toast.error(res.error?.message ?? 'An error occurred');
 				} else if(res.data?.status === true) {
 					success = true;
-					goto(data.callbackURL ?? '/');
+					toast.success(result.data?.message ?? 'Password was reset.');
+					goto('/auth/login', { replaceState: true });
 				}
 			} else if (result?.type === 'error' || result?.type === 'failure') {
 				toast.error(result.error?.message ?? 'Unable to reset password');

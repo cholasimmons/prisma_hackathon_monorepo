@@ -22,13 +22,17 @@ const auth = betterAuth({
     requireEmailVerification: true,
 
     sendResetPassword: async ({ user, url, token }, request) => {
-      const link = url; // `${process.env.ORIGIN_URL}/auth/password-reset?token=${token}`;
+      const link = `${process.env.ORIGIN_URL}/auth/reset-password?token=${token}`;
  			const html = `
 				<h2>Plates | Password reset</h2>
 				<p>
  					Reset your password by clicking
- 					<a href="${url}">here</a>.
+ 					<a href="${link}">here</a>.
 				</p>
+				<small>${url}, ${token}</small>
+				<small>
+					If you did not request a password reset, please ignore this email.
+				</small>
  			`;
 
       void addEmailJob({

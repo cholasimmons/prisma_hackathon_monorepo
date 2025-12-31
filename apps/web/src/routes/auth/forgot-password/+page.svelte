@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { authClient } from '$lib/auth-client';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import toast from 'svelte-french-toast';
+	import type { PageProps } from './$types';
+	import { PUBLIC_APP_URL } from '$env/static/public';
+	import { goto } from '$app/navigation';
+
 	// @ts-checkpe { PageProps } from './$types';
-	// let { data, form }: PageProps = $props();
+	let { data, form }: PageProps = $props();
 	let _resetting = $state(false);
 
 	const handleEnhance = () => {
@@ -16,10 +21,16 @@
           // AUTH — delegated
           const response = await authClient.requestPasswordReset({
             email,
-            redirectTo: '/login'
-          })
+            redirectTo: PUBLIC_APP_URL + '/auth/reset-password'
+          });
 
-          toast.success(result.data.message!);
+          if (response.error) {
+            toast.error(response.error.message ?? response.error.statusText);
+            // toast.success('Password reset email sent!');
+          }
+
+          toast.success(response.data?.message ?? 'Password reset email sent!');
+          goto('/', { replaceState: true });
         } else if (result?.type === 'error' || result?.type === 'failure') {
           toast.error(result.data.message);
         }
@@ -33,10 +44,7 @@
 <main
 	class="container mx-auto max-w-xl px-8 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<h1 class="mb-1 dark:text-gray-200 text-2xl">Forgot Password</h1>
-	<p class="mb-8 text-sm">
-	    Enter your email address, we'll send you a link to reset your password.
-	</p>
+    <PageHeader title="Forgot Password" description="Enter your email address, we'll send you a link to reset your password." />
 
 	<form method="POST" class="space-y-4"
 		use:enhance={handleEnhance}

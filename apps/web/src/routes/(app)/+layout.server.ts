@@ -18,7 +18,7 @@ export const load: LayoutServerLoad = ({ locals, url }) => {
 		};
 	} else {
 		if (!locals.session || !locals.user) {
-			throw redirect(302, `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+			throw redirect(302, `/auth/login?callbackURL=${encodeURIComponent(callbackURL)}`);
 		}
 	}
 

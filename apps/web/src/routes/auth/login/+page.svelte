@@ -54,9 +54,9 @@
 				if (res.error?.message || res.error?.statusText) {
 					toast.error(res.error?.message ?? res.error?.statusText);
 				} else if (res.data?.redirect) {
-					goto(res.data?.url ?? '/');
+					goto(res.data?.url ?? '/', { replaceState: true });
 				} else {
-					goto('/');
+					goto('/', { replaceState: true });
 				}
 			} else if (result?.type === 'error' || result?.type === 'failure') {
 				toast.error(result.data?.message ?? 'Unable to sign in');
@@ -102,7 +102,7 @@
 		try{
     		await authClient.sendVerificationEmail({
    			email: email,
-   			callbackURL: data.callbackUrl ?? (APP_URL + '/')
+   			callbackURL: (APP_URL + '/')
     		}, {timeout: 8000});
 
     		toast.success('Verification email sent! 😊');
@@ -177,13 +177,13 @@
 		<button
 			type="submit"
 			disabled={ !isValidEmail || !isValidPassword || _signingIn || _sendingLink}
-			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600  cursor-pointer transition-colors duration-100 ease-in-out"
 		>
 			{#if _signingIn} <Spinner size={24} /> Signing in… {:else} Sign in {/if}
 		</button>
 	</form>
 
-	<div class="flex my-4 items-center gap-3 text-sm text-gray-500">
+	<div class="flex my-4 items-center gap-3 text-sm">
 		<button in:fade={{ duration: 1000, delay: (1000 * 10) }} disabled={!isValidEmail || _sendingLink || _signingIn}
 		onclick={sendVerificationLink} style="padding: 0.5rem 1rem">
 			{#if _sendingLink}

@@ -13,14 +13,22 @@
 		HouseIcon,
 		TriangleAlert,
 		LucideSun,
-		LucideMoon
+		LucideMoon,
+
+		LucidePowerOff,
+
+		LucideCirclePower
+
+
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
 	import AvatarCell from '$lib/components/Tables/AvatarCell.svelte';
+	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 
 	let { children, data } = $props();
 	let dark = $state(true);
+	let loggingOut = $state(false);
 
 	function gotoLogin() {
 		goto('/auth/login');
@@ -38,6 +46,11 @@
 	}
 	function gotoProfile() {
 		goto('/profile');
+	}
+	function logout() {
+      authClient.signOut().then(() => {
+     	goto('/');
+      });
 	}
 
 	onMount(async () => {
@@ -126,11 +139,24 @@
 					{/if}
 				</button>
 				<button
-					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1 cursor-pointer"
+					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1"
 					onclick={gotoAbout}
 				>
 					<CircleQuestionMark />
 				</button>
+				{#if data.user}
+    				<button
+                        disabled={loggingOut}
+    					class="hidden md:block text-red-700 dark:text-red-400 hover:text-amber-600 px-2"
+    					onclick={logout}
+    				>
+                        {#if loggingOut}
+                            <Spinner size={24} />
+                        {:else}
+                            <LucideCirclePower />
+                        {/if}
+    				</button>
+                {/if}
 			</div>
 		</header>
 

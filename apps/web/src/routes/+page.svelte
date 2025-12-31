@@ -142,7 +142,7 @@
 			<div
 				in:fade={{ duration: 400, delay: 100 }}
 				out:fade={{ duration: 100 }}
-				class="text-center py-2 w-full mx-auto"
+				class="text-center py-2 flex flex-col w-full mx-auto"
 			>
 				<svg
 					class="mx-auto h-12 w-12 text-gray-400"

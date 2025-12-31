@@ -5,6 +5,7 @@
 	import { authClient } from '$lib/auth-client';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { PUBLIC_APP_URL } from '$env/static/public';
+	import { goto } from '$app/navigation';
 
 	const APP_URL = PUBLIC_APP_URL;
 
@@ -65,19 +66,20 @@
 					email,
 					password,
 					name,
-					callbackURL: APP_URL + '/login'
+					callbackURL: (APP_URL + '/')
 				});
 
 				if (res.error?.message || res.error?.statusText) {
 					toast.error(res.error?.message ?? res.error?.statusText);
 				} else if (res.data?.user) {
 					toast.success('Account created successfully');
+					goto('/', { replaceState: true })
 				}
 			} else if (result?.type === 'error' || result?.type === 'failure') {
 				toast.error(result.data.message);
 			}
 
-			await update();
+			// await update();
 			_signingUp = false;
 		};
 	};

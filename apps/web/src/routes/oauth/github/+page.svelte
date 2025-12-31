@@ -16,7 +16,7 @@
 			goto('/');
 		} catch (e) {
 			console.error(e);
-			goto('/login');
+			goto('/auth/login');
 		}
 	});
 </script>

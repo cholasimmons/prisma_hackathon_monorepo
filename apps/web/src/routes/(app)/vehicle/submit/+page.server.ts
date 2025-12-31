@@ -4,16 +4,10 @@ import { formatPlateInput } from '$lib/vehicles/plate';
 import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
-export function load({ url }) {
-	return {
-		plate: url.searchParams.get('plate')
-	};
-}
-
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		if (!locals.user) {
-			throw redirect(302, '/login');
+			throw redirect(302, '/auth/login');
 		}
 
 		const data = await request.formData();

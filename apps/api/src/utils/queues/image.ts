@@ -21,7 +21,7 @@ const addImageJob = async (userId: string, tempPath: string, filepath: string, e
 const imageWorker = createWorker('imageQueue', async (job: Job) => {
     console.log('Image Worker:', job.name);
 
-    if(job.name === RedisEvents.processImage){
+    if(job.name === RedisEvents.processUserImage){
         const { userId, tempPath, filepath, ext } = job.data as QueueImage;
         // Put your actual logic here
         console.log(`[Queue]: 📷 Processing ${ext} image`);
@@ -31,7 +31,8 @@ const imageWorker = createWorker('imageQueue', async (job: Job) => {
         // const buffer = Buffer.from(arrayBuffer);
 
       try {
-        const buffer = await Bun.file(tempPath).arrayBuffer();
+        const arrayBuffer = await Bun.file(tempPath).arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
         // Use Sharp to resize and optimize
         const optimizedBuffer = await sharp(buffer)
