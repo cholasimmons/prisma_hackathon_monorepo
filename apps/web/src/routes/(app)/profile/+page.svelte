@@ -159,7 +159,7 @@
 				>
 				    <UserAvatar
 				        avatarUrl={_avatar}
-				        size={96}
+				        size={128}
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}

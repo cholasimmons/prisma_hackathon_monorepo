@@ -1,18 +1,16 @@
 <script lang="ts">
-	import { PUBLIC_S3_ENDPOINT, PUBLIC_S3_BUCKET } from "$env/static/public";
-
     let { avatarUrl, size = 128, alt }: { avatarUrl: string | null, size: number, alt?: string } = $props();
+    const S3_ENDPOINT = import.meta.env.PUBLIC_S3_ENDPOINT;
+    const S3_BUCKET = import.meta.env.PUBLIC_S3_BUCKET;
 
-    const avatarPath = $derived.by(() => {
-      `/${PUBLIC_S3_ENDPOINT}'/'${PUBLIC_S3_BUCKET}'/'${avatarUrl}`;
-    });
+    const src = $derived.by(() => `${S3_ENDPOINT}'/'${S3_BUCKET}'/'${avatarUrl}`);
 </script>
 
 
 {#if avatarUrl}
   <img
-    src={avatarPath ?? ''}
-    alt={alt}
+    {src}
+    {alt}
     class="avatar"
     width={size}
     height={size}
