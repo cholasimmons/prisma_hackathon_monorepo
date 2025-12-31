@@ -114,7 +114,7 @@
 				{/if}
 
 				{#if data?.user && page.data.user.image}
-					<button class="txt-btn" onclick={() => gotoProfile()}>
+					<button onclick={() => gotoProfile()}>
 						<UserAvatar
 							src={page.data.user.image}
 							className="w-8 h-8 rounded-full"

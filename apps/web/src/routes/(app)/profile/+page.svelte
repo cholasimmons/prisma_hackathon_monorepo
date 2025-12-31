@@ -158,7 +158,7 @@
 				>
 				    <UserAvatar
 				        src={_avatar}
-				        className="w-24 h-24 rounded-full"
+				        className="w-32 h-32 aspect-square rounded-full"
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}
