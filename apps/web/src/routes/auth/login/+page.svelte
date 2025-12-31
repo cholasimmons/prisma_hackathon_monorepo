@@ -105,7 +105,7 @@
    			callbackURL: (APP_URL + '/')
     		}, {timeout: 8000});
 
-    		toast.success('Verification email sent! 😊');
+    		toast.success('Verification email sent! 😊', { duration: 5000 });
 		} catch(error){
 		    console.error(error);
 			toast.error('Unable to send verification email');
@@ -122,7 +122,7 @@
 
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="space-y-1">
-			<label for="email" class="text-sm font-medium">Email</label>
+			<label for="email" class={`text-sm font-medium ${isValidEmail ? '' : 'label-error'}`}>Email</label>
 			<input
 				id="email"
 				name="email"
@@ -135,7 +135,7 @@
 		</div>
 
 		<div class="space-y-1">
-			<label for="password" class="text-sm font-medium">Password</label>
+			<label for="password" class={`text-sm font-medium ${isValidPassword ? '' : 'label-error'}`}>Password</label>
 			<input
 				id="password"
 				name="password"
@@ -159,7 +159,7 @@
 				Remember me
 			</label>
 
-			<button onclick={forgotPassword} disabled={!isValidEmail || _resettingPassword}  style="padding: 0.5rem 1rem;">
+			<button type="button" onclick={forgotPassword} disabled={!isValidEmail || _resettingPassword || _signingIn}  style="padding: 0.5rem 1rem;">
 				{#if _resettingPassword}
 				    <Spinner size={18} /> Resetting Password…
 				{:else}
@@ -176,7 +176,7 @@
 
 		<button
 			type="submit"
-			disabled={ !isValidEmail || !isValidPassword || _signingIn || _sendingLink}
+			disabled={ !isValidEmail || !isValidPassword || _signingIn || _sendingLink || _resettingPassword}
 			class="w-full rounded-lg bg-gray-800 dark:bg-amber-800 py-3 font-medium text-white hover:bg-amber-600  cursor-pointer transition-colors duration-100 ease-in-out"
 		>
 			{#if _signingIn} <Spinner size={24} /> Signing in… {:else} Sign in {/if}
@@ -248,3 +248,12 @@
 		>Return home</a
 	 -->
 </main>
+
+<style>
+    .label-success {
+        color: seagreen
+    }
+    .label-error {
+        color: salmon
+    }
+</style>

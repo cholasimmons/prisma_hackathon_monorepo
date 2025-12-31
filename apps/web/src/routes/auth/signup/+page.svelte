@@ -93,7 +93,7 @@
 	<form method="POST" class="space-y-4" use:enhance={handleEnhance}>
 		<div class="grid grid-cols-2 gap-4 text-gray-800 dark:text-gray-300 text-lg md:text-2xl">
 			<div class="space-y-1">
-				<label for="firstname" class={`text-sm font-medium 'text-red-600': !isValidFirstname`}>First Name</label>
+				<label for="firstname" class={`text-sm font-medium ${isValidFirstname ? '' : 'label-error'}`}>First Name</label>
 				<input
 					id="firstname"
 					name="firstname"
@@ -104,20 +104,20 @@
 				/>
 			</div>
 			<div class="space-y-1">
-				<label for="lastname" class="text-sm font-medium">Last Name</label>
+				<label for="lastname" class={`text-sm font-medium ${isValidLastname ? '' : 'label-error'}`}>Last Name</label>
 				<input
 					id="lastname"
 					name="lastname"
 					type="text"
 					bind:value={lastname}
 					required
-					class={`w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium ${!isValidLastname ? 'label-error' : ''}`}
+					class="w-full rounded-lg border px-3 py-2 text-lg md:text-2xl text-gray-800 focus:outline-none focus:ring focus:border-amber-600 font-medium"
 				/>
 			</div>
 		</div>
 
 		<div class="space-y-1 text-gray-800 dark:text-gray-300">
-			<label for="email" class="text-sm font-medium">Email</label>
+			<label for="email" class={`text-sm font-medium ${isValidEmail ? '' : 'label-error'}`}>Email</label>
 			<input
 				id="email"
 				name="email"
@@ -132,7 +132,7 @@
 			class="grid grid-cols-1 gap-4 md:grid-cols-2 text-gray-800 dark:text-gray-300 text-lg md:text-xl"
 		>
 			<div class="space-y-1">
-				<label for="password" class="text-sm font-medium">Password</label>
+				<label for="password" class={`text-sm font-medium ${isValidPassword ? '' : 'label-error'}`}>Password</label>
 				<input
 					id="password"
 					name="password"
@@ -144,7 +144,7 @@
 			</div>
 
 			<div class="space-y-1">
-				<label for="confirmPassword" class="text-sm font-medium">Confirm Password</label>
+				<label for="confirmPassword" class={`text-sm font-medium ${isValidConfirmPassword ? '' : 'label-error'}`}>Confirm Password</label>
 				<div class="relative">
 					<input
 						id="confirmPassword"
@@ -158,8 +158,9 @@
 					<!-- Eye icon button -->
 					<button
 						type="button"
+						hidden={confirmPassword.length === 0}
 						onclick={() => (_showConfirmPassword = !_showConfirmPassword)}
-						class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+						class="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
 						style="border:none; focus:outline-none; outline:none;"
 					>
 						{#if _showConfirmPassword}
@@ -193,7 +194,10 @@
 
 
 <style>
+    .label-success {
+        color: seagreen
+    }
     .label-error {
-        color: orangered
+        color: salmon
     }
 </style>

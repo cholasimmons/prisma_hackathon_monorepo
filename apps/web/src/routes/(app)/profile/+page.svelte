@@ -47,8 +47,7 @@
 	}
 
 	async function uploadAvatar(file: File | Blob) {
-		console.log('beginning to upload:', file);
-		console.log(typeof file);
+		console.log('beginning to upload:',typeof file, file);
 		uploading = true;
 
 		const form = new FormData();
@@ -56,21 +55,28 @@
 
 		console.log('form:', form);
 
-		const res = await api.post<string>('/users/avatar', form);
+		try {
+            const res = await api.post<string>('/users/avatar', form);
 
-		console.log('form POST response:', res);
+            console.log('form POST response:', res);
 
-		if (!res) {
+    		if (!res) {
+     			alert('Failed to upload avatar');
+     			uploading = false;
+     			return;
+    		}
+
+    		toast.success('Image uploaded 🤗');
+
+    		_avatar = res.data; // update locally
+    		profile = { ...profile, image: res.data } as UserProfile;
+		} catch(error){
+			console.error('Error uploading avatar:', error);
 			alert('Failed to upload avatar');
-			uploading = false;
 			return;
+		} finally {
+			uploading = false;
 		}
-
-		toast.success('Image uploaded 🤗');
-
-		_avatar = res.data; // update locally
-		profile = { ...profile, image: res.data } as UserProfile;
-		uploading = false;
 	}
 
 	function _gotoSubmitVehicle() {

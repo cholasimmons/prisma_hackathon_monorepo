@@ -3,12 +3,16 @@ import { fail, type Actions } from '@sveltejs/kit';
 export const actions: Actions = {
 	default: async ({ request, url }) => {
 		const callbackURL = url.searchParams.get('callbackURL');
+    const token = url.searchParams.get('token');
 
 		const data = await request.formData();
 
 		const newPassword = String(data.get('newPassword') ?? '').trim();
 		const confirmPassword = String(data.get('confirmPassword') ?? '').trim();
 
+		if (!token || token.length < 64) {
+			return fail(400, { success: false, message: 'Invalid reset token' });
+		}
 
 		const passwordHasLength = newPassword.length >= 6;
     // const passwordHasNumber = /\d/.test(password);
@@ -24,7 +28,7 @@ export const actions: Actions = {
 		return {
 			success: true,
 			user: { newPassword },
-			callbackURL,
+			callbackURL, token,
 			message: 'Password updated!'
 		};
 	}

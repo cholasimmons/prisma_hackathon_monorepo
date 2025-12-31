@@ -82,7 +82,7 @@
 		class="
 	focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500
 	placeholder:text-gray-400 dark:placeholder:text-gray-300
-	plates text-6xl sm:text-7xl text-center inner-outline emboss extrude"
+	plates text-6xl sm:text-7xl text-center emboss-extrude"
 		autocomplete="off"
 		autoCapitalize="characters"
 		inputmode="text"
@@ -108,31 +108,24 @@
 	}
 
 	#plates-input-container input {
-		background-color: #eeeeee;
+		background-image: linear-gradient(to bottom, #dedede,#bcbcbc, #bcbcbc);
 		color: #222;
 		width: 100%;
 		border-radius: 1rem;
-		border: 3px solid #e5e7eb;
+		border: 4px solid #BEBEBE;
+		font-weight: 900;
+		line-height: 1.3;
+		box-shadow: inset 0 0 0 4px #333;
 	}
 	#plates-input-container input::placeholder {
 		opacity: 0.35;
 		color: #333;
+		text-shadow: none;
 	}
-
-	.emboss {
-		color: #9ca3af; /* base text color */
+	.emboss-extrude {
+		color: #48f; /* base text color */
 		text-shadow:
-			3px32px 0 #ffffff80,
-			/* highlight (top-left) */ -3px -3px 0 #00000040; /* shadow (bottom-right) */
-	}
-
-	.extrude {
-		text-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3);
-	}
-
-	.inner-outline {
-		border: 3px solid #e5e7eb; /* normal border */
-		border-radius: 1rem; /* match input radius */
-		box-shadow: inset 0 0 0 2px #000;
+			2px 2px 2px #00000060, /* shadow (bottom-right) */
+			-2px -2px 1px rgba(255,255,255,0.95); /* highlight (top-left) */
 	}
 </style>

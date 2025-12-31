@@ -29,7 +29,7 @@ const auth = betterAuth({
  					Reset your password by clicking
  					<a href="${link}">here</a>.
 				</p>
-				<small>${url}, ${token}</small>
+
 				<small>
 					If you did not request a password reset, please ignore this email.
 				</small>
