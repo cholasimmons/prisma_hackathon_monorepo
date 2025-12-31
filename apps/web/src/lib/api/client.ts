@@ -57,11 +57,19 @@ async function request<T>(
 
 	for (let attempt = 0; attempt <= retries; attempt++) {
 		try {
-			const fetchPromise = fetch(url, {
-				method,
-				headers: baseHeaders,
-				body: isFormData ? body : body ? JSON.stringify(body) : undefined
-			});
+		  const fetchOptions: RequestInit = {
+        method,
+        headers: baseHeaders,
+        credentials: 'include', // ✅ This belongs here
+      };
+
+			if (isFormData) {
+        fetchOptions.body = body as FormData;
+      } else if (body) {
+        fetchOptions.body = JSON.stringify(body);
+      }
+
+      const fetchPromise = fetch(url, fetchOptions);
 
 			const response = await timeoutPromise(fetchPromise, timeout);
 
