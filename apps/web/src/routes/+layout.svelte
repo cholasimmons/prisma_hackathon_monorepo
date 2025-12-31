@@ -7,7 +7,7 @@
 
 	import { onMount } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import {
 		CircleQuestionMark,
 		HouseIcon,
@@ -48,8 +48,16 @@
 		goto('/profile');
 	}
 	function logout() {
-      authClient.signOut().then(() => {
-     	goto('/');
+	loggingOut = true;
+      authClient.signOut().then(async () => {
+        invalidateAll().then(() => {
+          goto('/');
+        }).finally(() => {
+          loggingOut = false;
+        });
+
+      }).finally(() => {
+        loggingOut = false;
       });
 	}
 

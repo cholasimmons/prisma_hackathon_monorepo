@@ -3,7 +3,8 @@
     const S3_ENDPOINT = import.meta.env.PUBLIC_S3_ENDPOINT;
     const S3_BUCKET = import.meta.env.PUBLIC_S3_BUCKET;
 
-    const src = $derived.by(() => `${S3_ENDPOINT}'/'${S3_BUCKET}'/'${avatarUrl}`);
+    const src = $derived.by(() => `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`);
+    // const src = `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`;
 </script>
 
 
