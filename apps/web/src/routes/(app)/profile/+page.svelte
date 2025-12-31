@@ -50,10 +50,10 @@
 	async function uploadAvatar(file: File) {
 		uploading = true;
 
-		const form = new FormData();
-		form.append('avatar', file);
-
 		try {
+    		const form = new FormData();
+    		form.append('avatar', file);
+
             const res = await api.post<string>('/users/avatar', form);
 
             console.log('form POST response:', res);
@@ -98,7 +98,6 @@
 		try {
 			_fetchingProfile = true;
 			response = await api.get<UserProfile>('/auth/me');
-			console.log('auth/me', response);
 			profile = response.data as UserProfile;
 			_avatar = response.data?.image ? response.data.image : '/images/default-avatar.png';
 		} catch (error) {
@@ -140,7 +139,7 @@
 </script>
 
 <main
-	class="mx-auto p-8 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="mx-auto dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
 	<!--PageHeader title={`${toPossessive(data.user!.name)} Profile`} /-->
 
@@ -198,7 +197,7 @@
 			<p class="mb-4">{data.user!.email}</p>
 
 			{#if _fetchingProfile}
-				<p class="flex space-x-2 items-center justify-center text-gray-500 text-sm">
+				<p class="flex gap-2 items-center justify-center text-gray-500 text-sm">
 					<Spinner /> <span>Loading Profile...</span>
 				</p>
 			{:else}

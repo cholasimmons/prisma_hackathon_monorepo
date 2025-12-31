@@ -80,35 +80,67 @@ const usersController = new Elysia({
   })
 
   .post('/upload-test', async ({ status, body }) => {
-    // Dummy content // Convert File to ArrayBuffer
-    const content = `${new Date().toISOString()}: MinIO upload test - ${body.text ?? '.'}`;
-    const buffer = Buffer.from(content);
+    if (body.text) {
+      // Dummy content // Convert File to ArrayBuffer
+      const content = `${new Date().toISOString()}: MinIO upload test - ${body.text ?? '.'}`;
+      const buffer = Buffer.from(content);
 
-    // Create unique filename
-    const extension = "txt";
-    const filepath = `${BucketNames.users}/debug-${Date.now()}.${extension}`;
+      // Create unique filename
+      const extension = "txt";
+      const filepath = `${BucketNames.users}/debug-${Date.now()}.${extension}`;
 
-    // Upload to S3
-    const s3File = s3.file(filepath);
-    const uploadSizeB = await s3File.write(buffer, {
-      type: "text/plain"
-    });
+      // Upload to S3
+      const s3File = s3.file(filepath);
+      const uploadSizeB = await s3File.write(buffer, {
+        type: "text/plain"
+      });
 
-    // GET URL for downloads
-    const downloadUrl = s3File.presign({
-      method: "GET",
-      expiresIn: 60 * 60 * 24 // 1 day
-    });
+      // GET URL for downloads
+      const downloadUrl = s3File.presign({
+        method: "GET",
+        expiresIn: 60 * 60 * 24 // 1 day
+      });
 
-    const data = {
-      downloadUrl,
-      uploadSizeKB: uploadSizeB / 1024,
+      const data = {
+        downloadUrl,
+        uploadSizeKB: uploadSizeB / 1024,
+      }
+
+      return status(200, { data, success: true, message: `${uploadSizeB / 1024}KB text file uploaded.` });
+    } else if (body.file) {
+      // Convert File to ArrayBuffer
+      const buffer = await body.file.arrayBuffer();
+
+      // Create unique filename
+      const extension = body.file.type.split('.').pop() ?? 'jpg';
+      const filepath = `${BucketNames.users}/test/debug-${Date.now()}.${extension}`;
+
+      // Upload to S3
+      const s3File = s3.file(filepath);
+      const uploadSizeB = await s3File.write(buffer, {
+        type: body.file.type
+      });
+
+      // GET URL for downloads
+      const downloadUrl = s3File.presign({
+        method: "GET",
+        expiresIn: 60 * 60 * 24 // 1 day
+      });
+
+      const data = {
+        downloadUrl,
+        uploadSizeKB: uploadSizeB / 1024,
+      }
+
+      return status(200, { data, success: true, message: `${uploadSizeB / 1024}KB file uploaded.` });
     }
-
-    return status(200, { data, success: true, message: `${uploadSizeB / 1024}KB text file uploaded.` });
   }, {
     body: t.Object({
-      text: t.Optional(t.String())
+      text: t.Optional(t.String()),
+      file: t.Optional(t.File({
+        max: 1024 * 1024 * 5,
+        mimeTypes: ['image/*']
+      }))
     }),
     detail: {
       tags: ['Debug', 'S3', 'upload', 'test'],

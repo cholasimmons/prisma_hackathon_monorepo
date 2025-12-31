@@ -1,6 +1,6 @@
 import { BETTER_AUTH_URL } from '$env/static/private';
 import { PUBLIC_API_BASE_URL } from '$env/static/public';
-import { PUBLIC_APP_URL } from '$env/static/public';
+import { PUBLIC_APP_URL, PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from '$env/static/public';
 
 const API_BASE_URL = PUBLIC_API_BASE_URL;
 const APP_URL = PUBLIC_APP_URL;
