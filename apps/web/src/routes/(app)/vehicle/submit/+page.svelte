@@ -33,7 +33,6 @@
 		_submitting = true;
 
 		return async ({ result, update }: any) => {
-			await update();
 
 			if (result?.type === 'success') {
 				const { plate, make, color, model, year, type, forSale } = result.data;
@@ -54,13 +53,13 @@
 				const response = await api.post<VehicleSubmission>('/vehicles/submit', formData);
 
 				if (response.success === true && response.message) {
-					toast.success(response.message);
+					toast.success(response.message, { duration: 5000 });
 					goto('/');
 				} else if (response.success === false && response.message) {
-					toast.error(response.message);
+					toast.error(response.message, { duration: 5000 });
 				}
 			} else if (result?.type === 'error' || result?.type === 'failure') {
-				toast.error(result.data.message);
+				toast.error(result.data.message, { duration: 5000 });
 			}
 
 			_submitting = false;
@@ -71,36 +70,6 @@
 		vehicleImages = files;
 	}
 
-	async function handleSubmit(e: Event) {
-		e.preventDefault();
-
-		const form = e.currentTarget as HTMLFormElement;
-		const formData = new FormData(form);
-
-		// Optional: do client-side validation
-		if (vehicleImages.length > 3) {
-			alert('Max 3 images allowed');
-			return;
-		}
-
-		// Append images manually
-		vehicleImages.forEach((file, i) => {
-			formData.append(`image-${i}`, file);
-		});
-
-		// Send form data to your API
-		const res = await api.post<VehicleSubmission>('/vehicles', formData);
-
-		if (res.success) {
-			toast.success(res.message ?? 'Vehicle submitted successfully');
-		} else {
-			toast.error(res.message ?? 'Could not submit vehicle');
-		}
-	}
-
-	// function inputChange(plate: string){
-	//   console.log(plate)
-	// }
 </script>
 
 <main
@@ -216,11 +185,10 @@
 						name="type"
 						bind:value={vehicleType}
 						class="border rounded px-3 py-2 w-full text-xl" style="width: 100%">
-
 						<option value="" class="text-xl" disabled>Select vehicle type</option>
 
 						{#each VEHICLE_TYPE_VALUES as type}
-							<option value={type} class="text-xl">
+							<option value={type} class="text-lg">
 								{type.charAt(0).toUpperCase() + type.slice(1)}
 							</option>
 						{/each}
@@ -235,7 +203,7 @@
 						<!--p class="hidden md:block">For sale?</p-->
 						<p>Is this Vehicle for sale?</p>
 					</label>
-					<input id="forSale" type="checkbox" name="forSale" class="shrink-0 h-5 w-5 aspect-square" />
+					<input id="forSale" type="checkbox" name="forSale" class="h-5 w-5 aspect-square block" />
 				</div>
 			</section>
 

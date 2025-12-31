@@ -36,6 +36,7 @@ interface VehicleSubmission {
 }
 
 export enum VehicleType {
+  OFFROAD = 'offroad',
 	PICKUP = 'pickup',
 	TRUCK = 'truck',
 	MOTORBIKE = 'motorbike',

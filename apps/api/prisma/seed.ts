@@ -7,14 +7,14 @@ const db = new PrismaClient({ adapter });
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Create 2 vehicles
+  // Create 3 vehicles
   const vehicles = await db.vehicle.createManyAndReturn({
     data: [
       {
         plate: "GRZ 1 Z",
         make: "Toyota",
         model: "Corolla",
-        color: "Silver",
+        color: "#342",
         year: 2020,
         forSale: true,
         isActive: true
@@ -29,8 +29,17 @@ async function main() {
         plate: "ABC 123",
         make: "Ford",
         model: "Ranger",
-        color: "Blue",
+        color: "#44F",
         year: 2022,
+        forSale: false,
+        isActive: true
+      },
+      {
+        plate: "ALC 5355",
+        make: "Land Rover",
+        model: "Defender 110",
+        color: "#FFF",
+        year: 2001,
         forSale: false,
         isActive: true
       },

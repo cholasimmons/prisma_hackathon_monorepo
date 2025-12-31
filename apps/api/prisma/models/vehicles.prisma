@@ -94,6 +94,7 @@ model VehiclePhoto {
 }
 
 enum VehicleType {
+  offroad
   pickup
   truck
   motorbike

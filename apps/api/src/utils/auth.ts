@@ -24,7 +24,8 @@ const auth = betterAuth({
     sendResetPassword: async ({ user, url, token }, request) => {
       const link = `${process.env.ORIGIN_URL}/auth/reset-password?token=${token}`;
  			const html = `
-				<h2>Plates | Password reset</h2>
+        <small>Plates</small>
+				<h2>Password reset</h2>
 				<p>
  					Reset your password by clicking
  					<a href="${link}">here</a>.
@@ -37,14 +38,35 @@ const auth = betterAuth({
 
       void addEmailJob({
         to: user.email,
-        subject: "Reset your password",
+        subject: "Plates | Password Reset",
         html
       });
     },
     onPasswordReset: async ({ user }, request) => {
-      // your logic here
       console.log(`Password for user ${user.email} has been reset.`);
+      const link = `${process.env.ORIGIN_URL}/auth/login`;
+      const html = `
+        <small>Plates</small>
+				<h2>Password successfully reset</h2>
+				<p>
+   					You can now log in to Plates with your new password, sign in by clicking
+   					<a href="${link}">here</a>.
+				</p>
+
+				<small>
+					Be sure to <a href="https://github.com/cholasimmons/prisma_hackathon_monorepo/issues">report any bugs</a> or <a href="mailto://apps@simmons.studio">feature suggestions</a> to us.
+				</small>
+   			`;
+
+        void addEmailJob({
+          to: user.email,
+          subject: "Plates | Password Reset",
+          html
+        });
     },
+    minPasswordLength: 6,
+    maxPasswordLength: 24,
+    autoSignIn: true
   },
   emailVerification: {
     sendOnSignUp: true,
@@ -54,7 +76,8 @@ const auth = betterAuth({
     sendVerificationEmail: async ({ user, url, token }, request) => {
       const link = url; // `${process.env.ORIGIN_URL}/auth/verify-email?token=${token}`;
       const html = `
-				<h2>Plates | Verify your email</h2>
+				<small>Plates</small>
+				<h2>Verify your email</h2>
 				<p>Hello ${user.name ?? 'there'},</p>
 				<p>
 					<a href="${link}">Click here</a> to verify your email.
@@ -63,7 +86,7 @@ const auth = betterAuth({
 
       void addEmailJob({
         to: user.email,
-        subject: "Verify your email address",
+        subject: "Plates | Email Verification",
         html
       });
 
@@ -72,8 +95,26 @@ const auth = betterAuth({
     },
 
     async afterEmailVerification(user, request) {
-      // Your custom logic here, e.g., grant access to premium features
-      console.log(`${user.email} has been successfully verified!`);
+      const html = `
+				<small>Plates</small>
+				<h2>Welcome!</h2>
+				<p>Hello again ${user.name ?? ''},</p>
+				<p>
+					Thank you for taking the time to verify your email.<br>
+					You can now enjoy all the features of Plates.
+				</p>
+				<p>
+					<a href="https://plates.simmons.studio/about"><strong>Plates</strong></a> is a crowd-source database for vehicle registration numbers, nothing else to it.<br/>
+					Just a small project putting together all the tools, knowledge and expertise we have.<br/>
+					We hope you enjoy it!
+				</p>
+			`;
+
+      void addEmailJob({
+        to: user.email,
+        subject: "Welcome to Plates | ZM",
+        html
+      });
     }
   },
 

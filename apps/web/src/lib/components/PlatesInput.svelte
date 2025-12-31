@@ -108,11 +108,13 @@
 	}
 
 	#plates-input-container input {
-		background-image: linear-gradient(to bottom, #dedede,#bcbcbc, #bcbcbc);
+		background-image: linear-gradient(to bottom, #dedede, #bebebe);
 		color: #222;
 		width: 100%;
 		border-radius: 1rem;
-		border: 4px solid #BEBEBE;
+		border: 4px solid #444444;
+		outline: 3px solid #EFEFEF;
+		outline-offset: 1px;
 		font-weight: 900;
 		line-height: 1.3;
 	}
@@ -125,6 +127,6 @@
 		color: #48f; /* base text color */
 		text-shadow:
 			2px 2px 2px #00000060, /* shadow (bottom-right) */
-			-2px -2px 1px rgba(255,255,255,0.95); /* highlight (top-left) */
+			-3px -3px 1px rgba(255,255,255,0.95); /* highlight (top-left) */
 	}
 </style>

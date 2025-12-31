@@ -5,10 +5,10 @@ import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
-	default: async ({ request, locals }) => {
-		if (!locals.user) {
-			throw redirect(302, '/auth/login');
-		}
+	default: async ({ request }) => {
+		// if (!locals.user) {
+		// 	throw redirect(302, '/auth/login');
+		// }
 
 		const data = await request.formData();
 
@@ -46,10 +46,10 @@ export const actions: Actions = {
 
 		const forSale = Boolean(data.get('forSale') === 'on');
 
-		const photos = data.getAll('photos') as File[];
-		if (photos.some((f) => f.size > 3_000_000))
-			return fail(400, { message: 'Photo must be ≤ 3MB' });
-		if (photos.length > 3) return fail(400, { message: 'Max 1 photo allowed' });
+		// const photos = data.getAll('photos') as File[];
+		// if (photos.some((f) => f.size > 3_000_000))
+		// 	return fail(400, { message: 'Photo must be ≤ 3MB' });
+		// if (photos.length > 3) return fail(400, { message: 'Max 1 photo allowed' });
 
 		return {
 			success: true,
@@ -60,8 +60,7 @@ export const actions: Actions = {
 				model,
 				year,
 				type,
-				forSale,
-				photos
+				forSale
 			}
 		}; // submittedById: locals.user.id
 	}

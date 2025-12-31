@@ -70,13 +70,13 @@
 				});
 
 				if (res.error?.message || res.error?.statusText) {
-					toast.error(res.error?.message ?? res.error?.statusText);
+					toast.error(res.error?.message ?? res.error?.statusText, { duration: 5000 });
 				} else if (res.data?.user) {
-					toast.success('Account created successfully');
+					toast.success('Account created successfully', { duration: 5000 });
 					goto('/', { replaceState: true })
 				}
 			} else if (result?.type === 'error' || result?.type === 'failure') {
-				toast.error(result.data.message);
+				toast.error(result.data.message, { duration: 5000 });
 			}
 
 			// await update();

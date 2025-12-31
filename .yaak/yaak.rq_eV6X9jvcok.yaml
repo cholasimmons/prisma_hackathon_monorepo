@@ -2,23 +2,28 @@ type: http_request
 model: http_request
 id: rq_eV6X9jvcok
 createdAt: 2025-12-27T15:57:17.774481700
-updatedAt: 2025-12-27T15:57:49.805357800
+updatedAt: 2025-12-31T23:20:37.486250100
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
 authenticationType: null
 body:
-  text: |-
-    {
-      "text": "Yaak text test"
-    }
-bodyType: application/json
+  form:
+  - enabled: true
+    file: C:\Users\chola\Pictures\1986_Toyota_Corolla_DX.PNG
+    id: iQFuA4QNty
+    name: file
+  - enabled: true
+    id: iqAdjDyYN6
+    name: ''
+    value: ''
+bodyType: multipart/form-data
 description: ''
 headers:
 - enabled: true
   name: Content-Type
-  value: application/json
-  id: SXw6XJx2ux
+  value: multipart/form-data
+  id: bpdIcUvgeb
 method: POST
 name: /users/upload-test
 sortPriority: 4000.001

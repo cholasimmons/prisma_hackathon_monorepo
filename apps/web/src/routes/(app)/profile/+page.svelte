@@ -9,10 +9,11 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
-	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User } from '@lucide/svelte';
+	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User, LucidePlusCircle, LucideRecycle } from '@lucide/svelte';
 	import toast from 'svelte-french-toast';
 	import { authClient } from '$lib/auth-client';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -158,7 +159,7 @@
 				>
 				    <UserAvatar
 				        src={_avatar}
-				        className="w-32 h-32 aspect-square rounded-full"
+				        className="w-34 h-34 rounded-ful object-cover"
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}
@@ -249,8 +250,8 @@
 		<hr class="border-gray-400 dark:border-gray-600" />
 	</section>
 
-	<h2 class="mb-1 dark:text-gray-200 text-2xl">Vehicle Submissions</h2>
-	<p class="mb-8 md:text-sm">Your Pending / Approved submissions</p>
+	<PageHeader title="Vehicle Submissions" description="Your Pending / Approved submissions"
+	    endIcon={LucideRecycle} endAction={_fetchSubmissions}/>
 
 	{#if _fetchingSubmissions}
 		<p class="flex space-x-2 items-center justify-center text-amber-800 dark:text-amber-600">
@@ -263,7 +264,7 @@
 				<li class="flex items-center space-x-4">
 					<img
 						src={submission.photos?.[0].url}
-						alt={submission.photos?.length + ' photos for ' + submission.make}
+						alt={submission.photos?.length + ' / ' + submission.make}
 						class="w-16 h-16 rounded-md"
 					/>
 					<div class="text-gray-700 dark:text-gray-300">
@@ -279,15 +280,15 @@
 			{/each}
 		</ul>
 	{:else}
-		<p in:fade={{ duration: 300 }} class="text-gray-600 dark:text-gray-400">
+		<p in:fade={{ duration: 300 }} class="flex items-center justify-center text-gray-600 dark:text-gray-400">
 			No submissions yet.
-			<button
+			<!-- <button
 				in:fade={{ duration: 600, delay: 600 }}
-				class="mt-4 py-1 px-6 text-sm"
+				class="py-1 px-6 text-sm"
 				onclick={_fetchSubmissions}
 			>
 				Re-fetch?
-			</button>
+			</button> -->
 		</p>
 
 		<button

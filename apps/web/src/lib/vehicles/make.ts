@@ -24,7 +24,9 @@ function normalizeMake(input: string): string {
 const MAKE_ALIASES: Record<string, string> = {
 	VW: 'Volkswagen',
 	BMW: 'BMW',
+	Beamer: 'BMW',
 	Mercedes: 'Mercedes-Benz',
+	Benz: 'Mercedes-Benz',
 	Aston: 'Aston Martin',
 };
 
