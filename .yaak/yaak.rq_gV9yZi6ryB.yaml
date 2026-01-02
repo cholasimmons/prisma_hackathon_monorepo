@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_gV9yZi6ryB
 createdAt: 2025-12-14T12:22:01.370801700
-updatedAt: 2025-12-14T12:42:22.919576800
+updatedAt: 2026-01-02T11:59:45.346679900
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -13,6 +13,6 @@ description: ''
 headers: []
 method: GET
 name: /auth/get-session
-sortPriority: 3000.0
+sortPriority: 2000.0
 url: ${[ base_url ]}/auth/get-session
 urlParameters: []

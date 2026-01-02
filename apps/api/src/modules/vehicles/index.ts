@@ -169,14 +169,17 @@ const vehiclesController = new Elysia({
     },
   )
 
-  .get('/vehicles/suggest-make', async ({ query }) => {
+  .get('/vehicles/suggest-make', async ({ status, query }) => {
     const suggestions = KNOWN_MAKES
       .filter(make =>
         make.toLowerCase().includes(query.make.toLowerCase())
       )
       .slice(0, 5);
 
-    return suggestions;
+    return status(200, {
+      data: suggestions,
+      message: `Found ${suggestions.length} suggestions`,
+    });
   }, {
     query: t.Object({
       make: t.String()
@@ -188,6 +191,8 @@ const vehiclesController = new Elysia({
   .post(
     "/",
     async ({ body, status, session, request, ip }) => {
+      console.log(session.userId + "attempting to upload" + body);
+
       const submission = await VehicleService.submitVehicle(
         body,
         session.userId,
@@ -217,19 +222,17 @@ const vehiclesController = new Elysia({
           error: "Plate number cannot exceed 10 characters",
         }),
         images: t.Optional(
-          t.Array(
-            t.File({
+            t.Files({
               type: "image",
               maxSize: "5m",
             }),
-          )
         ),
         make: t.String(),
         model: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
         color: t.Optional(t.String()),
         type: t.Optional(t.String()),
-        forSale: t.Optional(t.Boolean())
+        forSale: t.Optional(t.BooleanString())
       }),
       auth: true,
     },

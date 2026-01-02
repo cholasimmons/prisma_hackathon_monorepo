@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_uVFgHHpmZr
 createdAt: 2025-12-31T03:17:28.131911900
-updatedAt: 2025-12-31T03:18:28.805118500
+updatedAt: 2026-01-02T11:59:45.372755
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -13,7 +13,7 @@ description: ''
 headers: []
 method: GET
 name: /auth/verify-email
-sortPriority: 3000.0020000000004
+sortPriority: 4000.0
 url: ${[ base_url ]}/auth/verify-email
 urlParameters:
 - enabled: true

@@ -20,9 +20,7 @@ interface QueueSubmission {
 }
 
 interface QueueSubmissionPhotos {
-  userId: string,
-  submittedVehiclePhotoId: string,
-  file: File
+  photoId: string, submissionId: string, tempPath: string, filepath: string, ext?: string
 }
 
 export type { QueueEmail, QueueImage, QueueSubmission, QueueSubmissionPhotos }

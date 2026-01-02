@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_SxtwQHjN3w
 createdAt: 2025-12-26T17:02:35.664721100
-updatedAt: 2025-12-27T03:00:22.089081
+updatedAt: 2026-01-02T11:59:45.459155200
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -13,6 +13,6 @@ description: ''
 headers: []
 method: GET
 name: /vehicles/:plate
-sortPriority: 6000.003000000001
+sortPriority: 13000.0
 url: ${[ base_url ]}/vehicles/GRZ%201%20Z
 urlParameters: []

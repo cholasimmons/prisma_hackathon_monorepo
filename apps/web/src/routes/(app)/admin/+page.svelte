@@ -49,7 +49,7 @@
 	<div class="container mx-auto max-w-7xl px-6 py-6 space-y-6">
 
         <!-- KPI CARDS -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPI title="Users" value={_loadingStats ? '...' : _users} />
             <KPI title="Vehicles" value={_loadingStats ? '...' : _vehicles} />
             <KPI title="Submissions" value={_loadingStats ? '...' : _submissions} />

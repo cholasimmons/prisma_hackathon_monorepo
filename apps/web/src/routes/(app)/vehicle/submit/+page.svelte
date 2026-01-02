@@ -18,7 +18,7 @@
 
 	let plate = $state(data?.plate ?? '');
 	let vehicleType = $state<VehicleType | ''>('');
-	let vehicleImages: File[] = [];
+	let vehicleImages: Blob[] = [];
 
 	let _submitting = $state(false);
 	let _submitted = $state(false);
@@ -45,12 +45,14 @@
 				formData.append('year', year ?? null);
 				formData.append('type', type ?? '');
 				formData.append('forSale', forSale === 'on' ? 'true' : 'false');
-				formData.append('image', vehicleImages[0]);
+				for (const image of vehicleImages) {
+                  formData.append('images', image); // ✅ each File is a Blob
+                }
 
 				// Append images from your bound ImageUpload component
 				// vehicleImages.forEach((file) => formData.append('image', file));
 
-				const response = await api.post<VehicleSubmission>('/vehicles/submit', formData);
+				const response = await api.post<VehicleSubmission>('/vehicles', formData);
 
 				if (response.success === true && response.message) {
 					toast.success(response.message, { duration: 5000 });
@@ -67,7 +69,12 @@
 	};
 
 	function handleImageChange(files: File[]) {
-		vehicleImages = files;
+	  if(files.length < 1) return;
+
+		for(const file of files) {
+			vehicleImages.push(file);
+		}
+
 	}
 
 </script>

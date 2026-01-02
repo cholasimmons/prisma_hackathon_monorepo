@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_qNjdm7TmGt
 createdAt: 2025-12-14T11:48:32.680107600
-updatedAt: 2025-12-14T12:42:22.912329
+updatedAt: 2026-01-02T11:59:45.334735800
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -13,6 +13,6 @@ description: ''
 headers: []
 method: GET
 name: logos
-sortPriority: 2000.0
+sortPriority: 1000.0
 url: ${[ base_url ]}/logos
 urlParameters: []

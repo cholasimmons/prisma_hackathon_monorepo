@@ -15,7 +15,7 @@
 
 <div class="w-full flex flex-row items-center justify-between mb-8">
 	<!-- Start -->
-	<div class="w-8"></div>
+	<div class={endIcon ? 'block w-10' : ''}></div>
 
 	<!-- Main -->
 	<div class="flex flex-col items-center text-center">

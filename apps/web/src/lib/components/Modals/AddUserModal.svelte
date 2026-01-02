@@ -1,18 +1,19 @@
 <script lang="ts">
 	import type { UserProfile } from '$lib/models/user.model';
-	import { VerifiedIcon, BadgeAlertIcon } from '@lucide/svelte';
+	import { LucideVerified, BadgeAlertIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import PageHeader from '../PageHeader.svelte';
 
 	const { user, onClose }: { user?: UserProfile; onClose: () => void } = $props();
 
 	const defaultAvatar = '/images/default-avatar.png';
 
-	let username = $state(user?.name || '');
-	let useremail = $state(user?.email || '');
+	let username = $state(user?.name || null);
+	let useremail = $state(user?.email || null);
 	let userbanned = $state(user?.banned || false);
-	let userbanReason = $state(user?.banReason || '');
+	let userbanReason = $state(user?.banReason || null);
 	let userrole = $state(user?.role || 'user');
-	let useravatar = $state(user?.image || defaultAvatar);
+	let useravatar = $state(user?.image ?? defaultAvatar);
 
 	let password = $state('');
 	let confirmPassword = $state('');
@@ -20,9 +21,9 @@
 	let isSubmitting = $state(false);
 	let error = $state<string | null>(null);
 
-	onMount(() => {
-		// user.set({ id: '1', email: 'user@example.com', name: 'User' });
-	});
+	// onMount(() => {
+	// 	// user.set({ id: '1', email: 'user@example.com', name: 'User' });
+	// });
 
 	function handleScrimClick(e: Event) {
 		if (e.target === e.currentTarget && onClose) {
@@ -67,7 +68,7 @@
 >
 	<!-- Modal card -->
 	<div
-		class="bg-white dark:bg-gray-800 rounded-md shadow-xl max-w-lg w-full p-6 relative animate-in text-gray-800 dark:text-gray-200"
+		class="bg-white dark:bg-gray-800 rounded-md shadow-xl max-w-2xl w-full p-6 relative animate-in text-gray-800 dark:text-gray-200"
 	>
 		<!-- Close button -->
 		<button
@@ -86,13 +87,8 @@
 		</button>
 
 		<!-- Form header -->
-		<div class="flex flex-col items-center text-center mb-6">
-			<h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-				{user ? 'Edit User' : 'Add New User'}
-			</h2>
-			<p class="text-gray-600 dark:text-gray-400 text-sm">
-				{user ? 'Update user information' : 'Create a new user account'}
-			</p>
+		<div class="flex flex-col items-center text-center mb-2">
+			<PageHeader title={user ? 'Edit User' : 'Add New User'} />
 		</div>
 
 		<!-- User form -->
@@ -101,13 +97,14 @@
 			<div class="flex flex-col items-center mb-6">
 				<div class="relative">
 					<img
-						src={user?.image ?? defaultAvatar}
+						id="avatar-upload"
+						src={useravatar}
 						alt="User avatar"
-						class="w-28 h-28 rounded-full object-cover ring-4 ring-gray-100 dark:ring-gray-800"
+						class="w-28 aspect-square rounded-full object-cover ring-4 ring-gray-100 dark:ring-gray-800"
 					/>
 					<label
 						for="avatar-upload"
-						class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors"
+						class="absolute bottom-0 right-0 bg-amber-600 text-white p-2 rounded-full cursor-pointer hover:bg-amber-700 transition-colors"
 						title="Upload image"
 					>
 						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,26 +134,43 @@
 
 			<!-- Form fields -->
 			<div class="space-y-4">
-				<!-- Name field -->
-				<div>
-					<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-						Full Name *
-					</label>
-					<input
-						id="name"
-						type="text"
-						bind:value={username}
-						required
-						class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-						placeholder="Enter full name"
-					/>
+			    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    				<!-- Name field -->
+    				<div>
+    					<label for="name" class="block text-sm mb-1">
+    						Full Name *
+    					</label>
+    					<input
+    						id="name"
+    						type="text"
+    						bind:value={username}
+    						required
+    						class="sm:text-xl w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+    						placeholder="Full name"
+    					/>
+    				</div>
+
+                    <!-- Additional fields (optional - can be expanded based on your needs) -->
+    				<div>
+    					<label for="role" class="block text-sm mb-1">
+    						Role
+    					</label>
+    					<select
+    						id="role"
+    						bind:value={userrole}
+    						class="sm:text-xl w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+    					>
+    						<option value="user">User</option>
+    						<option value="admin">Admin</option>
+    					</select>
+    				</div>
 				</div>
 
 				<!-- Email field -->
 				<div>
 					<label
 						for="email"
-						class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+						class="block text-sm mb-1"
 					>
 						Email Address *
 					</label>
@@ -165,7 +179,7 @@
 						type="email"
 						bind:value={useremail}
 						required
-						class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+						class="sm:text-xl w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
 						placeholder="user@example.com"
 					/>
 					{#if !user}
@@ -176,11 +190,12 @@
 				</div>
 
 				<!-- Password fields (only for new users or when changing password) -->
-				{#if !user || showPasswordFields}
+				{#if  showPasswordFields}
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
 					<div>
 						<label
 							for="password"
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+							class="block text-sm mb-1"
 						>
 							{user ? 'New Password' : 'Password *'}
 						</label>
@@ -197,7 +212,7 @@
 					<div>
 						<label
 							for="confirmPassword"
-							class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+							class="block text-sm mb-1"
 						>
 							Confirm Password {#if !user}*{/if}
 						</label>
@@ -210,11 +225,12 @@
 							placeholder="Confirm password"
 						/>
 					</div>
+				</div>
 				{:else if user}
 					<button
 						type="button"
 						onclick={() => (showPasswordFields = true)}
-						class="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+						class="text-sm hover:underline"
 					>
 						Change Password
 					</button>
@@ -274,7 +290,7 @@
 						<div class="flex items-center">
 							<span class={`mr-2 ${user?.emailVerified ? 'text-green-600' : 'text-yellow-600'}`}>
 								{#if user?.emailVerified}
-									<VerifiedIcon />
+									<LucideVerified />
 								{:else}
 									<BadgeAlertIcon />
 								{/if}
@@ -295,20 +311,7 @@
 					</div>
 				{/if}
 
-				<!-- Additional fields (optional - can be expanded based on your needs) -->
-				<div>
-					<label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-						Role
-					</label>
-					<select
-						id="role"
-						bind:value={userrole}
-						class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-					>
-						<option value="user">User</option>
-						<option value="admin">Admin</option>
-					</select>
-				</div>
+
 			</div>
 
 			<!-- Error message (if any) -->
@@ -346,7 +349,7 @@
 				</button>
 				<button
 					type="submit"
-					class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+					class="flex-1 txt-btn"
 					disabled={isSubmitting}
 				>
 					{#if isSubmitting}

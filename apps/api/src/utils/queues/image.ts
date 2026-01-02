@@ -5,7 +5,6 @@ import { createWorker } from '~/utils/worker';
 import { QueueImage } from './model';
 import { Job } from 'bullmq';
 import s3 from '~/utils/s3';
-import { unlink } from 'node:fs/promises';
 
 const addImageJob = async (userId: string, tempPath: string, filepath: string, ext?: string) => {
     await imageQueue.add(RedisEvents.processUserImage, { userId, tempPath, filepath, ext }, {
@@ -49,7 +48,7 @@ const imageWorker = createWorker('imageQueue', async (job: Job) => {
         });
 
         // Cleanup temp file
-        await unlink(tempPath);
+        await Bun.file(tempPath).delete();
 
         return {
             filepath,

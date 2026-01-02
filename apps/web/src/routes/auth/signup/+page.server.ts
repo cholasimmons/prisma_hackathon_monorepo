@@ -1,4 +1,5 @@
 import { fail, type Actions } from '@sveltejs/kit';
+import mono_config from '../../../../../constants';
 
 export const actions: Actions = {
   default: async ({ request }) => {
@@ -11,10 +12,10 @@ export const actions: Actions = {
     const lastname = String(data.get('lastname') ?? '').trim()
     const name = `${firstname} ${lastname}`
 
-   	const passwordHasLength = password.length >= 6;
-      // const passwordHasNumber = /\d/.test(password);
-      // const passwordHasUpper = /[A-Z]/.test(password);
-		if (!passwordHasLength) {
+   	const passwordHasLength = password.length >= mono_config.auth.password.maxLength;
+    const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(password) : false;
+    const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(password) : false;
+		if (!passwordHasLength || !passwordHasNumber || !passwordHasUpper) {
 			return fail(400, { success: false, email, name, message: 'Invalid password' });
 		}
 

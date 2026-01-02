@@ -2,17 +2,59 @@ type: http_request
 model: http_request
 id: rq_B6qV5sCt4M
 createdAt: 2025-12-14T11:48:21.363610
-updatedAt: 2025-12-14T12:42:22.904184700
+updatedAt: 2026-01-02T12:04:21.676181200
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
 authenticationType: null
-body: {}
-bodyType: null
+body:
+  form:
+  - enabled: true
+    id: FD64ZQyxtu
+    name: make
+    value: Honda
+  - enabled: true
+    id: A4u4FzHK3U
+    name: plate
+    value: XYZ 000
+  - enabled: true
+    id: 7wQVdYeuYW
+    name: model
+    value: Esprit
+  - enabled: true
+    id: BDgcxUITVp
+    name: year
+    value: '1998'
+  - enabled: true
+    id: b8DWCj82NU
+    name: color
+    value: '#00FF00'
+  - enabled: true
+    id: tejZrMmGBJ
+    name: type
+    value: Sedan
+  - contentType: image/*
+    enabled: false
+    file: C:\Users\chola\Pictures\1986_Toyota_Corolla_DX.PNG
+    id: 6DfaHXbVBi
+    name: images
+  - enabled: true
+    id: jB2FhcS9iB
+    name: forSale
+    value: 'false'
+  - enabled: true
+    id: nD7HU7p5X8
+    name: ''
+    value: ''
+bodyType: multipart/form-data
 description: ''
-headers: []
-method: GET
-name: vehicles
-sortPriority: 1000.0
+headers:
+- enabled: true
+  name: Content-Type
+  value: multipart/form-data
+  id: ZH6B9ubfWb
+method: POST
+name: /vehicles
+sortPriority: 11000.0
 url: ${[ base_url ]}/vehicles
 urlParameters: []

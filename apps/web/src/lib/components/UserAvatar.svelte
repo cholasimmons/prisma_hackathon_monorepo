@@ -1,14 +1,19 @@
 <script lang="ts">
-    let { src, className = 'w-12 h-12 rounded-full', alt }: { src?: string | null, className: string, alt?: string } = $props();
+    let { src, className = 'w-12 h-12', alt }: { src?: string | null, className: string, alt?: string } = $props();
 
-    const d = $derived.by(() => (`https://minio-prisma.vps.simmons.studio/prismabucket/${src}`) || '/images/default-avatar.png');
-    // const src = `${S3_ENDPOINT}/${S3_BUCKET}/${avatarUrl}`;
+    const d = $derived.by(() => {
+      if(src){
+        return (`https://minio-prisma.vps.simmons.studio/prismabucket/${src}`);
+      }
+      return '/images/default-avatar.png';
+    });
+
 </script>
 
 <img
     src={d}
     {alt}
-    class={className}
+    class={className + ' aspect-square rounded-full object-fill overflow-hidden'}
     loading="lazy"
 />
 

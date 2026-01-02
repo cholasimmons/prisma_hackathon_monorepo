@@ -1,4 +1,3 @@
-import type { AuthUser } from '$lib/models/auth.model.js';
 import { PUBLIC_S3_ENDPOINT, PUBLIC_S3_BUCKET } from '$env/static/public';
 
 export function load({ locals }) {

@@ -1,5 +1,6 @@
 import { APP_URL } from '$lib/env';
 import { fail, type Actions } from '@sveltejs/kit';
+import mono_config from '../../../../../constants.js';
 
 export function load({ locals, url }) {
 	return {
@@ -24,10 +25,10 @@ export const actions: Actions = {
 			return fail(400, { success: false, email, rememberMe, message: 'Invalid Email' });
 		}
 
-		const passwordHasLength = password.length >= 6;
-    // const passwordHasNumber = /\d/.test(password);
-    // const passwordHasUpper = /[A-Z]/.test(password);
-		if (!passwordHasLength) {
+		const passwordHasLength = password.length >= mono_config.auth.password.maxLength;
+    const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(password) : false;
+    const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(password) : false;
+		if (!passwordHasLength || !passwordHasNumber || !passwordHasUpper) {
 			return fail(400, { success: false, email, rememberMe, message: 'Invalid password' });
 		}
 

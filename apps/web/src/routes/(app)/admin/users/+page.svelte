@@ -214,7 +214,7 @@
 </script>
 
 <main
-	class="py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-stretch justify-start space-y-8"
+	class="py-4 dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
 	<PageHeader
 		title="Admin | Users"
@@ -225,7 +225,7 @@
 		}}
 	/>
 
-	<div class="flex flex-col w-full space-y-2">
+	<div class="container mx-auto max-w-7xl px-6 py-6 space-y-6">
 		{#if loading}
 			<div class="flex w-full items-center justify-center">
 				<Spinner size={32} />

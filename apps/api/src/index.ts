@@ -148,16 +148,16 @@ const app = new Elysia({
       if(cached)
         return status(200, { data: cached, success: true, message: "Cached Stats fetched successfully" });
 
-      const users = await db.user.findMany();
-      const vehicles = await db.vehicle.findMany();
-      const submissions = await db.vehicleSubmission.findMany();
-      const photos = await db.vehiclePhoto.findMany();
+      const users = await db.user.count();
+      const vehicles = await db.vehicle.count();
+      const submissions = await db.vehicleSubmission.count();
+      const photos = await db.vehiclePhoto.count();
 
       const data = {
-        users: users.length,
-        vehicles: vehicles.length,
-        submissions: submissions.length,
-        photos: photos.length,
+        users,
+        vehicles,
+        submissions,
+        photos,
       };
 
       await cache.set("stats", data, 60 * 60 * 6);
@@ -167,11 +167,11 @@ const app = new Elysia({
     auth: true
   })
 
-  .post('test-email', async ({ body, status, ip }) => {
+  .post('test-email', async ({ body, status, ip, session }) => {
     const { to, subject, html } = body;
 
     // Job Queue
-    await addEmailJob({ to, subject, html });
+    await addEmailJob({ to, subject , html });
 
     // Audit Log
     await audit.log({ actorId: "SYSTEM", type: EventType.EMAIL_SEND, entity: 'Email', entityId: '000', ipAddress: ip, userAgent: 'User Agent', route: '/test-email', method: 'POST' });
@@ -180,10 +180,11 @@ const app = new Elysia({
   }, {
     body: t.Object({
       to: t.String(),
-      subject: t.String(),
+      subject: t.String({ default: 'Test Email from Backend Server'}),
       // text: t.Optional(t.String()),
       html: t.String()
-    })
+    }),
+    auth: true
   })
 
   .get("/health", ({ status }: Context) => {
@@ -202,14 +203,6 @@ const app = new Elysia({
   })
 
   .options("*", ({ status }) => status(204))
-  // .onError(({ set }) => {
-  //   set.headers["Access-Control-Allow-Origin"] =
-  //     process.env.ORIGIN_URL || "http://localhost:5173";
-  //   set.headers["Access-Control-Allow-Methods"] =
-  //     "GET, POST, PUT, PATCH, DELETE, OPTIONS";
-  //   set.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization";
-  // })
-
   .onStop(systemOff);
 
 systemBoot().then(() => {

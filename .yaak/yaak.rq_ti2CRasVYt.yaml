@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_ti2CRasVYt
 createdAt: 2025-12-14T12:30:08.892882900
-updatedAt: 2025-12-26T16:11:11.484879400
+updatedAt: 2026-01-02T11:59:45.477907800
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -30,6 +30,6 @@ headers:
   id: aQXPI9g60G
 method: POST
 name: /auth/sign-in/email
-sortPriority: 7000.0
+sortPriority: 15000.0
 url: ${[ base_url ]}/auth/sign-in/email
 urlParameters: []

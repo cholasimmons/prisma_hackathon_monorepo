@@ -347,27 +347,63 @@ abstract class VehicleService {
     }
 
     // 3. Create photo records if user selected images (NO sharp yet)
-    let photoRecords: VehiclePhoto[] | null = null;
+    // let photoRecords: VehiclePhoto[] | null = null;
 
-    if (body.images && body.images.length > 0) {
-      photoRecords = await Promise.all(
-        body.images.map((file) =>
-          db.vehiclePhoto.create({
-            data: {
-              submittedVehicleId: submission.id,
-              url: "pending",
-              uploadSizeKb: Math.ceil(file.size / 1024),
-            },
-          }),
-        ),
-      );
+    const files = Array.isArray(body.images) ? body.images : [body.images];
 
+    const uploadedFiles: {
+      path: string;
+      tempPath: string;
+      filename: string;
+      ext: string;
+    }[] = [];
+
+    const tmpDir =
+      Bun.env.TMPDIR ??
+      Bun.env.TEMP ??
+      Bun.env.TMP ??
+      '/tmp';
+
+    for (const imageFile of files) {
+      // --- validate early ---
+      if (!(imageFile instanceof File)) continue;
+
+      const ext = imageFile.name.split('.').pop() ?? 'jpg';
+      const safeFilename = `image-${crypto.randomUUID()}`;
+      const filepath = `${BucketNames.vehicles}/${body.plate}/${safeFilename}.${ext}`;
+
+      // temp path
+      const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
+
+      // write to disk
+      await Bun.write(tempPath, await imageFile.arrayBuffer());
+
+      uploadedFiles.push({
+        path: filepath,
+        tempPath,
+        filename: imageFile.name,
+        ext
+      });
+    }
+
+    const photoRecords = await db.vehiclePhoto.createManyAndReturn({
+      data: files.map((file, index) => ({
+        submittedVehicleId: submission.id,
+        isPrimary: index === 0,          // first image primary
+        uploadSizeKb:file ? Math.ceil(file.size / 1024) : 0,
+        url: null
+      }))
+    });
+
+    if(uploadedFiles.length > 0 && photoRecords.length > 0) {
       // 4. Enqueue image processing jobs
-      for (let i = 0; i < photoRecords.length; i++) {
+      for (let i = 0; i < uploadedFiles.length; i++) {
         await addVehicleSubmissionImageUploadJob(
-          userId,
           photoRecords[i]!.id,
-          body.images[i]!,
+          submission.id,
+          uploadedFiles[i]!.tempPath,
+          uploadedFiles[i]!.path,
+          uploadedFiles[i]!.ext,
         );
       }
     }
@@ -403,16 +439,26 @@ abstract class VehicleService {
   ): Promise<{ path: string; size: number }> {
     try {
       // Create unique filename
-      const extension = imageFile.name.split(".").pop() || "jpg";
-      const filename = `${BucketNames.vehicles}/${vehicleId}/image-${Date.now()}.${extension}`;
+      const ext = imageFile.name.split(".").pop() ?? "jpg";
+      const safeFilename = `image-${Date.now()}`;
+      const filepath = `${BucketNames.vehicles}/${vehicleId}/${safeFilename}.${ext}`;
+      const tmpDir =
+        Bun.env.TMPDIR ??
+        Bun.env.TEMP ??
+        Bun.env.TMP ??
+        '/tmp';
 
-      await addImageJob(userId, imageFile, filename, extension);
+      // 1. Save file to temp disk (or direct S3 raw upload)
+      const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
+      await Bun.write(tempPath, (await imageFile.arrayBuffer()));
+
+      await addImageJob(userId, tempPath, filepath, ext);
 
       console.log(
-        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${filename}`,
+        `📸 Uploaded image for vehicle ${vehicleId} to S3: ${filepath}`,
       );
 
-      return { path: filename, size: imageFile.size };
+      return { path: filepath, size: imageFile.size };
     } catch (error) {
       console.error(`Failed to upload image for vehicle ${vehicleId}:`, error);
       throw error;

@@ -88,6 +88,9 @@ const systemOff = async () => {
     cache.close();
     console.info("| Cache layer offline.");
 
+    mailer.close();
+    console.info("| Email transport offline.");
+
     console.info("| System ready to shutdown.");
   } catch (e) {
     console.error("System failed to stop properly.", e);

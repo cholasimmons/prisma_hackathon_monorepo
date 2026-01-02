@@ -1,4 +1,5 @@
 import { fail, type Actions } from '@sveltejs/kit';
+import mono_config from '../../../../../constants';
 
 export const actions: Actions = {
 	default: async ({ request, url }) => {
@@ -14,10 +15,10 @@ export const actions: Actions = {
 			return fail(400, { success: false, message: 'Invalid reset token' });
 		}
 
-		const passwordHasLength = newPassword.length >= 6;
-    // const passwordHasNumber = /\d/.test(password);
-    // const passwordHasUpper = /[A-Z]/.test(password);
-		if (!passwordHasLength) {
+		const passwordHasLength = newPassword.length >= mono_config.auth.password.maxLength;
+    const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(newPassword) : false;
+    const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(newPassword) : false;
+		if (!passwordHasLength || !passwordHasNumber || !passwordHasUpper) {
 			return fail(400, { success: false, message: 'Invalid password' });
 		}
 

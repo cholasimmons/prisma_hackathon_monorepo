@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_wCsoE9GvHm
 createdAt: 2025-12-26T17:01:45.372744300
-updatedAt: 2025-12-26T17:01:56.709192300
+updatedAt: 2026-01-02T11:59:45.433437300
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -13,6 +13,6 @@ description: ''
 headers: []
 method: GET
 name: /vehicles
-sortPriority: 6000.001
-url: ${[ base_url ]}/vehicles/
+sortPriority: 10000.0
+url: ${[ base_url ]}/vehicles
 urlParameters: []

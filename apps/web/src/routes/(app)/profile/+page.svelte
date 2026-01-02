@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
-	import { Edit2Icon, Edit, Edit2, Edit3, ShieldCheckIcon, User, LucidePlusCircle, LucideRecycle } from '@lucide/svelte';
+	import { Edit, ShieldCheckIcon, User, BanIcon, LucideRefreshCw, LucideCircleCheck, LucideEdit } from '@lucide/svelte';
 	import toast from 'svelte-french-toast';
 	import { authClient } from '$lib/auth-client';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -17,14 +17,11 @@
 
 	const { data }: PageProps = $props();
 
-	// let colorHex = $state('#000000');
-	// let colorName = $derived.by(() => (colorHex ? hexToColorName(colorHex) : 'Black'));
-
-	let submissions: VehicleSubmission[] | null = $state<VehicleSubmission[] | null>([]);
+	let submissions = $state<VehicleSubmission[] | null>([]);
 	let profile = $state<UserProfile | null>(null);
 	let _fetchingSubmissions = $state(false);
 	let _fetchingProfile = $state(false);
-	let _avatar = $state('/images/default-avatar.png');
+	let _avatar = $state<string | null>(null);
 	let _loggingOut = $state(false);
 
 	// User image upload
@@ -83,7 +80,7 @@
 		goto('/vehicle/submit');
 	}
 
-	let _fetchSubmissions = async () => {
+	async function _fetchSubmissions() {
 		try {
 			_fetchingSubmissions = true;
 			submissions = await mySubmittedVehicles();
@@ -134,8 +131,9 @@
 	onMount(() => {
 		profile = data.user as UserProfile;
 		_fetchSubmissions();
-		_fetchProfile();
-		_avatar = data.user?.image || '/images/default-avatar.png';
+		console.log('Layout S3 Endpoint:', data.s3Endpoint);
+		// _fetchProfile();
+		// _avatar = data.user?.image || null;
 	});
 </script>
 
@@ -147,19 +145,19 @@
 	<div
 		class="grid grid-cols-1 md:grid-cols-2 place-items-center gap-4 text-gray-600 dark:text-gray-400"
 	>
-		<div class="relative group w-34 h-34">
-			<div class="flex flex-col items-center justify-center">
+		<div class="relative group w-40 aspect-square">
+			<div class="flex flex-col items-center justify-start">
 				<button
 					type="button"
 					disabled={uploading}
-					class="relative group w-34 h-34 rounded-full p-0 border-0 bg-transparent
+					class="relative group w-full rounded-full p-0 border-0 bg-transparent
                         	       focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-                        	       focus-visible:ring-gray-400"
+                        	       focus-visible:ring-gray-400 "
 					onclick={uploading ? null : triggerFileSelect}
 				>
 				    <UserAvatar
-				        src={_avatar}
-				        className="w-34 h-34 rounded-ful object-cover"
+				        src={data.user?.image || null}
+				        className="w-full"
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}
@@ -170,7 +168,7 @@
 
 					<!-- Overlay -->
 					<span
-						class="absolute bottom-1 right-1 bg-transparent text-white
+						class="absolute bottom-2 right-2 bg-transparent text-white
                		       p-1 rounded-full opacity-50 group-hover:opacity-100
                		       transition"
 						aria-hidden="true"
@@ -178,7 +176,7 @@
 						{#if uploading}
 							<Spinner size={20} />
 						{:else}
-							<Edit size={14} />
+							<LucideEdit size={14} />
 						{/if}
 					</span>
 
@@ -194,39 +192,39 @@
 		</div>
 
 		<div class="flex flex-col items-center md:items-start justify-start space-y-2">
-			<h2 class="text-2xl font-semibold m-0 text-gray-800 dark:text-gray-200">{data.user!.name}</h2>
+			<h2 class="flex items-center justify-center gap-1 text-2xl font-semibold m-0 text-gray-800 dark:text-gray-200">{data.user!.name}&nbsp;
+			{#if !data.user?.emailVerified}
+				<span class="text-pink-600" title="Email not verified"><BanIcon size={16} /></span>
+			{:else}
+				<span class="text-gray-600 dark:text-gray-500" ><LucideCircleCheck size={16} /></span>
+			{/if}
+			</h2>
 			<p class="mb-4">{data.user!.email}</p>
 
-			{#if _fetchingProfile}
-				<p class="flex gap-2 items-center justify-center text-gray-500 text-sm">
-					<Spinner /> <span>Loading Profile...</span>
-				</p>
-			{:else}
-				<p title={data.user?.role === 'admin' ? 'Admin' : null}
-					in:fade={{ duration: 300 }}
-					class="text-base flex items-center justify-center gap-3 {data.user!.role === 'admin' ? 'text-amber-500' : 'text-gray-500'} mb-6"
-				>
-					{#if data.user?.role === 'admin'}
-						<ShieldCheckIcon size={24} /> Admin
-					{:else}
-						<User size={24} /> {#if submissions && submissions.length > 0} Contributor {:else} Participant {/if}
-					{/if}
-				</p>
-			{/if}
+			<p title={data.user?.role === 'admin' ? 'Admin' : null}
+				in:fade={{ duration: 300 }}
+				class="text-base flex items-center justify-center gap-3 {data.user!.role === 'admin' ? 'text-amber-500' : 'text-gray-500'} mb-6"
+			>
+				{#if data.user?.role === 'admin'}
+					<ShieldCheckIcon size={24} /> Admin
+				{:else}
+					<User size={24} /> {#if submissions && submissions.length > 0} Contributor {:else} Participant {/if}
+				{/if}
+			</p>
 
-			<small
+			<!--small
 				class={`rounded-full border-2 px-3 py-1 ${data.user!.emailVerified ? 'border-green-700 text-green-700 dark:text-green-100' : 'border-pink-700 text-pink-700 dark:text-pink-100'} `}
 				>{data.user!.emailVerified ? 'Verified' : 'Not Verified'}</small
-			>
+			-->
 
-			<div class="flex justify-between items-center">
+			<div class="flex justify-between items-center gap-3">
 				{#if data.user?.role === 'admin'}
 					<button
 						class="txt-btn mt-8 md:mt-2"
 						aria-label="View Admin Dashboard"
 						onclick={_gotoAdminDashboard}
 					>
-						Open Dashboard
+						Dashboard
 					</button>
 				{/if}
 
@@ -246,12 +244,12 @@
 		</div>
 	</div>
 
-	<section class="container mx-auto max-w-xl">
+	<section class="container mx-auto">
 		<hr class="border-gray-400 dark:border-gray-600" />
 	</section>
 
 	<PageHeader title="Vehicle Submissions" description="Your Pending / Approved submissions"
-	    endIcon={LucideRecycle} endAction={_fetchSubmissions}/>
+	    endIcon={LucideRefreshCw} endAction={_fetchSubmissions}/>
 
 	{#if _fetchingSubmissions}
 		<p class="flex space-x-2 items-center justify-center text-amber-800 dark:text-amber-600">

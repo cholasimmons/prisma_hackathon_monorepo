@@ -2,10 +2,10 @@ import leven from 'leven';
 import { pickMajority } from './majorityResolver';
 
 const KNOWN_MAKES = [
-  'Toyota', 'Honda', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz',
+  'Toyota', 'Honda', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz', 'Mitsubishi',
   'Volkswagen', 'Nissan', 'Hyundai', 'Kia', 'Mazda', 'Subaru', 'Audi', 'Tesla',
   'Land Rover', 'Suzuki', 'Peugeot', 'Jaguar', 'Aston Martin', 'Fiat', 'Leyland',
-  'MAN', 'Scania'
+  'MAN', 'Scania', 'Lexus', 'Infiniti', 'Volvo'
 ] as const;
 
 const MAX_DISTANCE_RATIO = 0.25

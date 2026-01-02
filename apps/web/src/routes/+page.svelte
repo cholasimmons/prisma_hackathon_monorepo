@@ -7,6 +7,7 @@
 	import { cubicIn } from 'svelte/easing';
 	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
 	import PlatesInput from '$lib/components/PlatesInput.svelte';
+	import mono_config from '../../../constants';
 
 	let numberPlate = $state<string>('');
 	let vehicles = $state<Vehicle[]>([]);
@@ -67,7 +68,7 @@
 </script>
 
 <svelte:head>
-	<title>Vehicle Search</title>
+	<title>{mono_config.app.name} | Vehicle Search</title>
 </svelte:head>
 
 <main class="min-h-full w-full items-center flex flex-col justify-start">
