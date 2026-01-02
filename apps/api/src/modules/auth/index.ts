@@ -1,12 +1,12 @@
-import { User } from "@/generated/prisma/client";
+import { User } from "@generated/prisma/client";
 import { Elysia } from "elysia";
-import { betterAuth } from "~/middleware/betterauth";
-import { auth } from "~/utils/auth";
-import { cache } from "~/utils/cache";
-import { CacheKeys } from "~/utils/cache/keys";
-import db from "~/utils/database/client";
-import { strip } from "~/utils/strip";
-import { PublicUser, PublicUserFields } from "../users/model";
+import { betterAuth } from "~middleware/betterauth";
+import { auth } from "~utils/auth";
+import { cache } from "~utils/cache";
+import { CacheKeys } from "~utils/cache/keys";
+import db from "~utils/database/client";
+import { strip } from "~utils/strip";
+import { PublicUser, PublicUserFields } from "~modules/users/model";
 
 const authController = new Elysia({
   prefix: "/auth",

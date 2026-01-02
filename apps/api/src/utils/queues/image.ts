@@ -1,10 +1,10 @@
 import sharp from 'sharp';
 import { imageQueue } from '.';
-import { RedisEvents } from '~/utils/cache/keys';
-import { createWorker } from '~/utils/worker';
+import { RedisEvents } from '~utils/cache/keys';
+import { createWorker } from '~utils/worker';
 import { QueueImage } from './model';
 import { Job } from 'bullmq';
-import s3 from '~/utils/s3';
+import s3 from '~utils/s3';
 
 const addImageJob = async (userId: string, tempPath: string, filepath: string, ext?: string) => {
     await imageQueue.add(RedisEvents.processUserImage, { userId, tempPath, filepath, ext }, {

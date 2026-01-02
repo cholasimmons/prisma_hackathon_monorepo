@@ -1,9 +1,9 @@
-import { RedisEvents } from '~/utils/cache/keys';
-import { createWorker } from '~/utils/worker';
+import { RedisEvents } from '~utils/cache/keys';
+import { createWorker } from '~utils/worker';
 import { QueueSubmission, QueueSubmissionPhotos } from './model';
 import { Job } from 'bullmq';
 import { vehicleSubmissionImageUploadQueue, vehicleSubmissionQueue } from '.';
-import db from '~/utils/database/client';
+import db from '~utils/database/client';
 import { pickMajority } from '../vehicles/majorityResolver';
 import sharp from 'sharp';
 import s3 from '../s3';

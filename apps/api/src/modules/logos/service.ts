@@ -1,15 +1,15 @@
 import {
   Logo,
   Prisma
-} from "@/generated/prisma/client";
-import { cache } from "~/utils/cache";
-import db from "~/utils/database/client";
-import s3 from "~/utils/s3";
-import { strip } from "~/utils/strip";
+} from "@generated/prisma/client";
+import { cache } from "~utils/cache";
+import db from "~utils/database/client";
+import s3 from "~utils/s3";
+import { strip } from "~utils/strip";
 import { PublicLogoFields, type PublicLogo } from "./model";
-import { CacheKeys } from "~/utils/cache/keys";
+import { CacheKeys } from "~utils/cache/keys";
 import sharp from "sharp";
-import { BucketNames, nameFile } from "~/utils/image/storage";
+import { BucketNames, nameFile } from "~utils/image/storage";
 
 abstract class LogoService {
   static async fetchLogos(

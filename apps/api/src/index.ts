@@ -1,15 +1,13 @@
 import { Context, Elysia, t } from "elysia";
 import { openapi } from "@elysiajs/openapi";
 import { cors } from "@elysiajs/cors";
-import { OpenAPI } from "~/utils/auth";
-import { betterAuth } from "~/middleware/betterauth";
+import { OpenAPI } from "~utils/auth";
+import { betterAuth } from "~middleware/betterauth";
 import cron, { Patterns } from "@elysiajs/cron";
 import { helmet } from "elysia-helmet";
-import { elysiaXSS } from "elysia-xss";
 import { ip } from "elysia-ip";
-import { Logestic } from "logestic";
 import { rateLimit } from "elysia-rate-limit";
-import { systemBoot, systemOff } from "~/utils/system";
+import { systemBoot, systemOff } from "~utils/system";
 import { logger } from '@grotto/logysia';
 import {
   authController,
@@ -18,15 +16,15 @@ import {
   fileController,
   logosController,
   auditController
-} from "~/modules/index";
+} from "~modules/index";
 import staticPlugin from "@elysiajs/static";
-import db from "./utils/database/client";
-import { cache } from "./utils/cache";
-import { sendMail } from "./utils/mailer";
-import { addEmailJob } from "./utils/queues/email";
-import { audit } from "./services/audit";
-import { EventType } from "./generated/prisma/enums";
-import VehicleService from "./modules/vehicles/service";
+import db from "~utils/database/client";
+import { cache } from "~utils/cache";
+import { addEmailJob } from "~utils/queues/email";
+import { audit } from "~services/audit";
+import { EventType } from "@generated/prisma/enums";
+import VehicleService from "~modules/vehicles/service";
+import mono_config from '@repo/config';
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
@@ -40,6 +38,7 @@ const app = new Elysia({
   websocket: {
     idleTimeout: 30,
   },
+  name: mono_config.app.name,
   normalize: "typebox",
 })
   .use(
@@ -167,7 +166,7 @@ const app = new Elysia({
     auth: true
   })
 
-  .post('test-email', async ({ body, status, ip, session }) => {
+  .post("/test-email", async ({ body, status, ip, session }) => {
     const { to, subject, html } = body;
 
     // Job Queue
@@ -178,13 +177,12 @@ const app = new Elysia({
 
     return status(200, { success: true, message: "Email sent successfully" });
   }, {
+    auth: true,
     body: t.Object({
       to: t.String(),
       subject: t.String({ default: 'Test Email from Backend Server'}),
-      // text: t.Optional(t.String()),
       html: t.String()
-    }),
-    auth: true
+    })
   })
 
   .get("/health", ({ status }: Context) => {

@@ -1,7 +1,7 @@
-import { AuditEvent, EventType, Prisma } from "@/generated/prisma/client";
-import { cache } from "~/utils/cache";
-import db from "~/utils/database/client";
-import { CacheKeys } from "~/utils/cache/keys";
+import { AuditEvent, EventType, Prisma } from "@generated/prisma/client";
+import { cache } from "~utils/cache";
+import db from "~utils/database/client";
+import { CacheKeys } from "~utils/cache/keys";
 import { Log } from "./model";
 
 abstract class AuditService {

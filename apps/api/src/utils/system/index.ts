@@ -1,6 +1,6 @@
-import { checkEnvVariables } from "~/utils/system/env-checker";
-import db from "~/utils/database/client";
-import { cache } from "~/utils/cache/index";
+import { checkEnvVariables } from "~utils/system/env-checker";
+import db from "~utils/database/client";
+import { cache } from "~utils/cache/index";
 import { mailer, sendMail } from "../mailer";
 
 const requiredEnvVars = [

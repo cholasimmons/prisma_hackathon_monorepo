@@ -1,4 +1,4 @@
-import { VehicleSubmission } from "@/generated/prisma/client";
+import { VehicleSubmission } from "@generated/prisma/client";
 
 interface QueueEmail {
   to: string,

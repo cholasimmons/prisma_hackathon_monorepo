@@ -6,7 +6,7 @@ import {
 } from "better-auth/plugins";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import db from "~/utils/database/client";
+import db from "~utils/database/client";
 import { addEmailJob } from "./queues/email";
 
 const PREFIX = "/auth";

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { UserProfile } from '$lib/models/user.model';
 	import { LucideVerified, BadgeAlertIcon } from '@lucide/svelte';
-	import { onMount } from 'svelte';
 	import PageHeader from '../PageHeader.svelte';
 
 	const { user, onClose }: { user?: UserProfile; onClose: () => void } = $props();

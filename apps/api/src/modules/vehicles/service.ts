@@ -3,22 +3,22 @@ import {
   Vehicle,
   VehiclePhoto,
   VehicleSubmission,
-} from "@/generated/prisma/client";
-import { cache } from "~/utils/cache";
-import db from "~/utils/database/client";
-import { strip } from "~/utils/strip";
+} from "@generated/prisma/client";
+import { cache } from "~utils/cache";
+import db from "~utils/database/client";
+import { strip } from "~utils/strip";
 import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
 import type { PublicVehicle, PublicVehicleSubmission } from "./model";
-import { CacheKeys } from "~/utils/cache/keys";
-import { VehicleSubmissionCreateInput } from "@/generated/prisma/models";
-import { BucketNames } from "~/utils/image/storage";
-import s3 from "~/utils/s3";
-import { normalizeMake } from "~/utils/vehicles";
+import { CacheKeys } from "~utils/cache/keys";
+import { VehicleSubmissionCreateInput } from "@generated/prisma/models";
+import { BucketNames } from "~utils/image/storage";
+import s3 from "~utils/s3";
+import { normalizeMake } from "~utils/vehicles";
 import {
   addVehicleSubmissionImageUploadJob,
   addVehicleSubmissionJob,
-} from "~/utils/queues/vehicle";
-import { addImageJob } from "~/utils/queues/image";
+} from "~utils/queues/vehicle";
+import { addImageJob } from "~utils/queues/image";
 
 abstract class VehicleService {
   static async searchVehicles(

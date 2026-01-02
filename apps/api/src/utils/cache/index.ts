@@ -1,5 +1,5 @@
 import type { RedisClient } from "bun";
-import redis from "~/utils/cache/config";
+import redis from "~utils/cache/config";
 
 export class CacheService {
   private redis: RedisClient | null = null;

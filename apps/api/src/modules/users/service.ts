@@ -1,12 +1,12 @@
-import { User } from "@/generated/prisma/client";
-import { cache } from "~/utils/cache";
-import db from "~/utils/database/client";
-import { strip } from "~/utils/strip";
-import { CacheKeys } from "~/utils/cache/keys";
-import { BucketNames } from "~/utils/image/storage";
+import { User } from "@generated/prisma/client";
+import { cache } from "~utils/cache";
+import db from "~utils/database/client";
+import { strip } from "~utils/strip";
+import { CacheKeys } from "~utils/cache/keys";
+import { BucketNames } from "~utils/image/storage";
 import { PublicUser, PublicUserFields } from "./model";
-import { addImageJob } from "~/utils/queues/image";
-import s3 from "~/utils/s3";
+import { addImageJob } from "~utils/queues/image";
+import s3 from "~utils/s3";
 
 abstract class UserService {
 

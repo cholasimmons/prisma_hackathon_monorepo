@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@repo/config": ["packages/config.ts"]
+    },
+
+    "types": [],
+    "skipLibCheck": true
+  }
+}

@@ -1,4 +1,4 @@
-import { Vehicle, VehicleSubmission } from "@/generated/prisma/client";
+import { Vehicle, VehicleSubmission } from "@generated/prisma/client";
 
 const PublicVehicleFields = [
   "id",

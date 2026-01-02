@@ -1,5 +1,5 @@
 import { Elysia, t } from "elysia";
-import { betterAuth } from "~/middleware/betterauth";
+import { betterAuth } from "~middleware/betterauth";
 import AuditService from "./service";
 
 const auditController = new Elysia({

@@ -1,6 +1,6 @@
 
-import type { EventType } from "@/generated/prisma/enums";
-import db from "~/utils/database/client";
+import type { EventType } from "@generated/prisma/enums";
+import db from "~utils/database/client";
 
 class AuditService {
   async log(opts: {

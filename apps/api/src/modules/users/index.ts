@@ -1,15 +1,15 @@
-import { User } from "@/generated/prisma/client";
+import { User } from "@generated/prisma/client";
 import { Elysia, t } from "elysia";
-import { betterAuth } from "~/middleware/betterauth";
-import { auth } from "~/utils/auth";
-import { cache } from "~/utils/cache";
-import { CacheKeys } from "~/utils/cache/keys";
-import db from "~/utils/database/client";
-import { strip } from "~/utils/strip";
+import { betterAuth } from "~middleware/betterauth";
+import { auth } from "~utils/auth";
+import { cache } from "~utils/cache";
+import { CacheKeys } from "~utils/cache/keys";
+import db from "~utils/database/client";
+import { strip } from "~utils/strip";
 import { PublicUser, PublicUserFields } from "./model";
 import UserService from "./service";
-import { BucketNames } from "~/utils/image/storage";
-import s3 from "~/utils/s3";
+import { BucketNames } from "~utils/image/storage";
+import s3 from "~utils/s3";
 import { HttpStatusCode } from "elysia-http-status-code";
 
 const usersController = new Elysia({

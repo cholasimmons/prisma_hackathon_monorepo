@@ -1,14 +1,14 @@
 import { Elysia, t } from "elysia";
 import VehicleService from "./service";
-import { betterAuth } from "~/middleware/betterauth";
-import { cache } from "~/utils/cache";
+import { betterAuth } from "~middleware/betterauth";
+import { cache } from "~utils/cache";
 import {
   PublicVehicle,
   PublicVehicleSubmission,
 } from "./model";
-import { KNOWN_MAKES } from "~/utils/vehicles";
-import { audit } from "src/services/audit";
-import { EventType } from "@/generated/prisma/enums";
+import { KNOWN_MAKES } from "~utils/vehicles";
+import { audit } from "~services/audit";
+import { EventType } from "@generated/prisma/enums";
 import { ip } from "elysia-ip";
 
 const vehiclesController = new Elysia({

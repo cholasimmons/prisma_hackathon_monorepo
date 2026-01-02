@@ -1,4 +1,4 @@
-import { EventType } from "@/generated/prisma/enums";
+import { EventType } from "@generated/prisma/enums";
 
 const CacheKeys = {
   user: {

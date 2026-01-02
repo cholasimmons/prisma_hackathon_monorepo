@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import LogoService from "./service";
-import { betterAuth } from "~/middleware/betterauth";
+import { betterAuth } from "~middleware/betterauth";
 
 const logosController = new Elysia({
   prefix: "/logos",

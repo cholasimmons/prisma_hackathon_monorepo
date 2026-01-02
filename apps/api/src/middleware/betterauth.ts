@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { auth } from "~/utils/auth";
+import { auth } from "~utils/auth";
 
 // user middleware (compute user and session and pass to routes)
 const betterAuth = new Elysia({ name: "better-auth" }).macro({

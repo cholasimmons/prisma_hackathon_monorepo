@@ -1,5 +1,5 @@
 import { Elysia, redirect, t } from "elysia";
-import s3 from "~/utils/s3"; // Import your configured client
+import s3 from "~utils/s3"; // Import your configured client
 
 const fileController = new Elysia({
   prefix: "/files",

@@ -1,7 +1,7 @@
-// import { Log } from "@/generated/prisma/client";
+// import { Log } from "@generated/prisma/client";
 
-import { EventType } from "@/generated/prisma/enums";
-import { NullableJsonNullValueInput } from "@/generated/prisma/internal/prismaNamespace";
+import { EventType } from "@generated/prisma/enums";
+import { NullableJsonNullValueInput } from "@generated/prisma/internal/prismaNamespace";
 import { InputJsonValue } from "@prisma/client/runtime/client";
 
 // const PublicLogFields = ["id", "actorId", "createdAt"] as const;
