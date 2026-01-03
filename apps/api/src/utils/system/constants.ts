@@ -1,10 +1,15 @@
 const mono_config = {
   app: {
     name: 'Plates',
+    description: 'Crowd-sourced Vehicle Database database',
     lastUpdated: new Date().toISOString(),
     version: '0.1.0',
   },
   auth: {
+    email: {
+      regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      maxLength: 48,
+    },
     password: {
       minLength: 6,
       maxLength: 24,

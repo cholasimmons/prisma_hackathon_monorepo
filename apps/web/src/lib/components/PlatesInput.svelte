@@ -108,7 +108,7 @@
 	}
 
 	#plates-input-container input {
-		background-image: linear-gradient(to bottom, #dedede, #bebebe);
+		background-image: linear-gradient(to bottom, #dedede, #cecece);
 		color: #222;
 		width: 100%;
 		border-radius: 1rem;

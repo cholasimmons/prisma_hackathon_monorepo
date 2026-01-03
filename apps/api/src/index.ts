@@ -39,6 +39,9 @@ const app = new Elysia({
     idleTimeout: 30,
   },
   name: mono_config.app.name,
+  detail: {
+    description: mono_config.app.description
+  },
   normalize: "typebox",
 })
   .use(

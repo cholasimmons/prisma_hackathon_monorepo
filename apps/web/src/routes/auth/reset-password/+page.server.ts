@@ -18,10 +18,15 @@ export const actions: Actions = {
 		const passwordHasLength = newPassword.length >= mono_config.auth.password.maxLength;
     const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(newPassword) : false;
     const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(newPassword) : false;
-		if (!passwordHasLength || !passwordHasNumber || !passwordHasUpper) {
-			return fail(400, { success: false, message: 'Invalid password' });
+    if (!passwordHasLength) {
+			return fail(400, { success: false, message: 'Password invalid length' });
 		}
-
+		if (!passwordHasNumber) {
+			return fail(400, { success: false, message: 'Password requires a number' });
+		}
+		if (!passwordHasUpper) {
+			return fail(400, { success: false, message: 'Password requires an uppercase letter' });
+		}
 		if (newPassword !== confirmPassword) {
 			return fail(400, { success: false, message: 'Passwords do not match' });
 		}
