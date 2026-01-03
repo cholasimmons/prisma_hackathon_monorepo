@@ -2,9 +2,6 @@ FROM oven/bun:1.3.5 AS build
 WORKDIR /app
 
 COPY package.json bun.lock* ./
-# COPY apps ./apps
-# COPY packages ./packages
-# COPY . .
 
 # Try frozen first, fallback to regular install
 # RUN bun install --frozen-lockfile || (echo "⚠️ bun.lock outdated — regenerating..." && bun install)
@@ -12,7 +9,8 @@ RUN if ! bun install --frozen-lockfile; then \
       echo "⚠️ bun.lock outdated — regenerating..." && bun install; \
     fi
 
-WORKDIR /app
+COPY . .
+
 RUN bun run build
 
 # Production stage
