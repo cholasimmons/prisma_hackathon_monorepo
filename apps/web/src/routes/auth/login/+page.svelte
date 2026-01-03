@@ -9,8 +9,9 @@
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { fade } from 'svelte/transition';
 	import mono_config from '@config';
+	import { PUBLIC_APP_URL } from '$env/static/public';
 
-	const APP_URL = "https://plates.simmons.studio";
+	const APP_URL = PUBLIC_APP_URL;
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);

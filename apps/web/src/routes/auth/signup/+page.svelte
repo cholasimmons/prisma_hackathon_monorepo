@@ -4,7 +4,7 @@
 	import { EyeClosedIcon, EyeIcon } from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { PUBLIC_APP_URL } from '$env/dynamic/public';
+	import { PUBLIC_APP_URL } from '$env/static/public';
 	import { goto } from '$app/navigation';
 	import mono_config from '@config';
 
