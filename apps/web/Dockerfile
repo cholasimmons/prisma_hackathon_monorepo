@@ -2,8 +2,8 @@ FROM oven/bun:1.3.5 AS build
 WORKDIR /app
 
 COPY package.json bun.lock* ./
-COPY apps ./apps
-COPY packages ./packages
+# COPY apps ./apps
+# COPY packages ./packages
 # COPY . .
 
 # Try frozen first, fallback to regular install
@@ -12,7 +12,7 @@ RUN if ! bun install --frozen-lockfile; then \
       echo "⚠️ bun.lock outdated — regenerating..." && bun install; \
     fi
 
-WORKDIR /app/apps/web
+WORKDIR /app
 RUN bun run build
 
 # Production stage
@@ -20,8 +20,8 @@ FROM oven/bun:1.3.5 AS production
 WORKDIR /app
 
 # Copy built files
-COPY --from=build /app/apps/web/build ./build
-COPY --from=build /app/apps/web/package.json ./
+COPY --from=build /app/build ./build
+COPY --from=build /app/package.json ./
 
 # Install only prod deps for runtime
 # RUN bun install --production

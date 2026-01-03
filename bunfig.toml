@@ -1,6 +1,2 @@
 [workspace]
 members = ["apps/api", "apps/web"]
-[typescript]
-tsconfig = "./tsconfig.json"
-[resolve]
-aliases = { "@repo/config" = "./packages/config/src/index.ts" }

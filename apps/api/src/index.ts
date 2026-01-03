@@ -24,7 +24,7 @@ import { addEmailJob } from "~utils/queues/email";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
 import VehicleService from "~modules/vehicles/service";
-import mono_config from '@repo/config';
+import mono_config from '@config';
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);

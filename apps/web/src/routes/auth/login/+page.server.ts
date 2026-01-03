@@ -1,6 +1,6 @@
 import { APP_URL } from '$lib/env';
 import { fail, type Actions } from '@sveltejs/kit';
-import mono_config from '@repo/config';
+import mono_config from '@config';
 
 export function load({ locals, url }) {
 	return {

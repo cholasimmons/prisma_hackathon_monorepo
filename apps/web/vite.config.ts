@@ -4,11 +4,6 @@ import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
-  resolve: {
-      alias: {
-        '@repo/config': 'packages/config/src/index.ts'
-      }
-  },
 	plugins: [tailwindcss(), sveltekit(),
 	SvelteKitPWA({
 	  registerType: "autoUpdate",

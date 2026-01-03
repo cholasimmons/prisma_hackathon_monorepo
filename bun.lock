@@ -4,9 +4,6 @@
   "workspaces": {
     "": {
       "name": "prisma_hackathon",
-      "dependencies": {
-        "@repo/config": "workspace:*",
-      },
       "devDependencies": {
         "concurrently": "^9.2.1",
         "dotenv": "^17.2.3",
@@ -23,7 +20,6 @@
         "@grotto/logysia": "^0.1.6",
         "@prisma/adapter-pg": "^7.2.0",
         "@prisma/client": "^7.2.0",
-        "@repo/config": "workspace:*",
         "better-auth": "^1.4.7",
         "blockhash": "^0.2.0",
         "bullmq": "^5.66.3",
@@ -56,7 +52,6 @@
       "dependencies": {
         "@humanspeak/svelte-headless-table": "^6.0.1",
         "@lucide/svelte": "^0.562.0",
-        "@repo/config": "workspace:*",
         "better-auth": "^1.4.7",
         "color-namer": "^1.4.0",
         "layerchart": "^1.0.12",
@@ -84,10 +79,6 @@
         "typescript": "^5.9.3",
         "vite": "^7.3.0",
       },
-    },
-    "packages/config": {
-      "name": "@repo/config",
-      "version": "0.0.0",
     },
   },
   "packages": {
@@ -602,8 +593,6 @@
     "@prisma/query-plan-executor": ["@prisma/query-plan-executor@6.18.0", "", {}, "sha512-jZ8cfzFgL0jReE1R10gT8JLHtQxjWYLiQ//wHmVYZ2rVkFHoh0DT8IXsxcKcFlfKN7ak7k6j0XMNn2xVNyr5cA=="],
 
     "@prisma/studio-core": ["@prisma/studio-core@0.9.0", "", { "peerDependencies": { "@types/react": "^18.0.0 || ^19.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-xA2zoR/ADu/NCSQuriBKTh6Ps4XjU0bErkEcgMfnSGh346K1VI7iWKnoq1l2DoxUqiddPHIEWwtxJ6xCHG6W7g=="],
-
-    "@repo/config": ["@repo/config@workspace:packages/config"],
 
     "@rolldown/binding-darwin-arm64": ["@rolldown/binding-darwin-arm64@1.0.0-beta.9-commit.d91dfb5", "", { "os": "darwin", "cpu": "arm64" }, "sha512-Mp0/gqiPdepHjjVm7e0yL1acWvI0rJVVFQEADSezvAjon9sjQ7CEg9JnXICD4B1YrPmN9qV/e7cQZCp87tTV4w=="],
 

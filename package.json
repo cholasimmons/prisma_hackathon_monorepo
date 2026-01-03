@@ -5,8 +5,7 @@
   "type": "module",
   "workspaces": [
     "apps/api",
-    "apps/web",
-    "packages/config"
+    "apps/web"
   ],
   "scripts": {
     "dev": "bunx concurrently \"bun:dev:api\" \"bun:dev:web\"",
@@ -27,8 +26,5 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.3"
-  },
-  "dependencies": {
-    "@repo/config": "workspace:*"
   }
 }

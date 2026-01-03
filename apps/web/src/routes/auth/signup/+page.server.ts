@@ -1,5 +1,5 @@
 import { fail, type Actions } from '@sveltejs/kit';
-import mono_config from "@repo/config";
+import mono_config from "@config";
 
 export const actions: Actions = {
   default: async ({ request }) => {
