@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_S3_BUCKET, PUBLIC_S3_ENDPOINT } from "$env/static/public";
+	import mono_config from "@config";
 
     let { src, className = 'w-12 h-12', alt }: { src?: string | null, className?: string, alt?: string } = $props();
 
@@ -7,7 +8,7 @@
       if(src){
         return (`${PUBLIC_S3_ENDPOINT}/${PUBLIC_S3_BUCKET}/${src}`);
       }
-      return '/images/default-avatar.png';
+      return mono_config.defaultAvatar || '/images/default-avatar.png';
     });
 </script>
 

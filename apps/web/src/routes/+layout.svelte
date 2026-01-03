@@ -14,16 +14,10 @@
 		TriangleAlert,
 		LucideSun,
 		LucideMoon,
-
-		LucidePowerOff,
-
 		LucideCirclePower
-
-
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
-	import AvatarCell from '$lib/components/Tables/AvatarCell.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { cubicInOut, cubicOut, elasticIn } from 'svelte/easing';
@@ -92,7 +86,7 @@
 		</div>
 	{:else}
 		<header
-			class="container mx-auto sticky top-0 z-30 max-w-2xl lg:max-w-4xl px-2 sm:px-4 md:px-8 lg:px-12 py-2
+			class="container mx-auto sticky top-0 z-30 max-w-2xl lg:max-w-4xl px-2 sm:px-4 md:px-8 lg:px-12 py-2 max-h-13
             text-start text-gray-600 dark:text-gray-400
             flex flex-row items-center backdrop-blur-lg
             after:absolute after:left-0 after:right-0 after:bottom-0
@@ -118,7 +112,6 @@
 					<button onclick={() => gotoProfile()}>
 						<UserAvatar
 							src={page.data.user.image}
-							className="w-10 h-10 rounded-full"
 						/>
 					</button>
 				{:else if data?.user}

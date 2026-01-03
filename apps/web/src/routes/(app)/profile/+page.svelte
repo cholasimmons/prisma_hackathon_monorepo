@@ -129,6 +129,7 @@
 
 	onMount(() => {
 		profile = data.user as UserProfile;
+		_avatar = profile.image || null;
 		_fetchSubmissions();
 		// console.log('Layout S3 Endpoint:', data.s3Endpoint);
 		// _fetchProfile();
@@ -155,7 +156,7 @@
 					onclick={uploading ? null : triggerFileSelect}
 				>
 				    <UserAvatar
-				        src={data.user?.image || null}
+				        src={_avatar || null}
 				    />
 
 					<!-- Overlay -->
