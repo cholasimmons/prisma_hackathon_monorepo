@@ -1,8 +1,8 @@
 services:
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     init: true
     container_name: elysia-api
     ports:
@@ -29,8 +29,8 @@ services:
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
     container_name: sveltekit-web
     ports:
       - "3001:3001"
