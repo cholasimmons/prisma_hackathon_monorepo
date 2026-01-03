@@ -9,7 +9,7 @@
 	import { fade } from 'svelte/transition';
 	import type { PageProps } from './$types';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
-	import { Edit, ShieldCheckIcon, User, BanIcon, LucideRefreshCw, LucideCircleCheck, LucideEdit } from '@lucide/svelte';
+	import { ShieldCheckIcon, User, BanIcon, LucideRefreshCw, LucideCircleCheck, LucideEdit } from '@lucide/svelte';
 	import toast from 'svelte-french-toast';
 	import { authClient } from '$lib/auth-client';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -53,8 +53,7 @@
     		form.append('avatar', file);
 
             const res = await api.post<string>('/users/avatar', form);
-
-            console.log('form POST response:', res);
+            console.log('/users/avatar POST response:', res);
 
     		if (!res) {
      			alert('Failed to upload to server');
@@ -131,7 +130,7 @@
 	onMount(() => {
 		profile = data.user as UserProfile;
 		_fetchSubmissions();
-		console.log('Layout S3 Endpoint:', data.s3Endpoint);
+		// console.log('Layout S3 Endpoint:', data.s3Endpoint);
 		// _fetchProfile();
 		// _avatar = data.user?.image || null;
 	});
@@ -157,7 +156,6 @@
 				>
 				    <UserAvatar
 				        src={data.user?.image || null}
-				        className="w-full"
 				    />
 					<!-- <img
 						in:fade={{ duration: 400 }}

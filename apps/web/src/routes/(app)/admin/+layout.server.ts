@@ -1,5 +1,4 @@
 import { BUN_ENV } from '$env/static/private';
-import { redirect } from '@sveltejs/kit';
 
 export function load({ locals }) {
   if(BUN_ENV === 'production') {

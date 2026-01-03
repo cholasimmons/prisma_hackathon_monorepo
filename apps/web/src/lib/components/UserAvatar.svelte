@@ -1,5 +1,5 @@
 <script lang="ts">
-    let { src, className = 'w-12 h-12', alt }: { src?: string | null, className: string, alt?: string } = $props();
+    let { src, className = 'w-12 h-12', alt }: { src?: string | null, className?: string, alt?: string } = $props();
 
     const d = $derived.by(() => {
       if(src){
@@ -13,7 +13,7 @@
 <img
     src={d}
     {alt}
-    class={className + ' aspect-square rounded-full object-fill overflow-hidden'}
+    class={className + ' w-full aspect-square rounded-full object-cover overflow-hidden'}
     loading="lazy"
 />
 
