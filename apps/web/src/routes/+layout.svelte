@@ -109,10 +109,10 @@
 				{/if}
 
 				{#if data?.user && page.data.user.image}
-					<button onclick={() => gotoProfile()}>
+					<button onclick={() => gotoProfile()} style="padding: none, background: none;">
 						<UserAvatar
 							src={page.data.user.image}
-							className="h-12 w-12"
+							className="h-10 w-10"
 						/>
 					</button>
 				{:else if data?.user}
