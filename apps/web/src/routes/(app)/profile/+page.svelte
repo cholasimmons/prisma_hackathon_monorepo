@@ -149,20 +149,14 @@
 				<button
 					type="button"
 					disabled={uploading}
-					class="relative group w-full rounded-full p-0 border-0 bg-transparent
-                        	       focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
-                        	       focus-visible:ring-gray-400 "
+					class="relative group w-full p-0 bg-transparent
+            	       focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+            	       focus-visible:ring-gray-400 hover:bg-none"
 					onclick={uploading ? null : triggerFileSelect}
 				>
 				    <UserAvatar
 				        src={data.user?.image || null}
 				    />
-					<!-- <img
-						in:fade={{ duration: 400 }}
-						src={_avatar}
-						alt={data.user?.name}
-						class="w-full h-full rounded-full object-cover"
-					/> -->
 
 					<!-- Overlay -->
 					<span
