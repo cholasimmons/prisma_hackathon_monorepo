@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import toast from 'svelte-french-toast';
-	import { EyeClosedIcon, EyeOffIcon, EyeIcon } from '@lucide/svelte';
+	import { EyeClosedIcon, EyeIcon } from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { PUBLIC_APP_URL } from '$env/static/public';
+	import { PUBLIC_APP_URL } from '$env/dynamic/public';
 	import { goto } from '$app/navigation';
+	import mono_config from '@config';
 
 	const APP_URL = PUBLIC_APP_URL;
 
@@ -13,7 +14,7 @@
 	let _showConfirmPassword = $state(false);
 
 	// Reactive
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	const emailRegex = mono_config.auth.email.regex || /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
    	let firstname = $state('');
     let lastname = $state('');
     let email = $state('');
@@ -32,12 +33,13 @@
       return emailRegex.test(email);
     });
 
-    const isValidPassword = $derived.by(() => {
-      const hasLength = password.length >= 6;
-    		// const hasNumber = /\d/.test(password);
-    		// const hasUpper = /[A-Z]/.test(password);
-      return hasLength; // && hasNumber && hasUpper;
-    });
+    let isValidPassword = $derived.by(() => {
+        const hasLength = password.length >= mono_config.auth.password.minLength && password.length <= mono_config.auth.password.maxLength;
+		const hasNumber = mono_config.auth.password.requireNumber ? /\d/.test(password) : true;
+		const hasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(password) : true;
+		// const hasSpecial = mono_config.auth.password.requireSpecialChar ? /[!@#$%^&*(),.?":{}|<>]/.test(password) : true;
+		return hasLength && hasNumber && hasUpper;
+	})
 
     const isValidConfirmPassword = $derived.by(() => {
       const hasLength = password.length >= 6;

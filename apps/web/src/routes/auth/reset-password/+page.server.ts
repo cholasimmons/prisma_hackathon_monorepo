@@ -15,7 +15,7 @@ export const actions: Actions = {
 			return fail(400, { success: false, message: 'Invalid reset token' });
 		}
 
-		const passwordHasLength = newPassword.length >= mono_config.auth.password.maxLength;
+		const passwordHasLength = newPassword.length <= mono_config.auth.password.maxLength || newPassword.length >= mono_config.auth.password.minLength;
     const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(newPassword) : false;
     const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(newPassword) : false;
     if (!passwordHasLength) {

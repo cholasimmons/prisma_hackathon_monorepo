@@ -8,6 +8,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { fade } from 'svelte/transition';
+	import mono_config from '@config';
 
 	const APP_URL = "https://plates.simmons.studio";
 
@@ -24,10 +25,11 @@
 	  return emailRegex.test(email)
 	})
 	let isValidPassword = $derived.by(() => {
-        const hasLength = password.length >= 6;
-		// const hasNumber = /\d/.test(password);
-		// const hasUpper = /[A-Z]/.test(password);
-		return hasLength; // && hasNumber && hasUpper;
+        const hasLength = password.length >= mono_config.auth.password.minLength && password.length <= mono_config.auth.password.maxLength;
+		const hasNumber = mono_config.auth.password.requireNumber ? /\d/.test(password) : true;
+		const hasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(password) : true;
+		// const hasSpecial = mono_config.auth.password.requireSpecialChar ? /[!@#$%^&*(),.?":{}|<>]/.test(password) : true;
+		return hasLength && hasNumber && hasUpper;
 	})
 
 	const GoogleIcon = 'flat-color-icons:google';

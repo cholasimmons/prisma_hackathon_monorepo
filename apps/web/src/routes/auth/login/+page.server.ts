@@ -27,7 +27,7 @@ export const actions: Actions = {
 			return fail(400, { success: false, email, rememberMe, message: 'Invalid Email' });
 		}
 
-		const passwordHasLength = password.length >= mono_config.auth.password.maxLength || password.length <= mono_config.auth.password.minLength;
+		const passwordHasLength = password.length <= mono_config.auth.password.maxLength || password.length >= mono_config.auth.password.minLength;
     const passwordHasNumber = mono_config.auth.password.requireNumber ? /\d/.test(password) : true;
     const passwordHasUpper = mono_config.auth.password.requireUppercase ? /[A-Z]/.test(password) : true;
     if (!passwordHasLength) {
