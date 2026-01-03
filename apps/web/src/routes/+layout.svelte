@@ -112,6 +112,7 @@
 					<button onclick={() => gotoProfile()}>
 						<UserAvatar
 							src={page.data.user.image}
+							className="h-12 w-12"
 						/>
 					</button>
 				{:else if data?.user}

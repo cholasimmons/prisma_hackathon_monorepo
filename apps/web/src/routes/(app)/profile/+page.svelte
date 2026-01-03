@@ -157,6 +157,7 @@
 				>
 				    <UserAvatar
 				        src={_avatar || null}
+						className="w-full h-full"
 				    />
 
 					<!-- Overlay -->

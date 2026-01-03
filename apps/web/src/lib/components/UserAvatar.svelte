@@ -15,6 +15,6 @@
 <img
     src={d}
     {alt}
-    class={className + ` w-full h-full aspect-square object-cover rounded-full ${src ? 'border-3' : ''} border-gray-400 dark:border-gray-600`}
+    class={className + ` aspect-square object-cover rounded-full ${src ? 'border-3' : ''} border-gray-400 dark:border-gray-600`}
     loading="lazy"
 />
