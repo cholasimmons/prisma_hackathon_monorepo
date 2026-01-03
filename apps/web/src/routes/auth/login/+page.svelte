@@ -8,9 +8,8 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import { fade } from 'svelte/transition';
-	import { PUBLIC_APP_URL } from '$env/static/public';
 
-	const APP_URL = PUBLIC_APP_URL;
+	const APP_URL = "https://plates.simmons.studio";
 
 	let { data, form }: PageProps = $props();
 	let _signingIn = $state(false);

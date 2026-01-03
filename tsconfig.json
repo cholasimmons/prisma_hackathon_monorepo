@@ -7,7 +7,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@repo/config": ["packages/config.ts"]
+      "@repo/config": ["packages/config/src/index.ts"]
     },
 
     "types": [],

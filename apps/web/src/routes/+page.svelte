@@ -7,7 +7,7 @@
 	import { cubicIn } from 'svelte/easing';
 	import VehicleListItem from '$lib/components/VehicleListItem.svelte';
 	import PlatesInput from '$lib/components/PlatesInput.svelte';
-	import mono_config from '../../../constants';
+	import mono_config from "@repo/config";
 
 	let numberPlate = $state<string>('');
 	let vehicles = $state<Vehicle[]>([]);
