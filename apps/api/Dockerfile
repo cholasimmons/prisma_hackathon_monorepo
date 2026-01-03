@@ -16,9 +16,8 @@ WORKDIR /app
 FROM base AS install
 # COPY package.json prisma start.sh tsconfig.json prisma.config.ts ./
 # COPY bun.lock* ./
-COPY package.json bun.lock* ./
-COPY prisma ./prisma
-COPY tsconfig.json prisma.config.ts start.sh ./
+COPY package.json prisma tsconfig.json prisma.config.ts start.sh ./
+COPY bun.lock* ./
 
 # if bun.lock exists, good; if not, it won't break
 RUN if [ -f bun.lock ]; then echo "Lockfile found and copied"; else echo "No lockfile present"; fi
@@ -34,7 +33,7 @@ FROM base AS build
 COPY --from=install /app/node_modules ./node_modules
 
 # Copy source code
-# COPY . .
+COPY . .
 
 # Debug: Prisma CLI check
 RUN echo "Prisma CLI version:" && bunx prisma --version || echo "Prisma CLI not found"
@@ -78,7 +77,6 @@ COPY --from=install /app/prisma.config.ts ./prisma.config.ts
 
 # Copy static folder
 COPY public ./public
-
 
 
 # Make executables runnable
