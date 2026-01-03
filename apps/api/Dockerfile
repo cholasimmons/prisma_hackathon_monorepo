@@ -74,12 +74,12 @@ COPY --from=install /app/apps/api/start.sh ./start.sh
 COPY --from=build /app/apps/api/node_modules ./node_modules
 
 # Copy database config
-COPY src/utils/database/client.ts ./src/utils/database/client.ts
+COPY apps/api/src/utils/database/client.ts ./src/utils/database/client.ts
 # Copy prisma.config script
 COPY --from=install /app/apps/api/prisma.config.ts ./prisma.config.ts
 
 # Copy static folder
-COPY public ./public
+COPY apps/api/public ./public
 
 # RUN bun install --include=optional --os=linux --cpu=x64 sharp --force
 
