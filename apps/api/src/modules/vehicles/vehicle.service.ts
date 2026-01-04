@@ -2,6 +2,7 @@ import {
   Prisma,
   Vehicle,
   VehicleSubmission,
+  VehicleType,
 } from "@generated/prisma/client";
 import { cache } from "~utils/cache";
 import db from "~utils/database/client";
@@ -32,18 +33,23 @@ abstract class VehicleService {
       limit?: number;
       color?: string;
       model?: string;
+      type?: VehicleType;
+      forSale?: boolean;
       plate?: string;
     },
     isAdmin: boolean = false,
   ): Promise<PublicVehicle[] | null> {
-    const { make, year, limit, color, model, plate } = params;
+    const { make, year, limit, color, model, plate, type, forSale } = params;
     const where: Prisma.VehicleWhereInput = {};
 
     if (make) where.make = make;
     if (year) where.year = year;
-    if (color) where.color = color;
-    if (model) where.model = model;
-    if (plate) where.plate = plate.trim();
+    if (color) where.color = { contains: color, mode: "insensitive" };
+    if (model) where.model = { contains: model, mode: "insensitive" };
+    if (type) where.type = type;
+    if (forSale) where.forSale = forSale;
+    if (plate) where.plate = { contains: plate.trim(), mode: "insensitive" };
+    where.submissionCount = { gte: MIN_SUBMISSIONS_FOR_PUBLIC };
 
     if (!isAdmin) {
       where.isActive = true;
@@ -59,13 +65,7 @@ abstract class VehicleService {
     }
 
     const vehicles: Vehicle[] | null = await db.vehicle.findMany({
-      where: {
-        plate: { contains: plate, mode: "insensitive" },
-        color: { contains: color, mode: "insensitive" },
-        model: { contains: model, mode: "insensitive" },
-        year,
-        make,
-      },
+      where,
       take: limit,
     });
 
@@ -79,7 +79,7 @@ abstract class VehicleService {
     cache.set<PublicVehicle[]>(
       CacheKeys.vehicles.allQueried(JSON.stringify(params)),
       cleanVehicles,
-      60, // 60 seconds
+      60 * 60, // 1 hour
     );
 
     return cleanVehicles;
@@ -88,26 +88,30 @@ abstract class VehicleService {
   static async searchSubmittedVehicles(
     params: {
       make?: string;
+      model?: string;
       year?: number;
       limit?: number;
       color?: string;
+      type?: VehicleType;
+      forSale?: boolean;
+      plate?: string;
     },
     userId: string,
   ): Promise<PublicVehicleSubmission[] | null> {
-    const { make, year, limit, color } = params;
+    const { make, model, year, limit, color, type, forSale, plate } = params;
     const where: Prisma.VehicleSubmissionWhereInput = {};
 
     if (make) where.make = make;
+    if (model) where.model = model;
     if (year) where.year = year;
-    if (color) where.color = color;
+    if (type) where.type = type;
+    if (forSale) where.forSale = forSale;
+    if (plate) where.plate = plate;
+    if (color) where.color = { contains: color, mode: "insensitive" };
     where.submittedById = userId;
 
     const submissions = await db.vehicleSubmission.findMany({
-      where: {
-        color: { contains: color, mode: "insensitive" },
-        year,
-        make,
-      },
+      where,
       include: { photos: true },
       take: limit || 20,
     });
@@ -424,10 +428,6 @@ abstract class VehicleService {
     }
 
     // 3. Create photo records if user selected images (NO sharp yet)
-    // let photoRecords: VehiclePhoto[] | null = null;
-
-    const files = Array.isArray(body.images) ? body.images : [body.images];
-
     const uploadedFiles: {
       path: string;
       tempPath: string;
@@ -441,16 +441,20 @@ abstract class VehicleService {
       Bun.env.TMP ??
       '/tmp';
 
+    const files = Array.isArray(body.images) ? body.images : [body.images];
+
     for (const imageFile of files) {
+      const randomID = crypto.randomUUID();
+
       // --- validate early ---
       if (!(imageFile instanceof File)) continue;
 
       const ext = imageFile.name.split('.').pop() ?? 'jpg';
-      const safeFilename = `image-${crypto.randomUUID()}`;
+      const safeFilename = `image-${randomID}`;
       const filepath = `${BucketNames.vehicles}/${body.plate}/${safeFilename}.${ext}`;
 
       // temp path
-      const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
+      const tempPath = `${tmpDir}/${randomID}.${ext}`;
 
       // write to disk
       await Bun.write(tempPath, await imageFile.arrayBuffer());
@@ -502,6 +506,8 @@ abstract class VehicleService {
       CacheKeys.vehicles.submissions.byId(submission.id),
       updatedStripped,
     );
+
+    this.runVehicleConsensus();
 
     return updatedStripped;
   }

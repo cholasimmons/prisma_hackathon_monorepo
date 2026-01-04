@@ -11,6 +11,7 @@ import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
 import { ip } from "elysia-ip";
 import cron, { Patterns } from "@elysiajs/cron";
+import { VehicleType } from "@generated/prismabox/VehicleType";
 
 const vehiclesController = new Elysia({
   prefix: "/vehicles",
@@ -99,9 +100,14 @@ const vehiclesController = new Elysia({
       const submissions: PublicVehicleSubmission[] | null =
         await VehicleService.searchSubmittedVehicles(
           {
+            plate: query.plate,
             make: query.make,
-            year: query.year ? query.year : undefined,
-            limit: query.limit ? query.limit : 10,
+            model: query.model,
+            type: query.type,
+            color: query.color,
+            forSale: query.forSale ?? undefined,
+            year: query.year ?? undefined,
+            limit: query.limit ?? 10,
           },
           session.userId,
         );
@@ -114,10 +120,14 @@ const vehiclesController = new Elysia({
     },
     {
       query: t.Object({
+        plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
+        model: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
         limit: t.Optional(t.Numeric({ default: 20 })),
         color: t.Optional(t.String()),
+        type: t.Optional(VehicleType),
+        forSale: t.Optional(t.BooleanString()),
       }),
       auth: true,
     },
@@ -155,7 +165,11 @@ const vehiclesController = new Elysia({
       const vehicles = await VehicleService.searchVehicles({
         plate: query.plate,
         make: query.make,
+        model: query.model ? query.model : undefined,
         year: query.year ? query.year : undefined,
+        color: query.color,
+        type: query.type,
+        forSale: query.forSale ? true : undefined,
         limit: query.limit ? query.limit : 10,
       });
 
@@ -172,14 +186,17 @@ const vehiclesController = new Elysia({
       query: t.Object({
         plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
+        model: t.Optional(t.String()),
         year: t.Optional(t.Numeric()),
         limit: t.Optional(t.Numeric({ default: 10 })),
         color: t.Optional(t.String()),
+        type: t.Optional(VehicleType),
+        forSale: t.Optional(t.BooleanString()),
       }),
     },
   )
 
-  .get('/vehicles/suggest-make', async ({ status, query }) => {
+  .get('/suggest-make', ({ status, query }) => {
     const suggestions = KNOWN_MAKES
       .filter(make =>
         make.toLowerCase().includes(query.make.toLowerCase())

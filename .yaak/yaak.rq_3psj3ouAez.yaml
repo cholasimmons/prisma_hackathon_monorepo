@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_3psj3ouAez
 createdAt: 2026-01-02T11:56:22.394420900
-updatedAt: 2026-01-02T11:59:45.467245500
+updatedAt: 2026-01-04T16:55:14.382546
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -14,13 +14,13 @@ headers: []
 method: GET
 name: /vehicles/suggest-make
 sortPriority: 14000.0
-url: ${[ base_url ]}/vehicles/suggest-make?make=toyota
+url: ${[ base_url ]}/vehicles/suggest-make
 urlParameters:
-- enabled: false
+- enabled: true
   name: make
-  value: toy
+  value: Vo
   id: tCyWua4Xyi
 - enabled: true
   name: ''
   value: ''
-  id: cRRZQ8ww9B
+  id: Ta8VYYbwtC
