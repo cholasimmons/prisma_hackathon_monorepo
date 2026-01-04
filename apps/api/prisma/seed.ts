@@ -17,7 +17,8 @@ async function main() {
         color: "#342",
         year: 2020,
         forSale: true,
-        isActive: true
+        isActive: true,
+        submissionCount: 2
         // photos: {
         //   create: [
         //     { photo: 'https://example.com/toyota-front.jpg' },
@@ -32,7 +33,8 @@ async function main() {
         color: "#44F",
         year: 2022,
         forSale: false,
-        isActive: true
+        isActive: true,
+        submissionCount: 2
       },
       {
         plate: "ALC 5355",
@@ -41,7 +43,8 @@ async function main() {
         color: "#FFF",
         year: 2001,
         forSale: false,
-        isActive: true
+        isActive: true,
+        submissionCount: 2
       },
     ],
     select: { id: true, plate: true },
