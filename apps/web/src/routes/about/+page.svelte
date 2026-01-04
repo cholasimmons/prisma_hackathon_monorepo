@@ -1,23 +1,25 @@
 <script lang="ts">
-	import toast from 'svelte-french-toast';
-	import { CircleHelpIcon } from '@lucide/svelte';
+	import { LucideHelpCircle } from '@lucide/svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LegalRow from '$lib/components/LegalRow.svelte';
+	import { PUBLIC_APP_URL } from '$env/static/public';
 </script>
 
 <main
-	class="mx-auto dark:text-gray-400 flex flex-col min-h-full container max-w-3xl items-center justify-start space-y-8"
+	class="mx-auto dark:text-gray-400 flex flex-col min-h-full container max-w-2xl items-center justify-start space-y-8"
 >
 	<PageHeader title="About Plates" />
-
-	<CircleHelpIcon />
+	<LucideHelpCircle />
 
 	<div class="flex flex-col items-center justify-center space-y-4 mt-8 text-gray-800 dark:text-gray-200 w-full">
 		<p>
 			Plates is a simple crowd-sourced vehicle database built with SvelteKit, Tailwind CSS & 💖.
 			It's designed to be responsive, simple, and easy to use.
 		</p>
-		<img src="/images/Simmons_S_Logo_SM_2025_2.png" alt="Simmons Studio logo" class="w-20 h-20" />
+		<p>
+		    Participants submit vehicles to the database including their make, model and photos. The system evaluates entries to ensure accuracy and completeness. Once approved, vehicles are added to the public database. The database is open to the public and can be accessed <a href={PUBLIC_APP_URL}>on this app</a>.
+		</p>
+		<img src="/images/Simmons_S_Logo_SM_2025_2.png" alt="Simmons Studio logo" class="w-20 h-20 my-2" />
 		<p>
 		    Plates was initially developed &AMP; maintained by <a href="https://simmons.studio" target="simmons" rel="noopener noreferrer">Simmons Multimedia</a> for a Prisma hackathon, but is now open to the community as a free training resource.
 		</p>
@@ -25,12 +27,12 @@
 		<img
             src="/images/Simmons_Logo_SM_2025_1.png"
             alt="Simmons Multimedia"
-            class="h-8 dark:hidden"
+            class="h-8 py-2 dark:hidden"
         />
         <img
             src="/images/Simmons_Logo_SM_2025_2.png"
             alt="Simmons Multimedia"
-            class="h-8 hidden dark:block"
+            class="h-12 py-2 hidden dark:block"
         />
 
         <p>

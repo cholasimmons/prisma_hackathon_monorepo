@@ -4,6 +4,7 @@ const mono_config = {
     description: 'Crowd-sourced Vehicle Database database',
     lastUpdated: new Date().toISOString(),
     version: '0.1.0',
+    email: 'apps@simmons.studio'
   },
   auth: {
     email: {
@@ -18,6 +19,12 @@ const mono_config = {
       requireNumber: false,
       requireSpecialChar: false,
     }
+  },
+  credit: {
+    author: 'Simmons Multimedia',
+    year: new Date().getFullYear(),
+    url: 'https://simmons.studio',
+    email: 'info@simmons.studio'
   },
   defaultAvatar: '/images/default-avatar.png',
 };

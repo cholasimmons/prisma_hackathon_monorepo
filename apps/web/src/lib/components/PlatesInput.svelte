@@ -109,6 +109,17 @@
 
 	#plates-input-container input {
 		background-image: linear-gradient(to bottom, #dedede, #cecece);
+		color: #333;
+		width: 100%;
+		border-radius: 1rem;
+		border: 4px solid #777777;
+		outline: 3px solid #EFEFEF;
+		outline-offset: 1px;
+		font-weight: 900;
+		line-height: 1.3;
+	}
+	:global(.dark) #plates-input-container input {
+		background-image: linear-gradient(to bottom, #dedede, #cecece);
 		color: #222;
 		width: 100%;
 		border-radius: 1rem;

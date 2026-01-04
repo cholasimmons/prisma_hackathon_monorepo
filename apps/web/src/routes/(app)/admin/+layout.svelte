@@ -21,7 +21,7 @@
 	});
 </script>
 
-<div class="min-h-full flex">
+<div class="min-h-full flex w-full">
     {#if data.user?.role !== 'admin'}
         <div class="flex flex-1 flex-col w-full text-gray-600 dark:text-gray-300 my-18">
             <div class="flex flex-col items-center justify-center h-full">
@@ -65,7 +65,7 @@
 
 		<!-- Mobile header -->
 		<header
-			class="flex md:hidden h-14 border-b border-gray-500 px-6 items-center justify-start text-gray-800 dark:text-gray-200"
+			class="flex md:hidden max-h-14 border-b border-gray-500 w-full items-center justify-start text-gray-800 dark:text-gray-200"
 		>
 			<!--span class="font-semibold">Menu</span-->
 			<button
@@ -80,30 +80,27 @@
 		{#if open}
 			<div class="fixed inset-0 z-40">
 				<!-- Backdrop -->
-				<button
-					type="button"
-					class="absolute inset-0 bg-black/40 hover:bg-none"
-					in:fade={{ duration: 150 }}
-					out:fade={{ duration: 150 }}
-					onclick={() => (open = false)}
-					aria-label="Close Menu"
-				>
-				</button>
+				<div aria-label="Close Menu" role="button" tabindex="0"
+    				in:fade={{ duration: 150 }}
+    				out:fade={{ duration: 150 }}
+					class="fixed inset-0 z-30 bg-black/50 hover:bg-none"
+					onclick={() => (open = false)} onkeypress={() => (open = false)}
+				></div>
 
 				<!-- Drawer -->
 				<aside
-					class="absolute left-0 top-0 bottom-0 w-64 bg-gray-300 dark:bg-gray-900"
+					class="absolute left-0 top-0 bottom-0 w-64 bg-gray-300 dark:bg-gray-900 z-40"
 					in:fly={{ x: -300, duration: 200 }}
 					out:fly={{ x: -300, duration: 200 }}
 				>
-					<nav class="gap-1 flex flex-col text-gray-800 dark:text-gray-200 mt-8">
-    	                <div class="mb-8">
+					<nav class="gap-1 flex flex-col text-gray-800 dark:text-gray-200 py-18">
+    	           <!--div class="mb-8">
     						<img src="/logos/Plates_BaiHa.svg" alt="" class="w-14 h-14 mx-auto" />
-    					</div>
+    					</div-->
 						{#each links as link}
 							<a
 								href={link.href}
-								class="flex items-center rounded px-4 py-6 text-lg hover:bg-black/10 dark:hover:bg-white/10"
+								class="flex items-center rounded p-4 text-lg hover:bg-black/10 dark:hover:bg-white/10"
 								onclick={() => (open = false)}
 							>
 							<link.icon class="h-5 w-5 shrink-0 mr-4" aria-hidden="true" />

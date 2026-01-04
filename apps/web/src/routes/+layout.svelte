@@ -1,11 +1,10 @@
 <script lang="ts">
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { Toaster } from 'svelte-french-toast';
+	import toast, { Toaster } from 'svelte-french-toast';
 	import { page } from '$app/state';
 	import { fade, fly } from 'svelte/transition';
-
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { initTheme, applyTheme } from '$lib/theme';
 	import { goto, invalidateAll } from '$app/navigation';
 	import {
@@ -14,17 +13,43 @@
 		TriangleAlert,
 		LucideSun,
 		LucideMoon,
-		LucideCirclePower
+		LucideCirclePower,
+		LucideCar,
+		LucideShieldUser,
+		LucideMenu,
+		LucideHome,
+		LucideUser,
+		LucideCircleQuestionMark,
+		LucideUserLock,
+		LucideCircleUser,
+		LucideTextAlignStart,
+		LucideCarFront,
+
+		LucideBadge
+
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { cubicInOut, cubicOut, elasticIn } from 'svelte/easing';
+	import { cubicOut } from 'svelte/easing';
+	import mono_config from '@config';
 
 	let { children, data } = $props();
 	let dark = $state(true);
 	let loggingOut = $state(false);
+
+	let drawerOpen = $state(false);
+	let media: MediaQueryList;
+
+	function closeDrawer() {
+		drawerOpen = false;
+	}
+
+	function toggleTheme() {
+		dark = !dark;
+		applyTheme(dark ? 'dark' : 'light');
+	}
 
 	function gotoLogin() {
 		goto('/auth/login');
@@ -32,10 +57,8 @@
 	function gotoSignup() {
 		goto('/auth/signup');
 	}
-
-	function toggleTheme() {
-		dark = !dark;
-		applyTheme(dark ? 'dark' : 'light');
+	function gotoSubmit() {
+		goto('/vehicle/submit');
 	}
 	function gotoAbout() {
 		goto('/about');
@@ -43,15 +66,20 @@
 	function gotoProfile() {
 		goto('/profile');
 	}
+	function gotoDashboard() {
+		goto('/admin');
+	}
 	function logout() {
-	loggingOut = true;
+	  loggingOut = true;
       authClient.signOut().then(async () => {
         invalidateAll().then(() => {
+          drawerOpen = false;
           goto('/');
         }).finally(() => {
           loggingOut = false;
         });
-
+      }).catch((error) => {
+        toast.error("Unable to log out")
       }).finally(() => {
         loggingOut = false;
       });
@@ -67,7 +95,33 @@
 		} catch (err) {
 			// rejectLogos(err);
 		}
+
+		media = window.matchMedia('(min-width: 768px)');
+		const handler = () => {
+			if (media.matches) {
+				drawerOpen = false;
+			}
+		};
+
+		media.addEventListener('change', handler);
+		onDestroy(() => media.removeEventListener('change', handler));
 	});
+
+	async function handleNavClick(e: MouseEvent) {
+		const target = e.target as HTMLElement;
+		if (target.closest('a')) {
+			await tick();      // let navigation start
+			drawerOpen = false;
+		}
+	}
+
+	async function handleNavKeyPress(e: KeyboardEvent) {
+		const target = e.target as HTMLElement;
+		if (target.closest('a')) {
+			await tick();      // let navigation start
+			drawerOpen = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -86,7 +140,7 @@
 		</div>
 	{:else}
 		<header
-			class="container mx-auto sticky top-0 z-30 max-w-2xl lg:max-w-4xl px-2 sm:px-4 md:px-8 lg:px-12 py-2 max-h-13
+			class="container mx-auto sticky top-0 max-w-2xl lg:max-w-4xl px-2 sm:px-4 md:px-8 lg:px-12 py-2 max-h-13
             text-start text-gray-600 dark:text-gray-400
             flex flex-row items-center backdrop-blur-lg
             after:absolute after:left-0 after:right-0 after:bottom-0
@@ -94,7 +148,7 @@
             after:bg-linear-to-r
             after:from-transparent
             after:to-transparent
-            after:via-gray-500 dark:after:via-gray-500"
+            after:via-gray-500 dark:after:via-gray-500 z-50"
 		>
 			<div class="grow space-x-4 flex flex-row items-center">
 				{#if page.url.pathname !== '/'}
@@ -103,6 +157,7 @@
 						onclick={() => {
 							goto('/');
 						}}
+						title="Home"
 					>
 						<HouseIcon />
 					</button>
@@ -119,6 +174,7 @@
 					<button onclick={() => gotoProfile()}>{data.user.name}</button>
 				{/if}
 			</div>
+
 			<div class="shrink-0 space-x-4 flex flex-row items-center">
 				{#if !data?.user && page.url.pathname.startsWith('/auth/login')}
 					<button
@@ -134,19 +190,39 @@
 					>
 				{/if}
 
-				<button onclick={toggleTheme}>
+				<div class="hidden md:flex gap-x-3">
+				    <!-- {#if data.user?.role === 'admin'}
+				    <button onclick={gotoDashboard} class={page.url.pathname.startsWith("/admin") ? "text-amber-600" : ""}>
+    					<LucideShieldUser />
+    				</button>
+                    {/if} -->
+                    {#if data.user}
+				    <button onclick={gotoProfile} class:active={page.url.pathname.startsWith("/profile")}
+						title="User Profile">
+       					<LucideUser size={24} />
+    				</button>
+                    {/if}
+
+                    <button onclick={gotoSubmit} class:active={page.url.pathname.startsWith("/vehicle")}
+                        title="Submit a Vehicle">
+    					<LucideCar size={24} />
+    				</button>
+
+                    <button onclick={gotoAbout} class:active={page.url.pathname.startsWith("/about")}
+                        title="About App">
+    					<CircleQuestionMark size={22} />
+    				</button>
+				</div>
+
+
+				<button onclick={toggleTheme} title="Toggle Theme">
 					{#if dark}
-						<LucideMoon />
+						<LucideMoon size={20} />
 					{:else}
-						<LucideSun />
+						<LucideSun size={20} />
 					{/if}
 				</button>
-				<button
-					class=" text-gray-700 dark:text-gray-300 hover:text-amber-600 px-2 py-1"
-					onclick={gotoAbout}
-				>
-					<CircleQuestionMark />
-				</button>
+				<!--
 				{#if data.user}
     				<button
                         disabled={loggingOut}
@@ -159,9 +235,67 @@
                             <LucideCirclePower />
                         {/if}
     				</button>
-                {/if}
+                {/if} -->
+
+				<div class="flex gap-x-2 md:hidden pr-2">
+    				<button onclick={() => (drawerOpen = !drawerOpen)}>
+        					<LucideMenu />
+    				</button>
+				</div>
 			</div>
 		</header>
+
+
+		{#if drawerOpen}
+			<div aria-label="Close Drawer" role="button" tabindex="0"
+				class="fixed inset-0 z-40 bg-black/50 md:hidden"
+				onclick={closeDrawer} onkeypress={closeDrawer}
+			></div>
+		{/if}
+
+        <!-- Drawer -->
+        <aside
+			class="
+				fixed top-0 left-0 z-40 h-full w-64 bg-gray-900
+				transform transition-transform duration-400 ease-out
+				md:hidden
+			"
+			class:translate-x-0={drawerOpen}
+			class:-translate-x-full={!drawerOpen}
+>
+            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div role="navigation" class="p-4 pr-0 space-y-1 py-18 text-gray-400"
+			    onclick={handleNavClick} onkeypress={handleNavKeyPress}>
+				<a href="/" class:active={page.url.pathname === "/"}><LucideHome size={16} /> Search</a>
+				<a href="/profile" class:active={page.url.pathname.startsWith("/profile")}><LucideUser size={16} /> Profile</a>
+				<a href="/vehicle/submit" class:active={page.url.pathname.startsWith("/vehicle/submit")}><LucideCarFront size={16} /> Submit</a>
+				<hr />
+				<a href="/about" class:active={page.url.pathname.startsWith("/about")}><LucideCircleQuestionMark size={16} /> About App</a>
+				<a href="/legal/terms" class:active={page.url.pathname.startsWith("/legal/terms")}><LucideTextAlignStart size={16} /> Terms / Conditions</a>
+				<a href="/legal/privacy" class:active={page.url.pathname.startsWith("/legal/privacy")}><LucideUserLock size={16} /> Privacy Policy</a>
+				<hr />
+				{#if data.user && data.user.role === 'admin'}
+				    <a href="/admin" class:active={page.url.pathname.startsWith("/admin")}><LucideShieldUser size={16} /> Dashboard</a>
+				{/if}
+				{#if data.user}
+				    <button style="background:none; padding-left: 0;" onclick={logout}>
+						{#if loggingOut}
+                            <Spinner size={16} />
+                        {:else}
+                       	    <LucideCirclePower size={16} />
+                        {/if}
+						Logout
+					</button>
+				{:else}
+				    <button style="background:none; padding-left: 0;" onclick={gotoLogin}>
+                   	    <LucideCircleUser size={16} />
+						Login
+					</button>
+                {/if}
+			</div>
+        </aside>
+
+
 
 		{#key page.url.pathname}
 			<div in:fly={{ duration: 600, x: 10, opacity: 0, easing: cubicOut }} class="grow flex flex-col mx-auto pt-6 px-6 md:px-8 lg:px-12 items-center justify-start w-full">
@@ -179,11 +313,11 @@
                 after:from-transparent
                 after:to-transparent
                 after:via-gray-500 dark:after:via-gray-500"> -->
-			<a href="https://simmons.studio">
+			<a href={mono_config.credit.url}>
 				<small
 					class="text-center px-6 py-1 text-gray-600 dark:text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
 				>
-					Simmons Studio
+				{mono_config.credit.author}
 				</small>
 			</a>
 		</footer>
@@ -197,3 +331,33 @@
 {#await import('$lib/components/PWA/ReloadPrompt.svelte') then { default: ReloadPrompt }}
 	<ReloadPrompt />
 {/await}
+
+
+
+<style>
+    div[role="navigation"] a {
+        display: flex;
+        align-items: center;
+        column-gap: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
+        padding: 0.5rem 0;
+        color: inherit;
+        text-decoration: none;
+    }
+    div[role="navigation"] a:hover {
+        color: white;
+    }
+    div[role="navigation"] a.active {
+        color: #FE9A00;
+        border-right: 6px solid #FE9A00;
+        border-radius: 0;
+    }
+
+    header button.active {
+        color: #FE9A00;
+    }
+
+    hr {
+        padding: 0.5rem 0;
+        color: #444
+    }
+</style>

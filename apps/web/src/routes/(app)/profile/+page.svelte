@@ -138,12 +138,12 @@
 </script>
 
 <main
-	class="mx-auto dark:text-gray-400 flex flex-col min-h-full w-full items-center justify-start space-y-8"
+	class="mx-auto dark:text-gray-400 flex flex-col min-h-full max-w-4xl items-center justify-start space-y-8"
 >
 	<!--PageHeader title={`${toPossessive(data.user!.name)} Profile`} /-->
 
 	<div
-		class="grid grid-cols-1 md:grid-cols-2 place-items-center gap-4 text-gray-600 dark:text-gray-400"
+		class="grid grid-cols-1 md:grid-cols-2 w-full place-items-center gap-4 text-gray-600 dark:text-gray-400"
 	>
 		<div class="relative group w-40 aspect-square">
 			<div class="flex flex-col items-center justify-start">
@@ -246,7 +246,7 @@
 	    endIcon={LucideRefreshCw} endAction={_fetchSubmissions}/>
 
 	{#if _fetchingSubmissions}
-		<p class="flex space-x-2 items-center justify-center text-amber-800 dark:text-amber-600">
+		<p class="flex space-x-2 items-center justify-center text-amber-800 dark:text-amber-500">
 			<Spinner />
 			<span>Fetching your submissions...</span>
 		</p>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageHeader from "$lib/components/PageHeader.svelte";
+	import mono_config from "@config";
 
   const lastUpdated = '2025-01-01'; // change when needed
 </script>
@@ -10,11 +11,11 @@
 
 
 <main
-	class="mx-auto px-8 dark:text-gray-400 flex flex-col min-h-full w-full max-w-2xl items-center justify-start space-y-8"
+	class="mx-auto text-gray-700  dark:text-gray-300 flex flex-col min-h-full w-full items-center justify-start space-y-8"
 >
-	<PageHeader title="Privacy Policy" description={`Plates · Last updated: ${lastUpdated}`} />
+	<PageHeader title="Privacy Policy" description={`${mono_config.app.name} · Last updated: ${lastUpdated}`} />
 
-    <div class="mx-auto max-w-2xl px-4 py-12 space-y-6">
+    <div class="mx-auto w-full py-6 space-y-6">
 
         <section class="space-y-4">
             <p>
@@ -26,8 +27,9 @@
             <p>
             <strong>Jurisdiction:</strong> Zambia<br />
             <strong>Contact:</strong>
-            <a href="mailto:apps@simmons.studio" class="text-amber-600 underline">
-                apps@simmons.studio
+
+            <a href={`mailto:${mono_config.app.email}`}>
+                {mono_config.app.email}
             </a>
             </p>
         </section>
@@ -88,12 +90,12 @@
         </section>
 
 
-        <section class="mt-10">
+        <section class="mt-10 text-center">
             <p>
-            Contact:
-            <a href="mailto:apps@simmons.studio" class="text-amber-600 underline">
-                apps@simmons.studio
-            </a>
+                Contact:
+                <a href={`mailto:${mono_config.app.email}`} >
+                    {mono_config.app.email}
+                </a>
             </p>
         </section>
     </div>
