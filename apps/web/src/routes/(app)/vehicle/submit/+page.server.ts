@@ -1,4 +1,5 @@
 import { hexToColorName } from '$lib/color/colors';
+import { VEHICLE_TYPE_VALUES, type VehicleType } from '$lib/models/vehicle.model';
 import { canonicalizeMake, normalizeMake } from '$lib/vehicles/make';
 import { formatPlateInput } from '$lib/vehicles/plate';
 import type { Actions } from './$types';
@@ -42,7 +43,15 @@ export const actions: Actions = {
 			return fail(400, { message: 'Year not acceptable' });
 		}
 
-		const type = String(data.get('type') ?? null).trim();
+		const type = String(data.get('type') ?? null).trim().toLowerCase();
+		const isValidVehicleType = (value: string): value is VehicleType => {
+      return Object.values(VEHICLE_TYPE_VALUES).includes(value as VehicleType);
+    };
+    if (!type || !isValidVehicleType(type)) {
+      return fail(400, {
+        message: 'Invalid vehicle type'
+      });
+    }
 
 		const forSale = Boolean(data.get('forSale') === 'on');
 

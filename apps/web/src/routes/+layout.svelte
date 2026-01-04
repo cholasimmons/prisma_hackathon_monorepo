@@ -128,11 +128,16 @@
 
 <main class="flex flex-col justify-start min-h-dvh min-w-dvw bg-gray-200 dark:bg-gray-800">
 	{#if data.apiDown}
-		<div class="h-full w-full flex items-center justify-center my-auto">
-			<div class="rounded-md bg-red-50 dark:bg-red-950 p-6 text-red-700 dark:text-white">
+		<div class="h-full w-full flex items-center justify-center my-auto px-8">
+			<div class="flex flex-col items-center rounded-md bg-red-800/60 dark:bg-red-900/60 border border-red-600 p-6 text-red-300 dark:text-red-200 text-center">
 				<TriangleAlert />
-				<h1 class="mt-4 text-xl font-semibold">Service unavailable</h1>
-				<p>The server is temporarily unreachable.</p>
+				<!--h1 class="mt-4 text-xl font-semibold">Service unavailable</h1-->
+				<p>Server temporarily unreachable.</p>
+				<button class="mt-4 txt-btn" onclick={() => {
+					location.reload();
+				}}>
+					Retry
+				</button>
 			</div>
 		</div>
 	{:else}
