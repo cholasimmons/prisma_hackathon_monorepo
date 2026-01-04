@@ -44,7 +44,7 @@ async function main() {
         year: 2001,
         forSale: false,
         isActive: true,
-        submissionCount: 2
+        submissionCount: 3
       },
     ],
     select: { id: true, plate: true },
