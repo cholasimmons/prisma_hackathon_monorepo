@@ -1,15 +1,16 @@
 import { Elysia, t } from "elysia";
-import VehicleService from "./service";
+import VehicleService from "./vehicle.service";
 import { betterAuth } from "~middleware/betterauth";
 import { cache } from "~utils/cache";
 import {
   PublicVehicle,
   PublicVehicleSubmission,
-} from "./model";
+} from "./vehicle.model";
 import { KNOWN_MAKES } from "~utils/vehicles";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
 import { ip } from "elysia-ip";
+import cron, { Patterns } from "@elysiajs/cron";
 
 const vehiclesController = new Elysia({
   prefix: "/vehicles",
@@ -20,6 +21,15 @@ const vehiclesController = new Elysia({
     plural: 'Vehicles'
   })
   .use(ip())
+  .use(cron({
+    name: "vehicle-cron-job",
+    pattern: Patterns.EVERY_HOUR,
+    run: () => {
+      //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
+      console.log("Vehicle Cron Job executed (Hourly)");
+      VehicleService.runVehicleConsensus();
+    },
+  }))
 
   .group('/admin', (secure) => secure
     // Get final vehicles

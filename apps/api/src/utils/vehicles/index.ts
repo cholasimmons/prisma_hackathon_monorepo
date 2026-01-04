@@ -1,5 +1,5 @@
 import leven from 'leven';
-import { pickMajority } from './majorityResolver';
+import { majorityVote, resolveRequired, computeOverallConfidence } from './majorityResolver';
 
 const KNOWN_MAKES = [
   'Toyota', 'Honda', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz', 'Mitsubishi',
@@ -52,5 +52,4 @@ function normalizeMake(input: string) {
   }
 }
 
-
-export { pickMajority, normalizeMake, KNOWN_MAKES }
+export { majorityVote, resolveRequired, normalizeMake, KNOWN_MAKES }

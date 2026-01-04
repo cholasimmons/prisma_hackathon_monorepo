@@ -23,7 +23,7 @@ import { cache } from "~utils/cache";
 import { addEmailJob } from "~utils/queues/email";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
-import VehicleService from "~modules/vehicles/service";
+import VehicleService from "~modules/vehicles/vehicle.service";
 import mono_config from '@config';
 
 // Useful constants
@@ -95,17 +95,8 @@ const app = new Elysia({
     cron({
       name: "cron-job",
       pattern: Patterns.EVERY_30_MINUTES,
-      run: () => console.log("Cron job executed (30 minutes)"),
+      run: () => console.log("Main Cron Job executed (30 minutes)"),
     }),
-  )
-  .use(
-    cron({
-      name: "cron-job-2",
-      pattern: Patterns.EVERY_DAY_AT_5AM,
-      run: () => {
-        VehicleService.reEvaluateVehicleSubmission();
-      },
-    })
   )
   .use(staticPlugin({ indexHTML: false }))
   .use(betterAuth)

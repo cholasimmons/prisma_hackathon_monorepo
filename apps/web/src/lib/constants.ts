@@ -4,7 +4,8 @@ const mono_config = {
     description: 'Crowd-sourced Vehicle Database database',
     lastUpdated: new Date().toISOString(),
     version: '0.1.0',
-    email: 'apps@simmons.studio'
+    email: 'apps@simmons.studio',
+    github: 'https://github.com/cholasimmons/prisma_hackathon_monorepo',
   },
   auth: {
     email: {

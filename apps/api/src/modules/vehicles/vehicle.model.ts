@@ -1,5 +1,24 @@
 import { Vehicle, VehicleSubmission } from "@generated/prisma/client";
 
+type FieldConsensus<T> = {
+  value: T | null;
+  confidence: number; // 0 → 1
+  votes: number;
+};
+
+type ConsensusResult = {
+  plate: string;
+  totalSubmissions: number;
+  fields: {
+    make: FieldConsensus<string>;
+    model: FieldConsensus<string | null>;
+    year: FieldConsensus<number | null>;
+    color: FieldConsensus<string>;
+    type: FieldConsensus<string | null>;
+    forSale: FieldConsensus<boolean | null>;
+  };
+};
+
 const PublicVehicleFields = [
   "id",
   "plate",
@@ -32,4 +51,4 @@ type PublicVehicleSubmission = Pick<
 >;
 
 export { PublicVehicleFields, PublicVehicleSubmissionFields };
-export type { PublicVehicle, PublicVehicleSubmission };
+export type { FieldConsensus, ConsensusResult, PublicVehicle, PublicVehicleSubmission };

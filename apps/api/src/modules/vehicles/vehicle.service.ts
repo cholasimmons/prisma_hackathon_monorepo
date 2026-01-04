@@ -1,26 +1,30 @@
 import {
   Prisma,
   Vehicle,
-  VehiclePhoto,
   VehicleSubmission,
 } from "@generated/prisma/client";
 import { cache } from "~utils/cache";
 import db from "~utils/database/client";
 import { strip } from "~utils/strip";
-import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./model";
-import type { PublicVehicle, PublicVehicleSubmission } from "./model";
+import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./vehicle.model";
+import type { ConsensusResult, PublicVehicle, PublicVehicleSubmission } from "./vehicle.model";
 import { CacheKeys } from "~utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@generated/prisma/models";
 import { BucketNames } from "~utils/image/storage";
-import s3 from "~utils/s3";
 import { normalizeMake } from "~utils/vehicles";
 import {
   addVehicleSubmissionImageUploadJob,
   addVehicleSubmissionJob,
 } from "~utils/queues/vehicle";
 import { addImageJob } from "~utils/queues/image";
+import { majorityVote, resolveRequired, computeOverallConfidence } from "~utils/vehicles/majorityResolver";
+
+const MIN_SUBMISSIONS_FOR_PUBLIC = Number(process.env.MIN_SUBMISSIONS_FOR_PUBLIC ?? 2);
+const MIN_FIELD_CONFIDENCE = Number(process.env.MIN_FIELD_CONFIDENCE ?? 0.6);
+
 
 abstract class VehicleService {
+
   static async searchVehicles(
     params: {
       make?: string;
@@ -182,6 +186,42 @@ abstract class VehicleService {
     return vehicle;
   }
 
+  /** Fetches all Vehicle Submissions
+   * @returns VehicleSubmissions[]
+   */
+  static async getSubmissionsByPlate(
+    plate: string,
+    isActive: boolean | undefined | null = true,
+  ): Promise<VehicleSubmission[] | null> {
+    // 1. Try cache first
+    const cached = await cache.get<VehicleSubmission[]>(
+      CacheKeys.vehicles.submissions.allByPlate(plate),
+    );
+    if (cached) {
+      console.log(`✅ Cache HIT for vehicle submissions: ${plate}`);
+      return cached;
+    }
+
+    console.log(`❌ Cache MISS for vehicle submissions: ${plate}`);
+
+    const submissions = await db.vehicleSubmission.findMany({
+      where: { plate, isActive: isActive || undefined },
+    });
+
+    if (!submissions) {
+      return null;
+    }
+
+    // const cleanVehicle = strip(vehicle, PublicVehicleFields);
+
+    await cache.set<VehicleSubmission[]>(
+      CacheKeys.vehicles.submissions.allByPlate(plate),
+      submissions,
+      60 * 60, // 1 hour
+    );
+    return submissions;
+  }
+
   /**
    * Get vehicle with image URL
    */
@@ -255,6 +295,43 @@ abstract class VehicleService {
   }
 
   /**
+   * Update/Create vehicle with cache invalidation
+   */
+  static async upsertVehicleByPlate(
+    plate: string,
+    updates: Partial<Vehicle> & { image?: File },
+  ): Promise<PublicVehicle | null> {
+    // 1. Update in database
+    const updatedVehicle: Vehicle | null = await db.vehicle.update({
+      where: { plate },
+      data: updates,
+    });
+
+    if (!updatedVehicle) {
+      return null;
+    }
+
+    // 2. Invalidate relevant cache entries
+    await cache.invalidate([CacheKeys.vehicles.byPlate(plate)]);
+
+    // 3. If there's an image upload, handle it
+    // if (updates.image) {
+    //   await VehicleService.handleVehicleImage(id, updates.image);
+    //   // Remove the temporary imageFile property
+    //   delete (updatedVehicle as any).photo;
+    // }
+
+    console.log(`🔄 Updated vehicle ${plate} and invalidated cache`);
+    const updatedStripped = strip(updatedVehicle, PublicVehicleFields);
+    await cache.set<PublicVehicle>(
+      CacheKeys.vehicles.byPlate(plate),
+      updatedStripped,
+    );
+
+    return updatedStripped;
+  }
+
+  /**
    * Update vehicle image
    */
   static async updateVehicleImage(
@@ -290,7 +367,7 @@ abstract class VehicleService {
 
     // 2. Invalidate relevant cache entries
     await cache.invalidate([
-      CacheKeys.vehicles.submissionById(updatedVehicle.id),
+      CacheKeys.vehicles.submissions.byId(updatedVehicle.id),
     ]);
 
     console.log(
@@ -306,7 +383,7 @@ abstract class VehicleService {
     }
 
     await cache.set<PublicVehicleSubmission>(
-      CacheKeys.vehicles.submissionById(updatedVehicle.id),
+      CacheKeys.vehicles.submissions.byId(updatedVehicle.id),
       updatedStripped,
     );
 
@@ -390,12 +467,12 @@ abstract class VehicleService {
       data: files.map((file, index) => ({
         submittedVehicleId: submission.id,
         isPrimary: index === 0,          // first image primary
-        uploadSizeKb:file ? Math.ceil(file.size / 1024) : 0,
+        uploadSizeKb: file ? Math.ceil(file.size / 1024) : 0,
         url: null
       }))
     });
 
-    if(uploadedFiles.length > 0 && photoRecords.length > 0) {
+    if (uploadedFiles.length > 0 && photoRecords.length > 0) {
       // 4. Enqueue image processing jobs
       for (let i = 0; i < uploadedFiles.length; i++) {
         await addVehicleSubmissionImageUploadJob(
@@ -412,7 +489,7 @@ abstract class VehicleService {
     await addVehicleSubmissionJob(userId, submission.plate);
 
     // 2. Invalidate relevant cache entries
-    await cache.invalidate([CacheKeys.vehicles.submissionById(submission.id)]);
+    await cache.invalidate([CacheKeys.vehicles.submissions.byId(submission.id)]);
 
     console.log(
       `🔄 Submitted vehicle ${submission.plate} and invalidated cache`,
@@ -422,7 +499,7 @@ abstract class VehicleService {
       PublicVehicleSubmissionFields,
     );
     await cache.set<PublicVehicleSubmission>(
-      CacheKeys.vehicles.submissionById(submission.id),
+      CacheKeys.vehicles.submissions.byId(submission.id),
       updatedStripped,
     );
 
@@ -470,7 +547,7 @@ abstract class VehicleService {
     userId: string,
   ): Promise<boolean> {
     const cached = await cache.get<VehicleSubmission>(
-      CacheKeys.vehicles.submissionById(vehicleId),
+      CacheKeys.vehicles.submissions.byId(vehicleId),
     );
     if (cached && cached.submittedById === userId) return true;
 
@@ -484,24 +561,131 @@ abstract class VehicleService {
     return vehicle?.submittedById === userId;
   }
 
-  static async reEvaluateVehicleSubmission(): Promise<boolean> {
+  /** AKA evaluateConsensus()
+   * fetches ALL active submissions
+   * @returns boolean
+   */
+  static async reEvaluateVehicleSubmissions(isActive: boolean | undefined | null = true): Promise<boolean> {
     let submissions: VehicleSubmission[] = [];
 
     const cached = await cache.get<VehicleSubmission[]>(
-      CacheKeys.vehicles.all,
+      CacheKeys.vehicles.submissions.all,
     );
-    if (cached) submissions = cached;
+    if (!cached) {
+      const vehicles: VehicleSubmission[] | null = await db.vehicleSubmission.findMany({
+        where: { isActive: isActive || undefined }
+      });
 
-    const vehicles = await db.vehicleSubmission.findMany({
-      where: { isActive: true }
-    });
+      if (!vehicles) return false;
 
-    if(vehicles) submissions = vehicles;
+      submissions = vehicles;
+    }
+
+    submissions = cached!;
+
+    await cache.set<VehicleSubmission[]>(
+      CacheKeys.vehicles.submissions.all,
+      submissions,
+    );
 
     console.log("| Processed ", submissions?.length ?? 0, " vehicle submissions")
 
     return true;
   }
+
+  /** CRON specific
+   * Runs the vehicle consensus algorithm for all active vehicles.
+   * @returns boolean
+   */
+  static async runVehicleConsensus(): Promise<boolean> {
+    let submissions: VehicleSubmission[] = [];
+
+    const cached = await cache.get<VehicleSubmission[]>(
+      CacheKeys.vehicles.submissions.all,
+    );
+    if (!cached) {
+      const vehicles: VehicleSubmission[] | null = await db.vehicleSubmission.findMany({
+        where: { isActive: true }
+      });
+
+      if (!vehicles) return false;
+
+      submissions = vehicles;
+    }
+
+    submissions = cached!;
+
+    await cache.set<VehicleSubmission[]>(
+      CacheKeys.vehicles.submissions.all,
+      submissions,
+    );
+
+    console.log("Processed ", submissions?.length ?? 0, " active vehicle submissions")
+
+    for (const submission of submissions) {
+      const submissions: VehicleSubmission[] | null = await VehicleService.getSubmissionsByPlate(submission.plate);
+      console.log("Plate:", submission.plate, ": ", submissions?.length ?? 0)
+
+      if (!submissions?.length) continue;
+
+      const consensus = VehicleService.computeConsensus(submissions ?? []);
+
+      await VehicleService.materializeVehicle(submission.plate, consensus, submissions);
+    }
+
+    return true;
+  }
+
+  static computeConsensus(submissions: VehicleSubmission[]): ConsensusResult {
+    const active = submissions.filter(s => s.isActive);
+
+    return {
+      plate: active[0]!.plate,
+      totalSubmissions: active.length,
+      fields: {
+        make: majorityVote(active.map(s => s.make)),
+        model: majorityVote(active.map(s => s.model)),
+        year: majorityVote(active.map(s => s.year)),
+        color: majorityVote(active.map(s => s.color)),
+        type: majorityVote(active.map(s => s.type)),
+        forSale: majorityVote(active.map(s => s.forSale))
+      }
+    };
+  }
+
+  static async materializeVehicle(plate: string, consensus: ConsensusResult, submissions: VehicleSubmission[]): Promise<void> {
+    if (!submissions.length) return;
+
+    // const consensus = computeConsensus(submissions);
+
+    const isPublic =
+      consensus.totalSubmissions >= MIN_SUBMISSIONS_FOR_PUBLIC;
+
+    const vehicleData: Partial<Vehicle> = {
+      plate,
+      make: resolveRequired<string>(consensus.fields.make.value, submissions, 'make'),
+      model: consensus.fields.model.confidence >= MIN_FIELD_CONFIDENCE
+        ? consensus.fields.model.value
+        : null,
+      year: consensus.fields.year.confidence >= MIN_FIELD_CONFIDENCE
+        ? consensus.fields.year.value
+        : null,
+      color: resolveRequired<string>(consensus.fields.color.value, submissions, 'color'),
+      type: consensus.fields.type.confidence >= MIN_FIELD_CONFIDENCE
+        ? consensus.fields.type.value
+        : null,
+      forSale: consensus.fields.forSale.confidence >= MIN_FIELD_CONFIDENCE
+        ? consensus.fields.forSale.value
+        : null,
+      confidence: computeOverallConfidence(consensus.fields),
+      submissionCount: consensus.totalSubmissions,
+      isActive: isPublic
+    };
+
+    await VehicleService.upsertVehicleByPlate(plate, vehicleData);
+  }
+
+
 }
 
 export default VehicleService;

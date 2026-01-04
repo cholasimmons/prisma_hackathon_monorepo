@@ -145,7 +145,7 @@
 	<div
 		class="grid grid-cols-1 md:grid-cols-2 w-full place-items-center gap-4 text-gray-600 dark:text-gray-400"
 	>
-		<div class="relative group w-40 aspect-square">
+		<div class="relative group w-52 md:w-42 aspect-square">
 			<div class="flex flex-col items-center justify-start">
 				<button
 					type="button"

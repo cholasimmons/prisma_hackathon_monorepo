@@ -19,8 +19,12 @@ const CacheKeys = {
     byId: (id: string | number) => `vehicle:${id}`,
     byPlate: (plate: string) => `vehicle:plate:${plate}`,
     byMake: (make: string) => `vehicles:make:${make}`,
-    submissionById: (id: string) => `vehicleSubmission:${id}`,
-    submissionByPlate: (plate: string) => `vehicleSubmission:plate:${plate}`,
+    submissions: {
+      all: "vehicles:submissions:all",
+      byId: (id: string) => `vehicle:submission:${id}`,
+      byPlate: (plate: string) => `vehicle:submission:plate:${plate}`,
+      allByPlate: (plate: string) => `vehicle:submissions:plate:${plate}`,
+    }
   },
 
   logos: {

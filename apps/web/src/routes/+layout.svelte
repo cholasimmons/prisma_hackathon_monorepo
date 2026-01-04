@@ -23,10 +23,7 @@
 		LucideUserLock,
 		LucideCircleUser,
 		LucideTextAlignStart,
-		LucideCarFront,
-
-		LucideBadge
-
+		LucideCarFront
 	} from '@lucide/svelte';
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
@@ -339,7 +336,7 @@
         display: flex;
         align-items: center;
         column-gap: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
-        padding: 0.5rem 0;
+        padding: 1rem 0;
         color: inherit;
         text-decoration: none;
     }
