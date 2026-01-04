@@ -25,6 +25,7 @@ import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
 import VehicleService from "~modules/vehicles/vehicle.service";
 import mono_config from '@config';
+import UserService from "~modules/users/users.service";
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
@@ -94,8 +95,15 @@ const app = new Elysia({
   .use(
     cron({
       name: "cron-job",
-      pattern: Patterns.EVERY_30_MINUTES,
-      run: () => console.log("Main Cron Job executed (30 minutes)"),
+      pattern: Patterns.EVERY_DAY_AT_9AM,
+      run: async () => {
+        console.log("Main Cron Job executed (9AM daily)");
+        try {
+          await UserService.sendThankYouEmailAfter24hrs();
+        } catch (error) {
+          console.error("[CRON] Error sending thank you email:", error);
+        }
+      },
     }),
   )
   .use(staticPlugin({ indexHTML: false }))

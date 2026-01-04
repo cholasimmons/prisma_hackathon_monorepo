@@ -4,9 +4,10 @@ import db from "~utils/database/client";
 import { strip } from "~utils/strip";
 import { CacheKeys } from "~utils/cache/keys";
 import { BucketNames } from "~utils/image/storage";
-import { PublicUser, PublicUserFields } from "./model";
+import { PublicUser, PublicUserFields } from "./users.model";
 import { addImageJob } from "~utils/queues/image";
-import s3 from "~utils/s3";
+import { addEmailJob } from "~utils/queues/email";
+import mono_config from "@config";
 
 abstract class UserService {
 
@@ -103,6 +104,50 @@ abstract class UserService {
       return filepath;
     } catch (error) {
       console.error(`Failed to upload image for User ${userId}:`, error);
+      throw error;
+    }
+  }
+
+  /** CRON junction to thank users who've been activated for 24hrs
+   *
+   * @param userId
+   */
+  static async sendThankYouEmailAfter24hrs() {
+    try {
+      const users = await db.user.findMany({
+        where: { emailVerified: true, banned: false, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+      });
+
+      for(const user of users) {
+        const { email, name, banned, emailVerified, createdAt } = user;
+
+        // if (banned || !emailVerified) { console.log(`User ${email} is banned or unverified`); return; }
+
+        // if(createdAt < new Date(Date.now() - 24 * 60 * 60 * 1000)) {
+        //   console.log(`User ${email} is not activated for 24 hours`);
+        //   return;
+        // }
+
+        const subject = `${mono_config.app.name} | Thank you ${name.split(' ')[0]}!`;
+        const html = `
+          <h3>Hey there ${name.split(' ')[0]},</h3>
+          <p>Thank you for joining the community!</p>
+          <p>We hope you enjoy your time on <a href="${mono_config.app.url}">our App</a>. Remember you can <a href="${mono_config.app.github}/issues/new">report issues</a> or <a href="${mono_config.app.email}">give us feedback</a>.</p><br/>
+          <p>Best regards,</p>
+          <p>The ${mono_config.app.name} Team</p>
+        `;
+
+        // Send thank you email after 24 hours (CRON)
+        await addEmailJob({ to: email, subject, html });
+
+        console.log(
+          `📧 Sent thank you email to ${email} (after 24 hours of being active).`
+        );
+      }
+
+
+    } catch (error) {
+      console.error(`Failed to send thank you emails`, error);
       throw error;
     }
   }

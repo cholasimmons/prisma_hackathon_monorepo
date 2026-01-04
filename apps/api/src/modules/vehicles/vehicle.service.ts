@@ -1,5 +1,6 @@
 import {
   Prisma,
+  UploadStatus,
   Vehicle,
   VehicleSubmission,
   VehicleType,
@@ -443,6 +444,7 @@ abstract class VehicleService {
 
     const files = Array.isArray(body.images) ? body.images : [body.images];
 
+    // Loop through each image file
     for (const imageFile of files) {
       const randomID = crypto.randomUUID();
 
@@ -466,13 +468,18 @@ abstract class VehicleService {
         ext
       });
     }
+    // End of Loop
+
+    // Run vehicle consensus after all images are processed
+    this.runVehicleConsensus();
 
     const photoRecords = await db.vehiclePhoto.createManyAndReturn({
       data: files.map((file, index) => ({
         submittedVehicleId: submission.id,
         isPrimary: index === 0,          // first image primary
         uploadSizeKb: file ? Math.ceil(file.size / 1024) : 0,
-        url: null
+        url: null,
+        status: UploadStatus.PROCESSING
       }))
     });
 
@@ -489,9 +496,6 @@ abstract class VehicleService {
       }
     }
 
-    // Send to Job Queue for vehicle "raffle draw""
-    await addVehicleSubmissionJob(userId, submission.plate);
-
     // 2. Invalidate relevant cache entries
     await cache.invalidate([CacheKeys.vehicles.submissions.byId(submission.id)]);
 
@@ -507,8 +511,6 @@ abstract class VehicleService {
       updatedStripped,
     );
 
-    this.runVehicleConsensus();
-
     return updatedStripped;
   }
 
@@ -519,7 +521,7 @@ abstract class VehicleService {
     userId: string,
     vehicleId: string,
     imageFile: File,
-  ): Promise<{ path: string; size: number }> {
+    ): Promise<{ path: string; size: number }> {
     try {
       // Create unique filename
       const ext = imageFile.name.split(".").pop() ?? "jpg";
@@ -626,11 +628,11 @@ abstract class VehicleService {
       submissions,
     );
 
-    console.log("Processed ", submissions?.length ?? 0, " active vehicle submissions")
+    console.log("[CRON] Processed ", submissions?.length ?? 0, " active vehicle submissions")
 
     for (const submission of submissions) {
       const submissions: VehicleSubmission[] | null = await VehicleService.getSubmissionsByPlate(submission.plate);
-      console.log("Plate:", submission.plate, ": ", submissions?.length ?? 0)
+      console.log("[CRON] Plate:", submission.plate, ": ", submissions?.length ?? 0)
 
       if (!submissions?.length) continue;
 
@@ -691,6 +693,20 @@ abstract class VehicleService {
     await VehicleService.upsertVehicleByPlate(plate, vehicleData);
   }
 
+
+  static async cleanupFailedPhotos() {
+    const { count } = await db.vehiclePhoto.deleteMany({
+      where: {
+        url: null,
+        status: { in: [UploadStatus.PENDING, UploadStatus.FAILED] },
+        createdAt: {
+          lt: new Date(Date.now() - 1000 * 60 * 60 * 24) // 24h
+        }
+      }
+    });
+
+    console.log(`[CRON] Deleted ${count} failed photos`);
+  }
 
 }
 

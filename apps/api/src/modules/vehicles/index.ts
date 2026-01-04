@@ -25,10 +25,19 @@ const vehiclesController = new Elysia({
   .use(cron({
     name: "vehicle-cron-job",
     pattern: Patterns.EVERY_HOUR,
-    run: () => {
+    run: async () => {
       //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
-      console.log("Vehicle Cron Job executed (Hourly)");
-      VehicleService.runVehicleConsensus();
+      console.log("[CRON] Vehicle Cron Job executed (Hourly)");
+      await VehicleService.runVehicleConsensus();
+    },
+  }))
+  .use(cron({
+    name: "vehicle-cron-job-2",
+    pattern: Patterns.EVERY_DAY_AT_4AM,
+    run: async () => {
+      //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
+      console.log("[CRON] Vehicle Cron Job executed (4AM Daily)");
+      await VehicleService.cleanupFailedPhotos();
     },
   }))
 

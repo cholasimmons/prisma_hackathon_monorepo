@@ -62,6 +62,8 @@ model VehiclePhoto {
   id             String   @id @default(cuid())
   url            String?
   /// @prismabox.input.hide
+  status         UploadStatus  @default(PENDING)
+  /// @prismabox.input.hide
   isPrimary      Boolean  @default(false)
   /// @prismabox.input.hide
   uploadSizeKb     Int?
@@ -112,4 +114,14 @@ enum VehicleType {
 
   @@schema("vehicles")
   @@map("vehicle_types")
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+
+  @@schema("vehicles")
+  @@map("upload_statuses")
 }

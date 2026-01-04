@@ -4,15 +4,21 @@ import { QueueSubmission, QueueSubmissionPhotos } from './model';
 import { Job } from 'bullmq';
 import { vehicleSubmissionImageUploadQueue, vehicleSubmissionQueue } from '.';
 import db from '~utils/database/client';
-import { pickMajority } from '../vehicles/majorityResolver';
+import { majorityVote } from '~utils/vehicles/majorityResolver';
 import sharp from 'sharp';
 import s3 from '../s3';
+import { UploadStatus } from '@generated/prisma/enums';
+import { Patterns } from '@elysiajs/cron';
 
 const addVehicleSubmissionJob = async (userId: string, submittedVehiclePlate: string) =>
     await vehicleSubmissionQueue.add(RedisEvents.submitVehicle, { userId, submittedVehiclePlate });
 
 const addVehicleSubmissionImageUploadJob = async (photoId: string, submissionId: string, tempPath: string, filepath: string, ext?: string) =>
-    await vehicleSubmissionImageUploadQueue.add(RedisEvents.submitVehiclePhotos, { photoId, submissionId, tempPath, filepath, ext });
+    await vehicleSubmissionImageUploadQueue.add(RedisEvents.submitVehiclePhotos, { photoId, submissionId, tempPath, filepath, ext },
+      { attempts: 3, backoff: { type: 'exponential', delay: 3000 }, repeat: { pattern: Patterns.EVERY_MINUTE } });
+
+
+
 
 // Worker for this queue
 const vehicleSubmissionWorker = createWorker('vehicleSubmissionQueue', async (job: Job) => {
@@ -32,23 +38,14 @@ const vehicleSubmissionWorker = createWorker('vehicleSubmissionQueue', async (jo
 
     if (!submissions || submissions.length === 0) return;
 
-    const make = pickMajority(submissions.map(s => s.make))
-    const model = pickMajority(submissions.map(s => s.model))
-    const color = pickMajority(submissions.map(s => s.color))
-    const year = pickMajority(submissions.map(s => s.year))
-    const type = pickMajority(submissions.map(s => s.type))
-    const forSale = pickMajority(submissions.map(s => s.forSale))
+    const make = majorityVote(submissions.map(s => s.make))
+    const model = majorityVote(submissions.map(s => s.model))
+    const color = majorityVote(submissions.map(s => s.color))
+    const year = majorityVote(submissions.map(s => s.year))
+    const type = majorityVote(submissions.map(s => s.type))
+    const forSale = majorityVote(submissions.map(s => s.forSale))
 
-    const maxVotes = Math.max(
-      make.count,
-      model.count,
-      color.count,
-      year.count,
-      type.count,
-      forSale.count
-    )
-
-    const confidence = maxVotes / submissions.length
+    const confidence = submissions.length / submissions.length
 
     await db.vehicle.upsert({
       where: { plate: submittedVehiclePlate },
@@ -108,6 +105,7 @@ const vehicleSubmissionWorker = createWorker('vehicleSubmissionQueue', async (jo
         where: { id: photoId },
         data: {
           url: filepath,
+          status: UploadStatus.SUCCESS,
           // width: buffer.width,
           // height: metadata.height,
           // pHash: metadata.pHash
@@ -123,7 +121,16 @@ const vehicleSubmissionWorker = createWorker('vehicleSubmissionQueue', async (jo
       };
     } catch (err) {
       console.error('Image processing failed', err);
-      throw err; // let BullMQ retry
+      if (job.name === RedisEvents.submitVehiclePhotos && (job.attemptsMade >= (job.opts?.attempts || 3))) {
+          await db.vehiclePhoto.update({
+            where: { id: photoId },
+            data: {
+              status: UploadStatus.FAILED
+            }
+          });
+          throw err; // let BullMQ retry
+      }
+
     }
   }
 });
