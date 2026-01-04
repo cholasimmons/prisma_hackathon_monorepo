@@ -44,12 +44,12 @@ abstract class VehicleService {
     const where: Prisma.VehicleWhereInput = {};
 
     if (make) where.make = make;
-    if (year) where.year = year;
-    if (color) where.color = { contains: color, mode: "insensitive" };
-    if (model) where.model = { contains: model, mode: "insensitive" };
+    if (typeof year === 'number') where.year = year;
+    if (color?.trim()) where.color = { contains: color.trim(), mode: "insensitive" };
+    if (model?.trim()) where.model = { contains: model.trim(), mode: "insensitive" };
     if (type) where.type = type;
-    if (forSale) where.forSale = forSale;
-    if (plate) where.plate = { contains: plate.trim(), mode: "insensitive" };
+    if (typeof forSale === 'boolean') where.forSale = forSale;
+    if (plate?.trim()) where.plate = { contains: plate.trim(), mode: "insensitive" };
     where.submissionCount = { gte: MIN_SUBMISSIONS_FOR_PUBLIC };
 
     if (!isAdmin) {
@@ -103,12 +103,12 @@ abstract class VehicleService {
     const where: Prisma.VehicleSubmissionWhereInput = {};
 
     if (make) where.make = make;
-    if (model) where.model = model;
-    if (year) where.year = year;
+    if (typeof year === 'number') where.year = year;
+    if (color?.trim()) where.color = { contains: color.trim(), mode: "insensitive" };
+    if (model?.trim()) where.model = { contains: model.trim(), mode: "insensitive" };
     if (type) where.type = type;
-    if (forSale) where.forSale = forSale;
-    if (plate) where.plate = plate;
-    if (color) where.color = { contains: color, mode: "insensitive" };
+    if (typeof forSale === 'boolean') where.forSale = forSale;
+    if (plate?.trim()) where.plate = { contains: plate.trim(), mode: "insensitive" };
     where.submittedById = userId;
 
     const submissions = await db.vehicleSubmission.findMany({

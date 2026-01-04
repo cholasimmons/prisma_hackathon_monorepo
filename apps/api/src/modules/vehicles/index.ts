@@ -57,7 +57,7 @@ const vehiclesController = new Elysia({
       }, {
         query: t.Object({
           make: t.Optional(t.String()),
-          year: t.Optional(t.Numeric()),
+          year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
           limit: t.Optional(t.Numeric()),
           color: t.Optional(t.String()),
           model: t.Optional(t.String()),
@@ -93,8 +93,8 @@ const vehiclesController = new Elysia({
     {
       query: t.Object({
         make: t.Optional(t.String()),
-        year: t.Optional(t.Numeric()),
-        limit: t.Optional(t.Numeric()),
+        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        limit: t.Optional(t.Numeric({ default: 10, minimum: 1, maximum: 50 })),
         color: t.Optional(t.String()),
         model: t.Optional(t.String()),
         plate: t.Optional(t.String()),
@@ -132,11 +132,11 @@ const vehiclesController = new Elysia({
         plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Numeric()),
-        limit: t.Optional(t.Numeric({ default: 20 })),
+        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        limit: t.Optional(t.Numeric({ default: 20, minimum: 1, maximum: 50 })),
         color: t.Optional(t.String()),
         type: t.Optional(VehicleType),
-        forSale: t.Optional(t.BooleanString()),
+        forSale: t.Optional(t.Boolean()),
       }),
       auth: true,
     },
@@ -168,17 +168,16 @@ const vehiclesController = new Elysia({
   )
 
   // Search final vehicles
-  .get(
-    "/search",
+  .get("/search",
     async ({ status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
         plate: query.plate,
-        make: query.make,
-        model: query.model ? query.model : undefined,
-        year: query.year ? query.year : undefined,
-        color: query.color,
-        type: query.type,
-        forSale: query.forSale ? true : undefined,
+        // make: query.make,
+        // model: query.model ? query.model : undefined,
+        // year: query.year ? query.year : undefined,
+        // color: query.color,
+        // type: query.type,
+        // forSale: query.forSale ? true : undefined,
         limit: query.limit ? query.limit : 10,
       });
 
@@ -194,13 +193,12 @@ const vehiclesController = new Elysia({
     {
       query: t.Object({
         plate: t.Optional(t.String()),
-        make: t.Optional(t.String()),
-        model: t.Optional(t.String()),
-        year: t.Optional(t.Numeric()),
-        limit: t.Optional(t.Numeric({ default: 10 })),
-        color: t.Optional(t.String()),
-        type: t.Optional(VehicleType),
-        forSale: t.Optional(t.BooleanString()),
+        // make: t.Optional(t.String()),
+        // model: t.Optional(t.String()),
+        // year: t.Optional(t.Numeric()),color: t.Optional(t.String()),
+        // type: t.Optional(VehicleType),
+        // forSale: t.Optional(t.BooleanString()),
+        limit: t.Optional(t.Numeric({ default: 10, minimum: 1, maximum: 100 }))
       }),
     },
   )
@@ -265,10 +263,10 @@ const vehiclesController = new Elysia({
         ),
         make: t.String(),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Numeric()),
+        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
         color: t.Optional(t.String()),
-        type: t.Optional(t.String()),
-        forSale: t.Optional(t.BooleanString())
+        type: t.Optional(VehicleType),
+        forSale: t.Optional(t.Boolean())
       }),
       auth: true,
     },
@@ -293,7 +291,7 @@ const vehiclesController = new Elysia({
       body: t.Object({
         make: t.Optional(t.String()),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Numeric()),
+        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
         image: t.Optional(
           t.File({
             type: "image/*",
@@ -360,9 +358,8 @@ const vehiclesController = new Elysia({
     return { success: true, message: "Vehicle cache cleared" };
   })
 
-  .get("/health", ({ status }) => {
-    status(200);
-    return { success: true, message: "Vehicles service is healthy" };
+  .get("/health", ({ status, store }) => {
+    return status(200, { success: true, message: `${store.single} service is healthy` });
   });
 
 export default vehiclesController;

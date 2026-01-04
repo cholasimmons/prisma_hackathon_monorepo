@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_ZwSkNhgQJT
 createdAt: 2025-12-26T17:02:04.616710900
-updatedAt: 2026-01-02T11:59:45.450456800
+updatedAt: 2026-01-04T20:55:57.260101900
 workspaceId: wk_HwJZxYJkYa
 folderId: null
 authentication: {}
@@ -14,5 +14,5 @@ headers: []
 method: GET
 name: /vehicles/search
 sortPriority: 12000.0
-url: ${[ base_url ]}/vehicles/search?plate=G
+url: ${[ base_url ]}/vehicles/search
 urlParameters: []
