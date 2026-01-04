@@ -6,7 +6,7 @@ import { cache } from "~utils/cache";
 import { CacheKeys } from "~utils/cache/keys";
 import db from "~utils/database/client";
 import { strip } from "~utils/strip";
-import { PublicUser, PublicUserFields } from "~modules/users/model";
+import { PublicUser, PublicUserFields } from "~modules/users/users.model";
 
 const authController = new Elysia({
   prefix: "/auth",
