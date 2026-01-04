@@ -2,7 +2,7 @@ import { AuditEvent, EventType, Prisma } from "@generated/prisma/client";
 import { cache } from "~utils/cache";
 import db from "~utils/database/client";
 import { CacheKeys } from "~utils/cache/keys";
-import { Log } from "./model";
+import { Log } from "./logs.model";
 
 abstract class AuditService {
   static async logEvent(body: Log): Promise<AuditEvent | null> {

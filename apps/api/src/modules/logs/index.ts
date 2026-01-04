@@ -1,9 +1,13 @@
 import { Elysia, t } from "elysia";
 import { betterAuth } from "~middleware/betterauth";
-import AuditService from "./service";
+import AuditService from "./logs.service";
 
 const auditController = new Elysia({
   prefix: "/logs",
+})
+.state({
+  single: 'Log',
+  plural: 'Logs'
 })
 
   .use(betterAuth)

@@ -23,7 +23,6 @@ import { cache } from "~utils/cache";
 import { addEmailJob } from "~utils/queues/email";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
-import VehicleService from "~modules/vehicles/vehicle.service";
 import mono_config from '@config';
 import UserService from "~modules/users/users.service";
 
