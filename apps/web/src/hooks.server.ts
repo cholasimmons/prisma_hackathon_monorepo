@@ -12,7 +12,6 @@ export async function handle({ event, resolve }) {
 		if (cookie) {
 			response = await fetch(`${API_BASE_URL}/auth/get-session`, {
 				headers: {
-					// 'Content-Type': 'application/json',
 					cookie: cookie ?? ''
 				},
 				method: 'GET',
@@ -27,20 +26,17 @@ export async function handle({ event, resolve }) {
 
 			// console.log('Session User:', event.locals.user);
 			// console.log('Session:', event.locals.session);
-
-			return resolve(event);
 		} else {
 			event.locals.user = null;
 			event.locals.session = null;
-			event.locals.apiDown = false; // API unreachable
-
-			return resolve(event);
+			event.locals.apiDown = false; // API reachable
 		}
 	} catch (error) {
 		event.locals.user = null;
 		event.locals.session = null;
 		event.locals.apiDown = true; // API unreachable
-
+	} finally {
+		controller.abort();
 		return resolve(event);
 	}
 }

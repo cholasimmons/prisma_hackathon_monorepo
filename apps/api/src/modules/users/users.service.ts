@@ -10,7 +10,6 @@ import { addEmailJob } from "~utils/queues/email";
 import mono_config from "@config";
 
 abstract class UserService {
-
   /**
    * Update User image
    */
@@ -19,10 +18,7 @@ abstract class UserService {
     image: File,
   ): Promise<string | null> {
     // 1. Upload image in S3
-    const path = await UserService.handleImageUpload(
-      userId,
-      image,
-    );
+    const path = await UserService.handleImageUpload(userId, image);
 
     // let presignedUrl: string | null = null;
     // if(path) {
@@ -36,69 +32,53 @@ abstract class UserService {
     // }
 
     // 2: Update database
-    const updatedUser: User | null =
-      await db.user.update({
-        where: { id: userId },
-        data: {
-          image: path,
-        }
-      });
+    const updatedUser: User | null = await db.user.update({
+      where: { id: userId },
+      data: {
+        image: path,
+      },
+    });
 
     if (!updatedUser) {
       return null;
     }
 
     // 2. Invalidate relevant cache entries
-    await cache.invalidate([
-      CacheKeys.user.byId(userId),
-    ]);
+    await cache.invalidate([CacheKeys.user.byId(userId)]);
 
-    console.log(
-      `🔄 Updated User image (${userId}) and invalidated cache`,
-    );
-    const updatedStripped = strip(
-      updatedUser,
-      PublicUserFields,
-    );
+    console.log(`🔄 Updated User image (${userId}) and invalidated cache`);
+    const updatedStripped = strip(updatedUser, PublicUserFields);
 
     if (!updatedStripped) {
       return null;
     }
 
-    await cache.set<PublicUser>(
-      CacheKeys.user.byId(userId),
-      updatedStripped,
-    );
+    await cache.set<PublicUser>(CacheKeys.user.byId(userId), updatedStripped);
 
     return path ?? null;
   }
-
 
   private static async handleImageUpload(
     userId: string,
     imageFile: File,
   ): Promise<string> {
     try {
-      console.log('handleImageUpload() started...')
+      console.log("handleImageUpload() started...");
 
       // Create unique filename
       const ext = imageFile.name.split(".").pop() ?? "jpg";
       const safeFilename = `avatar-${Date.now()}`;
       const filepath = `${BucketNames.users}/${userId}/${safeFilename}.${ext}`;
-      const tmpDir =
-        Bun.env.TMPDIR ??
-        Bun.env.TEMP ??
-        Bun.env.TMP ??
-        '/tmp';
+      const tmpDir = Bun.env.TMPDIR ?? Bun.env.TEMP ?? Bun.env.TMP ?? "/tmp";
 
       // 1. Save file to temp disk (or direct S3 raw upload)
       const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
-      await Bun.write(tempPath, (await imageFile.arrayBuffer()));
+      await Bun.write(tempPath, await imageFile.arrayBuffer());
 
       await addImageJob(userId, tempPath, filepath, ext);
 
       console.log(
-        `📸 Uploading optimized image for User ${userId} to S3: ${filepath}.`
+        `📸 Uploading optimized image for User ${userId} to S3: ${filepath}.`,
       );
 
       return filepath;
@@ -115,10 +95,14 @@ abstract class UserService {
   static async sendThankYouEmailAfter24hrs() {
     try {
       const users = await db.user.findMany({
-        where: { emailVerified: true, banned: false, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+        where: {
+          emailVerified: true,
+          banned: false,
+          createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
       });
 
-      for(const user of users) {
+      for (const user of users) {
         const { email, name, banned, emailVerified, createdAt } = user;
 
         // if (banned || !emailVerified) { console.log(`User ${email} is banned or unverified`); return; }
@@ -128,11 +112,11 @@ abstract class UserService {
         //   return;
         // }
 
-        const subject = `${mono_config.app.name} | Thank you ${name.split(' ')[0]}!`;
+        const subject = `${mono_config.app.name} | Thank you ${name.split(" ")[0]}!`;
         const html = `
-          <h3>Hey there ${name.split(' ')[0]},</h3>
+          <h3>Hey there ${name.split(" ")[0]},</h3>
           <p>Thank you for joining the community!</p>
-          <p>We hope you enjoy your time on <a href="${mono_config.app.url}">our App</a>. Remember you can <a href="${mono_config.app.github}/issues/new">report issues</a> or <a href="${mono_config.app.email}">give us feedback</a>.</p><br/>
+          <p>We hope you enjoy your time on <a href="${mono_config.app.url}">our App</a>. Remember you can <a href="${mono_config.app.github}/issues/new">report issues</a> or <a href="mailto://${mono_config.app.email}">give us feedback</a>.</p><br/>
           <p>Best regards,</p>
           <p>The ${mono_config.app.name} Team</p>
         `;
@@ -141,11 +125,9 @@ abstract class UserService {
         await addEmailJob({ to: email, subject, html });
 
         console.log(
-          `📧 Sent thank you email to ${email} (after 24 hours of being active).`
+          `📧 Sent thank you email to ${email} (after 24 hours of being active).`,
         );
       }
-
-
     } catch (error) {
       console.error(`Failed to send thank you emails`, error);
       throw error;
