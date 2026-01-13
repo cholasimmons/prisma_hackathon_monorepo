@@ -8,6 +8,7 @@ import { PublicUser, PublicUserFields } from "./users.model";
 import { addImageJob } from "~utils/queues/image";
 import { addEmailJob } from "~utils/queues/email";
 import mono_config from "@config";
+import { renderEmail } from "~utils/email";
 
 abstract class UserService {
 
@@ -108,14 +109,28 @@ abstract class UserService {
     }
   }
 
+  static async verifyUser(userId: string) {
+    try {
+      await db.user.update({
+        where: { id: userId },
+        data: { verifiedAt: new Date() }
+      });
+    } catch (error) {
+      console.error(`Failed to verify User ${userId}:`, error);
+      throw error;
+    }
+  }
+
   /** CRON junction to thank users who've been activated for 24hrs
    *
    * @param userId
    */
   static async sendThankYouEmailAfter24hrs() {
     try {
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000)
+
       const users = await db.user.findMany({
-        where: { emailVerified: true, banned: false, createdAt: { lt: new Date(Date.now() - 24 * 60 * 60 * 1000) } }
+        where: { emailVerified: true, banned: false, verifiedAt: { lt: cutoff }, activationEmailSentAt: null }
       });
 
       for(const user of users) {
@@ -128,14 +143,15 @@ abstract class UserService {
         //   return;
         // }
 
-        const subject = `${mono_config.app.name} | Thank you ${name.split(' ')[0]}!`;
-        const html = `
-          <h3>Hey there ${name.split(' ')[0]},</h3>
-          <p>Thank you for joining the community!</p>
-          <p>We hope you enjoy your time on <a href="${mono_config.app.url}">our App</a>. Remember you can <a href="${mono_config.app.github}/issues/new">report issues</a> or <a href="${mono_config.app.email}">give us feedback</a>.</p><br/>
-          <p>Best regards,</p>
-          <p>The ${mono_config.app.name} Team</p>
-        `;
+        const firstname = name.split(' ')[0];
+        const subject = `${mono_config.app.name} | Thank you ${firstname}!`;
+        const html = await renderEmail('welcome', {
+          name: firstname,
+          appUrl: mono_config.app.url,
+          appGithub: mono_config.app.github,
+          appEmail: mono_config.app.email,
+          appName: mono_config.app.name
+        });
 
         // Send thank you email after 24 hours (CRON)
         await addEmailJob({ to: email, subject, html });

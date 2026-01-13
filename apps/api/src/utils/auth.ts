@@ -1,5 +1,6 @@
 import {
   admin as adminPlugin,
+  createAuthMiddleware,
   emailOTP,
   magicLink,
   openAPI
@@ -8,6 +9,9 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import db from "~utils/database/client";
 import { addEmailJob } from "./queues/email";
+import { renderEmail } from "./email";
+import mono_config from "@config";
+import UserService from "~modules/users/users.service";
 
 const PREFIX = "/auth";
 
@@ -23,44 +27,51 @@ const auth = betterAuth({
 
     sendResetPassword: async ({ user, url, token }, request) => {
       const link = `${process.env.ORIGIN_URL}/auth/reset-password?token=${token}`;
- 			const html = `
-        <small>Plates</small>
-				<h2>Password reset</h2>
-				<p>
- 					Reset your password by clicking
- 					<a href="${link}">here</a>.
-				</p>
+      const html = await renderEmail('sendResetPassword', { link });
+    //   `
+    //     <small>Plates</small>
+				// <h2>Password reset</h2>
+				// <p>
+ 			// 		Reset your password by clicking
+ 			// 		<a href="${link}">here</a>.
+				// </p>
 
-				<small>
-					If you did not request a password reset, please ignore this email.
-				</small>
- 			`;
+				// <small>
+				// 	If you did not request a password reset, please ignore this email.
+				// </small>
+ 			// `;
 
       void addEmailJob({
         to: user.email,
-        subject: "Plates | Password Reset",
+        subject: `${mono_config.app.name} | Password Reset`,
         html
       });
     },
     onPasswordReset: async ({ user }, request) => {
       console.log(`Password for user ${user.email} has been reset.`);
       const link = `${process.env.ORIGIN_URL}/auth/login`;
-      const html = `
-        <small>Plates</small>
-				<h2>Password successfully reset</h2>
-				<p>
-   					You can now log in to Plates with your new password, sign in by clicking
-   					<a href="${link}">here</a>.
-				</p>
+      const html = await renderEmail('passwordReset', {
+        link,
+        appName: mono_config.app.name,
+        appGithub: mono_config.app.github,
+        appEmail: mono_config.app.email
+      })
+    //     `
+    //     <small>Plates</small>
+				// <h2>Password successfully reset</h2>
+				// <p>
+   	// 				You can now log in to Plates with your new password, sign in by clicking
+   	// 				<a href="${link}">here</a>.
+				// </p>
 
-				<small>
-					Be sure to <a href="https://github.com/cholasimmons/prisma_hackathon_monorepo/issues">report any bugs</a> or <a href="mailto://apps@simmons.studio">feature suggestions</a> to us.
-				</small>
-   			`;
+				// <small>
+				// 	Be sure to <a href="https://github.com/cholasimmons/prisma_hackathon_monorepo/issues">report any bugs</a> or <a href="mailto://apps@simmons.studio">feature suggestions</a> to us.
+				// </small>
+   	// 		`;
 
         void addEmailJob({
           to: user.email,
-          subject: "Plates | Password Reset",
+          subject: `${mono_config.app.name} | Password Reset`,
           html
         });
     },
@@ -75,18 +86,19 @@ const auth = betterAuth({
 
     sendVerificationEmail: async ({ user, url, token }, request) => {
       const link = url; // `${process.env.ORIGIN_URL}/auth/verify-email?token=${token}`;
-      const html = `
-				<small>Plates</small>
-				<h2>Verify your email</h2>
-				<p>Hello ${user.name ?? 'there'},</p>
-				<p>
-					<a href="${link}">Click here</a> to verify your email.
-				</p>
-			`;
+      const html = await renderEmail('sendVerificationEmail', { appName: mono_config.app.name, firstname: user?.name ?? 'there', link });
+      //  `
+			// 	<small>Plates</small>
+			// 	<h2>Verify your email</h2>
+			// 	<p>Hello ${user.name ?? 'there'},</p>
+			// 	<p>
+			// 		<a href="${link}">Click here</a> to verify your email.
+			// 	</p>
+			// `;
 
       void addEmailJob({
         to: user.email,
-        subject: "Plates | Email Verification",
+        subject: `${mono_config.app.name} | Email Verification`,
         html
       });
 
@@ -95,29 +107,49 @@ const auth = betterAuth({
     },
 
     async afterEmailVerification(user, request) {
-      const html = `
-				<small>Plates</small>
-				<h2>Welcome!</h2>
-				<p>Hello again ${user.name ?? ''},</p>
-				<p>
-					Thank you for taking the time to verify your email.<br>
-					You can now enjoy all the features of Plates.
-				</p>
-				<p>
-					<a href="https://plates.simmons.studio/about"><strong>Plates</strong></a> is a crowd-source database for vehicle registration numbers, nothing else to it.<br/>
-					Just a small project putting together all the tools, knowledge and expertise we have.<br/>
-					We hope you enjoy it!
-				</p>
-			`;
+      // await UserService.verifyUser(user.id);
+
+      const html = await renderEmail('emailVerification', {
+        appName: mono_config.app.name,
+        firstname: user?.name ?? 'there',
+        appUrl: mono_config.app.url,
+      });
+      //  `
+			// 	<small>Plates</small>
+			// 	<h2>Welcome!</h2>
+			// 	<p>Hello again ${user.name ?? ''},</p>
+			// 	<p>
+			// 		Thank you for taking the time to verify your email.<br>
+			// 		You can now enjoy all the features of Plates.
+			// 	</p>
+			// 	<p>
+			// 		<a href="https://plates.simmons.studio/about"><strong>Plates</strong></a> is a crowd-source database for vehicle registration numbers, nothing else to it.<br/>
+			// 		Just a small project putting together all the tools, knowledge and expertise we have.<br/>
+			// 		We hope you enjoy it!
+			// 	</p>
+			// `;
 
       void addEmailJob({
         to: user.email,
-        subject: "Welcome to Plates | ZM",
+        subject: `Welcome to ${mono_config.app.name} | ZM`,
         html
       });
     }
   },
-
+  user: {
+    additionalFields: {
+      verifiedAt: {
+        type: 'date',
+        default: null,
+        required: false
+      },
+      activationEmailSentAt: {
+        type: 'date',
+        default: null,
+        required: false
+      }
+    }
+  },
   // socialProviders: {
   //   github: {
   //     clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -149,6 +181,25 @@ const auth = betterAuth({
 
   },
   trustedOrigins: [process.env.ORIGIN_URL!],
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      if(ctx.path.startsWith("/sign-up")){
+          const newSession = ctx.context.newSession;
+        if (newSession) {
+          const id = newSession.user.id;
+            try {
+              await db.user.update({
+                where: { id },
+                data: { verifiedAt: new Date() }
+              });
+            } catch (error) {
+              console.error(`Failed to verify User ${id}:`, error);
+              throw error;
+            }
+          }
+      }
+    }),
+  },
   plugins: [
     openAPI(),
     adminPlugin({adminRoles: ["admin"]}),

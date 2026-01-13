@@ -25,6 +25,8 @@ import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
 import mono_config from '@config';
 import UserService from "~modules/users/users.service";
+import { elysiaXSS } from "elysia-xss";
+import { escapeHtml } from "~utils/email/render";
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
@@ -170,13 +172,15 @@ const app = new Elysia({
   .post("/test-email", async ({ body, status, ip, session }) => {
     const { to, subject, html } = body;
 
+    const cleanHtml: string = escapeHtml(html);
+
     // Job Queue
-    await addEmailJob({ to, subject , html });
+    await addEmailJob({ to, subject, html: cleanHtml });
 
     // Audit Log
     await audit.log({ actorId: "SYSTEM", type: EventType.EMAIL_SEND, entity: 'Email', entityId: '000', ipAddress: ip, userAgent: 'User Agent', route: '/test-email', method: 'POST' });
 
-    return status(200, { success: true, message: "Email sent successfully" });
+    return status(200, { success: true, message: "Clean Email sent successfully" });
   }, {
     auth: true,
     body: t.Object({
