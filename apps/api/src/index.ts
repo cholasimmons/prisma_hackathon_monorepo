@@ -191,15 +191,10 @@ const app = new Elysia({
     async ({ body, status, ip, session }) => {
       const { to, subject, html } = body;
 
-<<<<<<< HEAD
     const cleanHtml: string = escapeHtml(html);
 
     // Job Queue
     await addEmailJob({ to, subject, html: cleanHtml });
-=======
-      // Job Queue
-      await addEmailJob({ to, subject, html });
->>>>>>> 0d829d702567e0dcea31223bdb78393e701f2954
 
       // Audit Log
       await audit.log({
@@ -213,7 +208,6 @@ const app = new Elysia({
         method: "POST",
       });
 
-<<<<<<< HEAD
     return status(200, { success: true, message: "Clean Email sent successfully" });
   }, {
     auth: true,
@@ -223,19 +217,6 @@ const app = new Elysia({
       html: t.String()
     })
   })
-=======
-      return status(200, { success: true, message: "Email sent successfully" });
-    },
-    {
-      auth: true,
-      body: t.Object({
-        to: t.String(),
-        subject: t.String({ default: "Test Email from Backend Server" }),
-        html: t.String(),
-      }),
-    },
-  )
->>>>>>> 0d829d702567e0dcea31223bdb78393e701f2954
 
   .get("/health", ({ status }: Context) => {
     const info = {
