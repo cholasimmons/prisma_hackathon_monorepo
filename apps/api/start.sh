@@ -51,6 +51,9 @@ until nc -z "$DB_HOST" "$DB_PORT"; do
 done
 echo "✅ Database is ready!"
 
+# Generate BetterAuth schema
+echo "🛠  Generating BetterAuth schema..."
+bunx @better-auth/cli generate
 
 # Apply Prisma migrations
 echo "🛠  Applying Prisma migrations to $DB_URL"
