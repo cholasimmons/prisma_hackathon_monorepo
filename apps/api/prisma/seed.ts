@@ -18,7 +18,7 @@ async function main() {
         year: 2020,
         forSale: true,
         isActive: true,
-        submissionCount: 2
+        submissionCount: 2,
         // photos: {
         //   create: [
         //     { photo: 'https://example.com/toyota-front.jpg' },
@@ -34,7 +34,7 @@ async function main() {
         year: 2022,
         forSale: false,
         isActive: true,
-        submissionCount: 2
+        submissionCount: 2,
       },
       {
         plate: "ALC 5355",
@@ -44,10 +44,20 @@ async function main() {
         year: 2001,
         forSale: false,
         isActive: true,
-        submissionCount: 3
+        submissionCount: 3,
+      },
+      {
+        plate: "CAC 97",
+        make: "Toyota",
+        model: "Rav4",
+        color: "#FFF",
+        year: 2006,
+        forSale: false,
+        isActive: true,
+        submissionCount: 3,
       },
     ],
-    select: { id: true, plate: true },
+    select: { id: true },
     skipDuplicates: true,
   });
   console.log(`✅ Created ${vehicles.length} vehicles`);
@@ -55,16 +65,34 @@ async function main() {
   // Demo logos
   const logos = await db.logo.createManyAndReturn({
     data: [
-      { name: 'Toyota', url: '/public/logos/toyota.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Mazda', url: '/public/logos/mazda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Ford', url: '/public/logos/ford.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 },
-      { name: 'Honda', url: '/public/logos/honda.webp', submittedById: 'SYSTEM', uploadSizeKb: 0 }
+      {
+        name: "Toyota",
+        url: "/public/logos/toyota.webp",
+        submittedById: "SYSTEM",
+        uploadSizeKb: 0,
+      },
+      {
+        name: "Mazda",
+        url: "/public/logos/mazda.webp",
+        submittedById: "SYSTEM",
+        uploadSizeKb: 0,
+      },
+      {
+        name: "Ford",
+        url: "/public/logos/ford.webp",
+        submittedById: "SYSTEM",
+        uploadSizeKb: 0,
+      },
+      {
+        name: "Honda",
+        url: "/public/logos/honda.webp",
+        submittedById: "SYSTEM",
+        uploadSizeKb: 0,
+      },
     ],
-    skipDuplicates: true
+    skipDuplicates: true,
   });
   console.log(`✅ Created ${logos.length} test logos`);
-
-
 }
 
 main()

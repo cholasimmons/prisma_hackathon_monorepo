@@ -8,8 +8,15 @@ import {
 import { cache } from "~utils/cache";
 import db from "~utils/database/client";
 import { strip } from "~utils/strip";
-import { PublicVehicleFields, PublicVehicleSubmissionFields } from "./vehicle.model";
-import type { ConsensusResult, PublicVehicle, PublicVehicleSubmission } from "./vehicle.model";
+import {
+  PublicVehicleFields,
+  PublicVehicleSubmissionFields,
+} from "./vehicle.model";
+import type {
+  ConsensusResult,
+  PublicVehicle,
+  PublicVehicleSubmission,
+} from "./vehicle.model";
 import { CacheKeys } from "~utils/cache/keys";
 import { VehicleSubmissionCreateInput } from "@generated/prisma/models";
 import { BucketNames } from "~utils/image/storage";
@@ -19,14 +26,18 @@ import {
   addVehicleSubmissionJob,
 } from "~utils/queues/vehicle";
 import { addImageJob } from "~utils/queues/image";
-import { majorityVote, resolveRequired, computeOverallConfidence } from "~utils/vehicles/majorityResolver";
+import {
+  majorityVote,
+  resolveRequired,
+  computeOverallConfidence,
+} from "~utils/vehicles/majorityResolver";
 
-const MIN_SUBMISSIONS_FOR_PUBLIC = Number(process.env.MIN_SUBMISSIONS_FOR_PUBLIC ?? 2);
+const MIN_SUBMISSIONS_FOR_PUBLIC = Number(
+  process.env.MIN_SUBMISSIONS_FOR_PUBLIC ?? 2,
+);
 const MIN_FIELD_CONFIDENCE = Number(process.env.MIN_FIELD_CONFIDENCE ?? 0.6);
 
-
 abstract class VehicleService {
-
   static async searchVehicles(
     params: {
       make?: string;
@@ -44,12 +55,15 @@ abstract class VehicleService {
     const where: Prisma.VehicleWhereInput = {};
 
     if (make) where.make = make;
-    if (typeof year === 'number') where.year = year;
-    if (color?.trim()) where.color = { contains: color.trim(), mode: "insensitive" };
-    if (model?.trim()) where.model = { contains: model.trim(), mode: "insensitive" };
+    if (typeof year === "number") where.year = year;
+    if (color?.trim())
+      where.color = { contains: color.trim(), mode: "insensitive" };
+    if (model?.trim())
+      where.model = { contains: model.trim(), mode: "insensitive" };
     if (type) where.type = type;
-    if (typeof forSale === 'boolean') where.forSale = forSale;
-    if (plate?.trim()) where.plate = { contains: plate.trim(), mode: "insensitive" };
+    if (typeof forSale === "boolean") where.forSale = forSale;
+    if (plate?.trim())
+      where.plate = { contains: plate.trim(), mode: "insensitive" };
     where.submissionCount = { gte: MIN_SUBMISSIONS_FOR_PUBLIC };
 
     if (!isAdmin) {
@@ -103,12 +117,15 @@ abstract class VehicleService {
     const where: Prisma.VehicleSubmissionWhereInput = {};
 
     if (make) where.make = make;
-    if (typeof year === 'number') where.year = year;
-    if (color?.trim()) where.color = { contains: color.trim(), mode: "insensitive" };
-    if (model?.trim()) where.model = { contains: model.trim(), mode: "insensitive" };
+    if (typeof year === "number") where.year = year;
+    if (color?.trim())
+      where.color = { contains: color.trim(), mode: "insensitive" };
+    if (model?.trim())
+      where.model = { contains: model.trim(), mode: "insensitive" };
     if (type) where.type = type;
-    if (typeof forSale === 'boolean') where.forSale = forSale;
-    if (plate?.trim()) where.plate = { contains: plate.trim(), mode: "insensitive" };
+    if (typeof forSale === "boolean") where.forSale = forSale;
+    if (plate?.trim())
+      where.plate = { contains: plate.trim(), mode: "insensitive" };
     where.submittedById = userId;
 
     const submissions = await db.vehicleSubmission.findMany({
@@ -266,6 +283,7 @@ abstract class VehicleService {
    * Update vehicle with cache invalidation
    */
   static async updateVehicle(
+    userId: string,
     id: string,
     updates: Partial<Vehicle> & { image?: File },
   ): Promise<PublicVehicle | null> {
@@ -283,11 +301,11 @@ abstract class VehicleService {
     await cache.invalidate([CacheKeys.vehicles.byId(id)]);
 
     // 3. If there's an image upload, handle it
-    // if (updates.image) {
-    //   await VehicleService.handleVehicleImage(id, updates.image);
-    //   // Remove the temporary imageFile property
-    //   delete (updatedVehicle as any).photo;
-    // }
+    if (updates.image) {
+      await VehicleService.handleVehicleImage("", id, updates.image);
+      // Remove the temporary imageFile property
+      delete (updatedVehicle as any).photo;
+    }
 
     console.log(`🔄 Updated vehicle ${id} and invalidated cache`);
     const updatedStripped = strip(updatedVehicle, PublicVehicleFields);
@@ -436,11 +454,7 @@ abstract class VehicleService {
       ext: string;
     }[] = [];
 
-    const tmpDir =
-      Bun.env.TMPDIR ??
-      Bun.env.TEMP ??
-      Bun.env.TMP ??
-      '/tmp';
+    const tmpDir = Bun.env.TMPDIR ?? Bun.env.TEMP ?? Bun.env.TMP ?? "/tmp";
 
     const files = Array.isArray(body.images) ? body.images : [body.images];
 
@@ -451,7 +465,7 @@ abstract class VehicleService {
       // --- validate early ---
       if (!(imageFile instanceof File)) continue;
 
-      const ext = imageFile.name.split('.').pop() ?? 'jpg';
+      const ext = imageFile.name.split(".").pop() ?? "jpg";
       const safeFilename = `image-${randomID}`;
       const filepath = `${BucketNames.vehicles}/${body.plate}/${safeFilename}.${ext}`;
 
@@ -465,7 +479,7 @@ abstract class VehicleService {
         path: filepath,
         tempPath,
         filename: imageFile.name,
-        ext
+        ext,
       });
     }
     // End of Loop
@@ -476,11 +490,11 @@ abstract class VehicleService {
     const photoRecords = await db.vehiclePhoto.createManyAndReturn({
       data: files.map((file, index) => ({
         submittedVehicleId: submission.id,
-        isPrimary: index === 0,          // first image primary
+        isPrimary: index === 0, // first image primary
         uploadSizeKb: file ? Math.ceil(file.size / 1024) : 0,
         url: null,
-        status: UploadStatus.PROCESSING
-      }))
+        status: UploadStatus.PROCESSING,
+      })),
     });
 
     if (uploadedFiles.length > 0 && photoRecords.length > 0) {
@@ -497,7 +511,9 @@ abstract class VehicleService {
     }
 
     // 2. Invalidate relevant cache entries
-    await cache.invalidate([CacheKeys.vehicles.submissions.byId(submission.id)]);
+    await cache.invalidate([
+      CacheKeys.vehicles.submissions.byId(submission.id),
+    ]);
 
     console.log(
       `🔄 Submitted vehicle ${submission.plate} and invalidated cache`,
@@ -521,21 +537,17 @@ abstract class VehicleService {
     userId: string,
     vehicleId: string,
     imageFile: File,
-    ): Promise<{ path: string; size: number }> {
+  ): Promise<{ path: string; size: number }> {
     try {
       // Create unique filename
       const ext = imageFile.name.split(".").pop() ?? "jpg";
       const safeFilename = `image-${Date.now()}`;
       const filepath = `${BucketNames.vehicles}/${vehicleId}/${safeFilename}.${ext}`;
-      const tmpDir =
-        Bun.env.TMPDIR ??
-        Bun.env.TEMP ??
-        Bun.env.TMP ??
-        '/tmp';
+      const tmpDir = Bun.env.TMPDIR ?? Bun.env.TEMP ?? Bun.env.TMP ?? "/tmp";
 
       // 1. Save file to temp disk (or direct S3 raw upload)
       const tempPath = `${tmpDir}/${crypto.randomUUID()}.${ext}`;
-      await Bun.write(tempPath, (await imageFile.arrayBuffer()));
+      await Bun.write(tempPath, await imageFile.arrayBuffer());
 
       await addImageJob(userId, tempPath, filepath, ext);
 
@@ -573,16 +585,19 @@ abstract class VehicleService {
    * fetches ALL active submissions
    * @returns boolean
    */
-  static async reEvaluateVehicleSubmissions(isActive: boolean | undefined | null = true): Promise<boolean> {
+  static async reEvaluateVehicleSubmissions(
+    isActive: boolean | undefined | null = true,
+  ): Promise<boolean> {
     let submissions: VehicleSubmission[] = [];
 
     const cached = await cache.get<VehicleSubmission[]>(
       CacheKeys.vehicles.submissions.all,
     );
     if (!cached) {
-      const vehicles: VehicleSubmission[] | null = await db.vehicleSubmission.findMany({
-        where: { isActive: isActive || undefined }
-      });
+      const vehicles: VehicleSubmission[] | null =
+        await db.vehicleSubmission.findMany({
+          where: { isActive: isActive || undefined },
+        });
 
       if (!vehicles) return false;
 
@@ -596,7 +611,11 @@ abstract class VehicleService {
       submissions,
     );
 
-    console.log("| Processed ", submissions?.length ?? 0, " vehicle submissions")
+    console.log(
+      "| Processed ",
+      submissions?.length ?? 0,
+      " vehicle submissions",
+    );
 
     return true;
   }
@@ -612,9 +631,10 @@ abstract class VehicleService {
       CacheKeys.vehicles.submissions.all,
     );
     if (!cached) {
-      const vehicles: VehicleSubmission[] | null = await db.vehicleSubmission.findMany({
-        where: { isActive: true }
-      });
+      const vehicles: VehicleSubmission[] | null =
+        await db.vehicleSubmission.findMany({
+          where: { isActive: true },
+        });
 
       if (!vehicles) return false;
 
@@ -628,71 +648,99 @@ abstract class VehicleService {
       submissions,
     );
 
-    console.log("[CRON] Processed ", submissions?.length ?? 0, " active vehicle submissions")
+    console.log(
+      "[CRON] Processed ",
+      submissions?.length ?? 0,
+      " active vehicle submissions",
+    );
 
     for (const submission of submissions) {
-      const submissions: VehicleSubmission[] | null = await VehicleService.getSubmissionsByPlate(submission.plate);
-      console.log("[CRON] Plate:", submission.plate, ": ", submissions?.length ?? 0)
+      const submissions: VehicleSubmission[] | null =
+        await VehicleService.getSubmissionsByPlate(submission.plate);
+      console.log(
+        "[CRON] Plate:",
+        submission.plate,
+        ": ",
+        submissions?.length ?? 0,
+      );
 
       if (!submissions?.length) continue;
 
       const consensus = VehicleService.computeConsensus(submissions ?? []);
 
-      await VehicleService.materializeVehicle(submission.plate, consensus, submissions);
+      await VehicleService.materializeVehicle(
+        submission.plate,
+        consensus,
+        submissions,
+      );
     }
 
     return true;
   }
 
   static computeConsensus(submissions: VehicleSubmission[]): ConsensusResult {
-    const active = submissions.filter(s => s.isActive);
+    const active = submissions.filter((s) => s.isActive);
 
     return {
       plate: active[0]!.plate,
       totalSubmissions: active.length,
       fields: {
-        make: majorityVote(active.map(s => s.make)),
-        model: majorityVote(active.map(s => s.model)),
-        year: majorityVote(active.map(s => s.year)),
-        color: majorityVote(active.map(s => s.color)),
-        type: majorityVote(active.map(s => s.type)),
-        forSale: majorityVote(active.map(s => s.forSale))
-      }
+        make: majorityVote(active.map((s) => s.make)),
+        model: majorityVote(active.map((s) => s.model)),
+        year: majorityVote(active.map((s) => s.year)),
+        color: majorityVote(active.map((s) => s.color)),
+        type: majorityVote(active.map((s) => s.type)),
+        forSale: majorityVote(active.map((s) => s.forSale)),
+      },
     };
   }
 
-  static async materializeVehicle(plate: string, consensus: ConsensusResult, submissions: VehicleSubmission[]): Promise<void> {
+  static async materializeVehicle(
+    plate: string,
+    consensus: ConsensusResult,
+    submissions: VehicleSubmission[],
+  ): Promise<void> {
     if (!submissions.length) return;
 
     // const consensus = computeConsensus(submissions);
 
-    const isPublic =
-      consensus.totalSubmissions >= MIN_SUBMISSIONS_FOR_PUBLIC;
+    const isPublic = consensus.totalSubmissions >= MIN_SUBMISSIONS_FOR_PUBLIC;
 
     const vehicleData: Partial<Vehicle> = {
       plate,
-      make: resolveRequired<string>(consensus.fields.make.value, submissions, 'make'),
-      model: consensus.fields.model.confidence >= MIN_FIELD_CONFIDENCE
-        ? consensus.fields.model.value
-        : null,
-      year: consensus.fields.year.confidence >= MIN_FIELD_CONFIDENCE
-        ? consensus.fields.year.value
-        : null,
-      color: resolveRequired<string>(consensus.fields.color.value, submissions, 'color'),
-      type: consensus.fields.type.confidence >= MIN_FIELD_CONFIDENCE
-        ? consensus.fields.type.value
-        : null,
-      forSale: consensus.fields.forSale.confidence >= MIN_FIELD_CONFIDENCE
-        ? consensus.fields.forSale.value
-        : null,
+      make: resolveRequired<string>(
+        consensus.fields.make.value,
+        submissions,
+        "make",
+      ),
+      model:
+        consensus.fields.model.confidence >= MIN_FIELD_CONFIDENCE
+          ? consensus.fields.model.value
+          : null,
+      year:
+        consensus.fields.year.confidence >= MIN_FIELD_CONFIDENCE
+          ? consensus.fields.year.value
+          : null,
+      color: resolveRequired<string>(
+        consensus.fields.color.value,
+        submissions,
+        "color",
+      ),
+      type:
+        consensus.fields.type.confidence >= MIN_FIELD_CONFIDENCE
+          ? consensus.fields.type.value
+          : null,
+      forSale:
+        consensus.fields.forSale.confidence >= MIN_FIELD_CONFIDENCE
+          ? consensus.fields.forSale.value
+          : null,
       confidence: computeOverallConfidence(consensus.fields),
       submissionCount: consensus.totalSubmissions,
-      isActive: isPublic
+      isActive: isPublic,
     };
 
     await VehicleService.upsertVehicleByPlate(plate, vehicleData);
   }
-
 
   static async cleanupFailedPhotos() {
     const { count } = await db.vehiclePhoto.deleteMany({
@@ -700,14 +748,13 @@ abstract class VehicleService {
         url: null,
         status: { in: [UploadStatus.PENDING, UploadStatus.FAILED] },
         createdAt: {
-          lt: new Date(Date.now() - 1000 * 60 * 60 * 24) // 24h
-        }
-      }
+          lt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 24h
+        },
+      },
     });
 
     console.log(`[CRON] Deleted ${count} failed photos`);
   }
-
 }
 
 export default VehicleService;

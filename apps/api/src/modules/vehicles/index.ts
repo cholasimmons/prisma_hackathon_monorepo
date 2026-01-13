@@ -2,10 +2,7 @@ import { Elysia, t } from "elysia";
 import VehicleService from "./vehicle.service";
 import { betterAuth } from "~middleware/betterauth";
 import { cache } from "~utils/cache";
-import {
-  PublicVehicle,
-  PublicVehicleSubmission,
-} from "./vehicle.model";
+import { PublicVehicle, PublicVehicleSubmission } from "./vehicle.model";
 import { KNOWN_MAKES } from "~utils/vehicles";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
@@ -18,53 +15,64 @@ const vehiclesController = new Elysia({
 })
   .use(betterAuth)
   .state({
-    single: 'Vehicle',
-    plural: 'Vehicles'
+    single: "Vehicle",
+    plural: "Vehicles",
   })
   .use(ip())
-  .use(cron({
-    name: "vehicle-cron-job",
-    pattern: Patterns.EVERY_HOUR,
-    run: async () => {
-      //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
-      console.log("[CRON] Vehicle Cron Job executed (Hourly)");
-      await VehicleService.runVehicleConsensus();
-    },
-  }))
-  .use(cron({
-    name: "vehicle-cron-job-2",
-    pattern: Patterns.EVERY_DAY_AT_4AM,
-    run: async () => {
-      //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
-      console.log("[CRON] Vehicle Cron Job executed (4AM Daily)");
-      await VehicleService.cleanupFailedPhotos();
-    },
-  }))
+  .use(
+    cron({
+      name: "vehicle-cron-job",
+      pattern: Patterns.EVERY_HOUR,
+      run: async () => {
+        //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
+        console.log("[CRON] Vehicle Cron Job executed (Hourly)");
+        await VehicleService.runVehicleConsensus();
+      },
+    }),
+  )
+  .use(
+    cron({
+      name: "vehicle-cron-job-2",
+      pattern: Patterns.EVERY_DAY_AT_4AM,
+      run: async () => {
+        //console.log("Vehicle Cron Job executed (Daily @ 5AM)");
+        console.log("[CRON] Vehicle Cron Job executed (4AM Daily)");
+        await VehicleService.cleanupFailedPhotos();
+      },
+    }),
+  )
 
-  .group('/admin', (secure) => secure
-    // Get final vehicles
-    .get(
-      "/",
-      async ({ status, query }) => {
-        const vehicles = await VehicleService.searchVehicles({
-          make: query.make,
-          year: query.year ? query.year : undefined,
-          limit: query.limit ? query.limit : 10,
-          color: query.color,
-          model: query.model ? query.model : undefined,
-          plate: query.plate,
-        }, true);
-      }, {
-        query: t.Object({
-          make: t.Optional(t.String()),
-          year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
-          limit: t.Optional(t.Numeric()),
-          color: t.Optional(t.String()),
-          model: t.Optional(t.String()),
-          plate: t.Optional(t.String()),
-        }),
-      }
-    )
+  .group("/admin", (secure) =>
+    secure
+      // Get final vehicles
+      .get(
+        "/",
+        async ({ status, query }) => {
+          const vehicles = await VehicleService.searchVehicles(
+            {
+              make: query.make,
+              year: query.year ? query.year : undefined,
+              limit: query.limit ? query.limit : 10,
+              color: query.color,
+              model: query.model ? query.model : undefined,
+              plate: query.plate,
+            },
+            true,
+          );
+        },
+        {
+          query: t.Object({
+            make: t.Optional(t.String()),
+            year: t.Optional(
+              t.Integer({ minimum: 1900, maximum: new Date().getFullYear() }),
+            ),
+            limit: t.Optional(t.Numeric()),
+            color: t.Optional(t.String()),
+            model: t.Optional(t.String()),
+            plate: t.Optional(t.String()),
+          }),
+        },
+      ),
   )
 
   // Get final vehicles
@@ -93,7 +101,9 @@ const vehiclesController = new Elysia({
     {
       query: t.Object({
         make: t.Optional(t.String()),
-        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        year: t.Optional(
+          t.Integer({ minimum: 1900, maximum: new Date().getFullYear() }),
+        ),
         limit: t.Optional(t.Numeric({ default: 10, minimum: 1, maximum: 50 })),
         color: t.Optional(t.String()),
         model: t.Optional(t.String()),
@@ -132,7 +142,9 @@ const vehiclesController = new Elysia({
         plate: t.Optional(t.String()),
         make: t.Optional(t.String()),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        year: t.Optional(
+          t.Integer({ minimum: 1900, maximum: new Date().getFullYear() }),
+        ),
         limit: t.Optional(t.Numeric({ default: 20, minimum: 1, maximum: 50 })),
         color: t.Optional(t.String()),
         type: t.Optional(VehicleType),
@@ -158,7 +170,11 @@ const vehiclesController = new Elysia({
 
       // Add cache headers for client-side caching
       set.headers["Cache-Control"] = "public, max-age=60";
-      return status(200, { data: vehicle, message: plate+' found', success: true });
+      return status(200, {
+        data: vehicle,
+        message: plate + " found",
+        success: true,
+      });
     },
     {
       params: t.Object({
@@ -168,7 +184,8 @@ const vehiclesController = new Elysia({
   )
 
   // Search final vehicles
-  .get("/search",
+  .get(
+    "/search",
     async ({ status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
         plate: query.plate,
@@ -198,27 +215,29 @@ const vehiclesController = new Elysia({
         // year: t.Optional(t.Numeric()),color: t.Optional(t.String()),
         // type: t.Optional(VehicleType),
         // forSale: t.Optional(t.BooleanString()),
-        limit: t.Optional(t.Numeric({ default: 10, minimum: 1, maximum: 100 }))
+        limit: t.Optional(t.Numeric({ default: 10, minimum: 1, maximum: 100 })),
       }),
     },
   )
 
-  .get('/suggest-make', ({ status, query }) => {
-    const suggestions = KNOWN_MAKES
-      .filter(make =>
-        make.toLowerCase().includes(query.make.toLowerCase())
-      )
-      .slice(0, 5);
+  .get(
+    "/suggest-make",
+    ({ status, query }) => {
+      const suggestions = KNOWN_MAKES.filter((make) =>
+        make.toLowerCase().includes(query.make.toLowerCase()),
+      ).slice(0, 5);
 
-    return status(200, {
-      data: suggestions,
-      message: `Found ${suggestions.length} suggestions`,
-    });
-  }, {
-    query: t.Object({
-      make: t.String()
-    })
-  })
+      return status(200, {
+        data: suggestions,
+        message: `Found ${suggestions.length} suggestions`,
+      });
+    },
+    {
+      query: t.Object({
+        make: t.String(),
+      }),
+    },
+  )
 
   // POST
 
@@ -242,12 +261,16 @@ const vehiclesController = new Elysia({
         entity: "VehicleSubmission",
         entityId: submission.id,
         ipAddress: ip,
-        userAgent: request.headers.get('user-agent') ?? undefined,
+        userAgent: request.headers.get("user-agent") ?? undefined,
         route: request.url,
         method: request.method,
       });
 
-      return status(201, { success: true, data: submission, message: "Vehicle submitted." });
+      return status(201, {
+        success: true,
+        data: submission,
+        message: "Vehicle submitted.",
+      });
     },
     {
       body: t.Object({
@@ -256,17 +279,19 @@ const vehiclesController = new Elysia({
           error: "Plate number cannot exceed 10 characters",
         }),
         images: t.Optional(
-            t.Files({
-              type: "image",
-              maxSize: "5m",
-            }),
+          t.Files({
+            type: "image",
+            maxSize: "5m",
+          }),
         ),
         make: t.String(),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        year: t.Optional(
+          t.Integer({ minimum: 1900, maximum: new Date().getFullYear() }),
+        ),
         color: t.Optional(t.String()),
         type: t.Optional(VehicleType),
-        forSale: t.Optional(t.Boolean())
+        forSale: t.Optional(t.Boolean()),
       }),
       auth: true,
     },
@@ -275,8 +300,12 @@ const vehiclesController = new Elysia({
   // Update vehicle
   .patch(
     "/:id",
-    async ({ params: { id }, body, status }) => {
-      const updated = await VehicleService.updateVehicle(id, body);
+    async ({ params: { id }, body, status, session }) => {
+      const updated = await VehicleService.updateVehicle(
+        session.userId,
+        id,
+        body,
+      );
 
       if (!updated) {
         return status(404, "Vehicle not found");
@@ -291,7 +320,12 @@ const vehiclesController = new Elysia({
       body: t.Object({
         make: t.Optional(t.String()),
         model: t.Optional(t.String()),
-        year: t.Optional(t.Integer({ minimum: 1900, maximum: new Date().getFullYear() })),
+        type: t.Optional(VehicleType),
+        forSale: t.Optional(t.Boolean()),
+        year: t.Optional(
+          t.Integer({ minimum: 1900, maximum: new Date().getFullYear() }),
+        ),
+        submissionCount: t.Optional(t.Integer({ minimum: 0 })),
         image: t.Optional(
           t.File({
             type: "image/*",
@@ -301,6 +335,7 @@ const vehiclesController = new Elysia({
           }),
         ),
       }),
+      auth: true,
     },
   )
 
@@ -359,7 +394,10 @@ const vehiclesController = new Elysia({
   })
 
   .get("/health", ({ status, store }) => {
-    return status(200, { success: true, message: `${store.single} service is healthy` });
+    return status(200, {
+      success: true,
+      message: `${store.single} service is healthy`,
+    });
   });
 
 export default vehiclesController;
