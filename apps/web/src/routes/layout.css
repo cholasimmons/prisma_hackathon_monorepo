@@ -54,7 +54,7 @@ select {
 }
 button {
 	transition: all 0.2s ease-in-out; /* smooth focus effect */
-	@apply cursor-pointer rounded-xl px-2 py-1 text-base;
+	@apply cursor-pointer text-base;
 	@apply flex items-center justify-center gap-3;
 	@apply hover:bg-amber-500 hover:text-white hover:dark:bg-gray-500/40 hover:dark:text-amber-500;
 	@apply focus:border-0 focus:ring-0 focus:outline-none focus-visible:outline-none;
@@ -73,8 +73,8 @@ button:focus {
 input:disabled,
 textarea:disabled,
 select:disabled,
-button:disabled{
-	@apply bg-gray-400 dark:bg-gray-500 text-gray-950 dark:text-black disabled:opacity-50 cursor-not-allowed;
+button:disabled {
+	@apply cursor-not-allowed bg-gray-400 text-gray-950 disabled:opacity-50 dark:bg-gray-500 dark:text-black;
 	/* @apply border-2 border-gray-300 dark:border-gray-700 transition-all duration-200; */
 }
 

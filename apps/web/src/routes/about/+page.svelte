@@ -26,11 +26,7 @@
 				href={PUBLIC_APP_URL}>on this app</a
 			>.
 		</p>
-		<img
-			src="/images/Simmons_S_Logo_SM_2025_2.png"
-			alt="Simmons Studio logo"
-			class="w-20 h-20 py-2"
-		/>
+		<img src="/images/Simmons_S_Logo_SM_2025_2.png" alt="Simmons Studio logo" class="h-24 py-2" />
 		<p>
 			Plates was initially developed &AMP; maintained by <a
 				href="https://simmons.studio"
@@ -54,7 +50,7 @@
 			Please report any bugs or issues to <a href={mono_config.app.email}
 				>{mono_config.credit.author}</a
 			>
-			or <a href={`${mono_config.app.github}/issues`}>GitHub</a>. Feature suggestions are also
+			or <a href={`${mono_config.app.github}/issues/new`}>GitHub</a>. Feature suggestions are also
 			welcome.
 		</p>
 

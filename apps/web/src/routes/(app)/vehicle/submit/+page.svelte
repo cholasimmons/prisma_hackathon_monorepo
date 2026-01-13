@@ -33,7 +33,6 @@
 		_submitting = true;
 
 		return async ({ result, update }: any) => {
-
 			if (result?.type === 'success') {
 				const { plate, make, color, model, year, type, forSale } = result.data;
 
@@ -46,8 +45,8 @@
 				formData.append('type', type ?? '');
 				formData.append('forSale', forSale === 'on' ? 'true' : 'false');
 				for (const image of vehicleImages) {
-                  formData.append('images', image); // ✅ each File is a Blob
-                }
+					formData.append('images', image); // ✅ each File is a Blob
+				}
 
 				// Append images from your bound ImageUpload component
 				// vehicleImages.forEach((file) => formData.append('image', file));
@@ -69,14 +68,12 @@
 	};
 
 	function handleImageChange(files: File[]) {
-	  if(files.length < 1) return;
+		if (files.length < 1) return;
 
-		for(const file of files) {
+		for (const file of files) {
 			vehicleImages.push(file);
 		}
-
 	}
-
 </script>
 
 <main
@@ -114,7 +111,7 @@
 		>
 			<!-- PLATE (Hero Field) -->
 			<section class="text-center">
-    			<PlatesInput mode="input" value={plate} />
+				<PlatesInput mode="input" value={plate} />
 			</section>
 
 			<!-- MAKE + MODEL -->
@@ -181,9 +178,7 @@
 				</div>
 
 				<!-- Vehicle Type -->
-				<div
-					class="col-span-2 items-center gap-3 mt-4 sm:mt-0 justify-center"
-				>
+				<div class="col-span-2 items-center gap-3 mt-4 sm:mt-0 justify-center">
 					<!--label for="type" class="text-gray-500 text-sm">
 						Type
 					</label-->
@@ -191,7 +186,9 @@
 						id="type"
 						name="type"
 						bind:value={vehicleType}
-						class="border rounded px-3 py-2 w-full text-xl" style="width: 100%">
+						class="border rounded px-3 py-2 w-full text-xl"
+						style="width: 100%"
+					>
 						<option value="" class="text-xl" disabled>Select vehicle type</option>
 
 						{#each VEHICLE_TYPE_VALUES as type}
@@ -199,7 +196,7 @@
 								{type.charAt(0).toUpperCase() + type.slice(1)}
 							</option>
 						{/each}
-                    </select>
+					</select>
 				</div>
 
 				<!-- For Sale -->
@@ -223,7 +220,7 @@
 				type="submit"
 				disabled={_submitting}
 				autocapitalize="on"
-				class="w-full mt-12 rounded-lg bg-black dark:bg-amber-800 py-2 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
+				class="w-full mt-12 rounded-full bg-amber-800 dark:bg-amber-700 py-3 font-medium text-white hover:bg-amber-600 disabled:opacity-40 cursor-pointer transition-colors duration-100 ease-in-out"
 			>
 				{_submitting ? 'Submitting…' : 'Submit Vehicle'}
 			</button>
@@ -233,11 +230,11 @@
 
 <style>
 	:global(:root:not(.dark)) {
-		--cp-bg-color: #CECECE;
+		--cp-bg-color: #cecece;
 		--cp-border-color: white;
 		--cp-text-color: black;
 		--cp-input-color: white;
-		--cp-button-hover-color: #DFDFDF;
+		--cp-button-hover-color: #dfdfdf;
 	}
 	:global(:root.dark) {
 		--cp-bg-color: #1e2939;

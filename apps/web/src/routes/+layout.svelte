@@ -184,7 +184,9 @@
 					</button>
 				{:else if data?.user} -->
 				{#if data?.user}
-					<button onclick={() => gotoProfile()}>{data.user.name}</button>
+					<button style="padding: 0.2rem 1rem;" onclick={() => gotoProfile()}
+						>{data.user.name}</button
+					>
 				{/if}
 			</div>
 
@@ -398,5 +400,9 @@
 	hr {
 		padding: 0.5rem 0;
 		color: #444;
+	}
+	button {
+		padding: 0.25rem 0.3rem;
+		border-radius: 1rem;
 	}
 </style>
