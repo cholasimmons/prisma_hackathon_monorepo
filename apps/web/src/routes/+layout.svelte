@@ -17,7 +17,7 @@
 		LucideCar,
 		LucideShieldUser,
 		LucideMenu,
-		LucideHome,
+		HomeIcon,
 		LucideUser,
 		LucideCircleQuestionMark,
 		LucideUserLock,
@@ -28,7 +28,6 @@
 	import { authClient } from '$lib/auth-client';
 	import InstallPrompt from '$lib/components/PWA/installPrompt.svelte';
 	import Spinner from '$lib/components/Loaders/Spinner.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import mono_config from '@config';
 
@@ -67,19 +66,25 @@
 		goto('/admin');
 	}
 	function logout() {
-	  loggingOut = true;
-      authClient.signOut().then(async () => {
-        invalidateAll().then(() => {
-          drawerOpen = false;
-          goto('/');
-        }).finally(() => {
-          loggingOut = false;
-        });
-      }).catch((error) => {
-        toast.error("Unable to log out")
-      }).finally(() => {
-        loggingOut = false;
-      });
+		loggingOut = true;
+		authClient
+			.signOut()
+			.then(async () => {
+				invalidateAll()
+					.then(() => {
+						drawerOpen = false;
+						goto('/');
+					})
+					.finally(() => {
+						loggingOut = false;
+					});
+			})
+			.catch((error) => {
+				toast.error('Unable to log out');
+			})
+			.finally(() => {
+				loggingOut = false;
+			});
 	}
 
 	onMount(async () => {
@@ -107,7 +112,7 @@
 	async function handleNavClick(e: MouseEvent) {
 		const target = e.target as HTMLElement;
 		if (target.closest('a')) {
-			await tick();      // let navigation start
+			await tick(); // let navigation start
 			drawerOpen = false;
 		}
 	}
@@ -115,7 +120,7 @@
 	async function handleNavKeyPress(e: KeyboardEvent) {
 		const target = e.target as HTMLElement;
 		if (target.closest('a')) {
-			await tick();      // let navigation start
+			await tick(); // let navigation start
 			drawerOpen = false;
 		}
 	}
@@ -129,13 +134,18 @@
 <main class="flex flex-col justify-start min-h-dvh min-w-dvw bg-gray-200 dark:bg-gray-800">
 	{#if data.apiDown}
 		<div class="h-full w-full flex items-center justify-center my-auto px-8">
-			<div class="flex flex-col items-center rounded-md bg-red-800/60 dark:bg-red-900/60 border border-red-600 p-6 text-red-300 dark:text-red-200 text-center">
+			<div
+				class="flex flex-col items-center rounded-md bg-red-800/60 dark:bg-red-900/60 border border-red-600 p-6 text-red-300 dark:text-red-200 text-center"
+			>
 				<TriangleAlert />
 				<!--h1 class="mt-4 text-xl font-semibold">Service unavailable</h1-->
 				<p>Server temporarily unreachable.</p>
-				<button class="mt-4 txt-btn" onclick={() => {
-					location.reload();
-				}}>
+				<button
+					class="mt-4 txt-btn"
+					onclick={() => {
+						location.reload();
+					}}
+				>
 					Retry
 				</button>
 			</div>
@@ -194,29 +204,37 @@
 				{/if}
 
 				<div class="hidden md:flex gap-x-3">
-				    <!-- {#if data.user?.role === 'admin'}
+					<!-- {#if data.user?.role === 'admin'}
 				    <button onclick={gotoDashboard} class={page.url.pathname.startsWith("/admin") ? "text-amber-600" : ""}>
     					<LucideShieldUser />
     				</button>
                     {/if} -->
-                    {#if data.user}
-				    <button onclick={gotoProfile} class:active={page.url.pathname.startsWith("/profile")}
-						title="User Profile">
-       					<LucideUser size={24} />
-    				</button>
-                    {/if}
+					{#if data.user}
+						<button
+							onclick={gotoProfile}
+							class:active={page.url.pathname.startsWith('/profile')}
+							title="User Profile"
+						>
+							<LucideUser size={24} />
+						</button>
+					{/if}
 
-                    <button onclick={gotoSubmit} class:active={page.url.pathname.startsWith("/vehicle")}
-                        title="Submit a Vehicle">
-    					<LucideCar size={24} />
-    				</button>
+					<button
+						onclick={gotoSubmit}
+						class:active={page.url.pathname.startsWith('/vehicle')}
+						title="Submit a Vehicle"
+					>
+						<LucideCar size={24} />
+					</button>
 
-                    <button onclick={gotoAbout} class:active={page.url.pathname.startsWith("/about")}
-                        title="About App">
-    					<CircleQuestionMark size={22} />
-    				</button>
+					<button
+						onclick={gotoAbout}
+						class:active={page.url.pathname.startsWith('/about')}
+						title="About App"
+					>
+						<CircleQuestionMark size={22} />
+					</button>
 				</div>
-
 
 				<button onclick={toggleTheme} title="Toggle Theme">
 					{#if dark}
@@ -241,23 +259,26 @@
                 {/if} -->
 
 				<div class="flex gap-x-2 md:hidden pr-2">
-    				<button onclick={() => (drawerOpen = !drawerOpen)}>
-        					<LucideMenu />
-    				</button>
+					<button onclick={() => (drawerOpen = !drawerOpen)}>
+						<LucideMenu />
+					</button>
 				</div>
 			</div>
 		</header>
 
-
 		{#if drawerOpen}
-			<div aria-label="Close Drawer" role="button" tabindex="0"
+			<div
+				aria-label="Close Drawer"
+				role="button"
+				tabindex="0"
 				class="fixed inset-0 z-40 bg-black/50 md:hidden"
-				onclick={closeDrawer} onkeypress={closeDrawer}
+				onclick={closeDrawer}
+				onkeypress={closeDrawer}
 			></div>
 		{/if}
 
-        <!-- Drawer -->
-        <aside
+		<!-- Drawer -->
+		<aside
 			class="
 				fixed top-0 left-0 z-40 h-full w-64 bg-gray-900
 				transform transition-transform duration-400 ease-out
@@ -265,43 +286,60 @@
 			"
 			class:translate-x-0={drawerOpen}
 			class:-translate-x-full={!drawerOpen}
->
-            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div role="navigation" class="p-4 pr-0 space-y-1 py-18 text-gray-400"
-			    onclick={handleNavClick} onkeypress={handleNavKeyPress}>
-				<a href="/" class:active={page.url.pathname === "/"}><LucideHome size={16} /> Search</a>
-				<a href="/profile" class:active={page.url.pathname.startsWith("/profile")}><LucideUser size={16} /> Profile</a>
-				<a href="/vehicle/submit" class:active={page.url.pathname.startsWith("/vehicle/submit")}><LucideCarFront size={16} /> Submit</a>
+		>
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div
+				role="navigation"
+				class="p-4 pr-0 space-y-1 py-18 text-gray-400"
+				onclick={handleNavClick}
+				onkeypress={handleNavKeyPress}
+			>
+				<a href="/" class:active={page.url.pathname === '/'}><HomeIcon size={16} /> Search</a>
+				<a href="/profile" class:active={page.url.pathname.startsWith('/profile')}
+					><LucideUser size={16} /> Profile</a
+				>
+				<a href="/vehicle/submit" class:active={page.url.pathname.startsWith('/vehicle/submit')}
+					><LucideCarFront size={16} /> Submit</a
+				>
 				<hr />
-				<a href="/about" class:active={page.url.pathname.startsWith("/about")}><LucideCircleQuestionMark size={16} /> About App</a>
-				<a href="/legal/terms" class:active={page.url.pathname.startsWith("/legal/terms")}><LucideTextAlignStart size={16} /> Terms / Conditions</a>
-				<a href="/legal/privacy" class:active={page.url.pathname.startsWith("/legal/privacy")}><LucideUserLock size={16} /> Privacy Policy</a>
+				<a href="/about" class:active={page.url.pathname.startsWith('/about')}
+					><LucideCircleQuestionMark size={16} /> About App</a
+				>
+				<a href="/legal/terms" class:active={page.url.pathname.startsWith('/legal/terms')}
+					><LucideTextAlignStart size={16} /> Terms / Conditions</a
+				>
+				<a href="/legal/privacy" class:active={page.url.pathname.startsWith('/legal/privacy')}
+					><LucideUserLock size={16} /> Privacy Policy</a
+				>
 				<hr />
 				{#if data.user && data.user.role === 'admin'}
-				    <a href="/admin" class:active={page.url.pathname.startsWith("/admin")}><LucideShieldUser size={16} /> Dashboard</a>
+					<a href="/admin" class:active={page.url.pathname.startsWith('/admin')}
+						><LucideShieldUser size={16} /> Dashboard</a
+					>
 				{/if}
 				{#if data.user}
-				    <button style="background:none; padding-left: 0;" onclick={logout}>
+					<button style="background:none; padding-left: 0;" onclick={logout}>
 						{#if loggingOut}
-                            <Spinner size={16} />
-                        {:else}
-                       	    <LucideCirclePower size={16} />
-                        {/if}
+							<Spinner size={16} />
+						{:else}
+							<LucideCirclePower size={16} />
+						{/if}
 						Logout
 					</button>
 				{:else}
-				    <button style="background:none; padding-left: 0;" onclick={gotoLogin}>
-                   	    <LucideCircleUser size={16} />
+					<button style="background:none; padding-left: 0;" onclick={gotoLogin}>
+						<LucideCircleUser size={16} />
 						Login
 					</button>
-                {/if}
+				{/if}
 			</div>
-        </aside>
-
-
+		</aside>
 
 		{#key page.url.pathname}
-			<div in:fly={{ duration: 600, x: 10, opacity: 0, easing: cubicOut }} class="grow flex flex-col mx-auto pt-6 px-6 md:px-8 lg:px-12 items-center justify-start w-full">
+			<div
+				in:fly={{ duration: 600, x: 10, opacity: 0, easing: cubicOut }}
+				class="grow flex flex-col mx-auto pt-6 px-6 md:px-8 lg:px-12 items-center justify-start w-full"
+			>
 				{@render children()}
 			</div>
 		{/key}
@@ -320,7 +358,7 @@
 				<small
 					class="text-center px-6 py-1 text-gray-600 dark:text-gray-400 hover:text-amber-600 hover:font-bold transition-all duration-300"
 				>
-				{mono_config.credit.author}
+					{mono_config.credit.author}
 				</small>
 			</a>
 		</footer>
@@ -335,32 +373,30 @@
 	<ReloadPrompt />
 {/await}
 
-
-
 <style>
-    div[role="navigation"] a {
-        display: flex;
-        align-items: center;
-        column-gap: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
-        padding: 1rem 0;
-        color: inherit;
-        text-decoration: none;
-    }
-    div[role="navigation"] a:hover {
-        color: white;
-    }
-    div[role="navigation"] a.active {
-        color: #FE9A00;
-        border-right: 6px solid #FE9A00;
-        border-radius: 0;
-    }
+	div[role='navigation'] a {
+		display: flex;
+		align-items: center;
+		column-gap: calc(var(--spacing) * 2) /* 0.5rem = 8px */;
+		padding: 1rem 0;
+		color: inherit;
+		text-decoration: none;
+	}
+	div[role='navigation'] a:hover {
+		color: white;
+	}
+	div[role='navigation'] a.active {
+		color: #fe9a00;
+		border-right: 6px solid #fe9a00;
+		border-radius: 0;
+	}
 
-    header button.active {
-        color: #FE9A00;
-    }
+	header button.active {
+		color: #fe9a00;
+	}
 
-    hr {
-        padding: 0.5rem 0;
-        color: #444
-    }
+	hr {
+		padding: 0.5rem 0;
+		color: #444;
+	}
 </style>

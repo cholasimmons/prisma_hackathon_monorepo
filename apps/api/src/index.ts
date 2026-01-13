@@ -8,14 +8,14 @@ import { helmet } from "elysia-helmet";
 import { ip } from "elysia-ip";
 import { rateLimit } from "elysia-rate-limit";
 import { systemBoot, systemOff } from "~utils/system";
-import { logger } from '@grotto/logysia';
+import { logger } from "@grotto/logysia";
 import {
   authController,
   usersController,
   vehiclesController,
   fileController,
   logosController,
-  auditController
+  auditController,
 } from "~modules/index";
 import staticPlugin from "@elysiajs/static";
 import db from "~utils/database/client";
@@ -23,7 +23,7 @@ import { cache } from "~utils/cache";
 import { addEmailJob } from "~utils/queues/email";
 import { audit } from "~services/audit";
 import { EventType } from "@generated/prisma/enums";
-import mono_config from '@config';
+import mono_config from "@config";
 import UserService from "~modules/users/users.service";
 import { elysiaXSS } from "elysia-xss";
 import { escapeHtml } from "~utils/email/render";
@@ -31,10 +31,10 @@ import { escapeHtml } from "~utils/email/render";
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
 const ENV = process.env.BUN_ENV ?? process.env.NODE_ENV;
-const allowedOrigins = process.env.ORIGIN_URL?.split(',')
-  // const unsafePlugins = new Elysia()
-  //   .use(elysiaXSS({}))
-  //   .use(Logestic.preset("commontz"));
+const allowedOrigins = process.env.ORIGIN_URL?.split(",");
+// const unsafePlugins = new Elysia()
+//   .use(elysiaXSS({}))
+//   .use(Logestic.preset("commontz"));
 
 const app = new Elysia({
   websocket: {
@@ -42,13 +42,16 @@ const app = new Elysia({
   },
   name: mono_config.app.name,
   detail: {
-    description: mono_config.app.description
+    description: mono_config.app.description,
   },
   normalize: "typebox",
 })
   .use(
     cors({
-      origin: process.env.NODE_ENV === 'production' ? allowedOrigins : ["http://localhost:3001"],
+      origin:
+        process.env.NODE_ENV === "production"
+          ? allowedOrigins
+          : ["http://localhost:3001"],
       aot: false,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: [
@@ -77,14 +80,16 @@ const app = new Elysia({
   // .use(elysiaXSS({}))
   .use(ip())
   // .use(Logestic.preset("commontz") as any)
-  .use(logger({
+  .use(
+    logger({
       logIP: true,
       writer: {
-          write(msg: string) {
-            console.log(msg)
-          }
-      }
-  }))
+        write(msg: string) {
+          console.log(msg);
+        },
+      },
+    }),
+  )
   .use(
     rateLimit({
       scoping: "global",
@@ -145,10 +150,16 @@ const app = new Elysia({
     },
   })
 
-  .get("/stats", async ({ status, session }:any) => {
+  .get(
+    "/stats",
+    async ({ status, session }: any) => {
       const cached = await cache.get("stats");
-      if(cached)
-        return status(200, { data: cached, success: true, message: "Cached Stats fetched successfully" });
+      if (cached)
+        return status(200, {
+          data: cached,
+          success: true,
+          message: "Cached Stats fetched successfully",
+        });
 
       const users = await db.user.count();
       const vehicles = await db.vehicle.count();
@@ -164,22 +175,45 @@ const app = new Elysia({
 
       await cache.set("stats", data, 60 * 60 * 6);
 
-      return status(200, { data, success: true, message: "Stats fetched successfully" });
-  }, {
-    auth: true
-  })
+      return status(200, {
+        data,
+        success: true,
+        message: "Stats fetched successfully",
+      });
+    },
+    {
+      auth: true,
+    },
+  )
 
-  .post("/test-email", async ({ body, status, ip, session }) => {
-    const { to, subject, html } = body;
+  .post(
+    "/test-email",
+    async ({ body, status, ip, session }) => {
+      const { to, subject, html } = body;
 
+<<<<<<< HEAD
     const cleanHtml: string = escapeHtml(html);
 
     // Job Queue
     await addEmailJob({ to, subject, html: cleanHtml });
+=======
+      // Job Queue
+      await addEmailJob({ to, subject, html });
+>>>>>>> 0d829d702567e0dcea31223bdb78393e701f2954
 
-    // Audit Log
-    await audit.log({ actorId: "SYSTEM", type: EventType.EMAIL_SEND, entity: 'Email', entityId: '000', ipAddress: ip, userAgent: 'User Agent', route: '/test-email', method: 'POST' });
+      // Audit Log
+      await audit.log({
+        actorId: "SYSTEM",
+        type: EventType.EMAIL_SEND,
+        entity: "Email",
+        entityId: "000",
+        ipAddress: ip,
+        userAgent: "User Agent",
+        route: "/test-email",
+        method: "POST",
+      });
 
+<<<<<<< HEAD
     return status(200, { success: true, message: "Clean Email sent successfully" });
   }, {
     auth: true,
@@ -189,6 +223,19 @@ const app = new Elysia({
       html: t.String()
     })
   })
+=======
+      return status(200, { success: true, message: "Email sent successfully" });
+    },
+    {
+      auth: true,
+      body: t.Object({
+        to: t.String(),
+        subject: t.String({ default: "Test Email from Backend Server" }),
+        html: t.String(),
+      }),
+    },
+  )
+>>>>>>> 0d829d702567e0dcea31223bdb78393e701f2954
 
   .get("/health", ({ status }: Context) => {
     const info = {
