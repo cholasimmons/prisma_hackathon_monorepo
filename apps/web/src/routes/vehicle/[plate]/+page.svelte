@@ -103,7 +103,7 @@
 					<img
 						src={makeLogoUrl}
 						alt={_vehicle.make}
-						class="h-16 md:h-32 object-contain"
+						class="h-24 md:h-32 object-contain"
 						loading="lazy"
 					/>
 				{:else if !logoLoading}
@@ -179,9 +179,9 @@
 			{/if}
 
 			<!-- Vehicle Info Card -->
-			<div class="bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300">
+			<div class="bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 p-6">
 				<h2 class="text-lg font-semibold mb-6">{_vehicle.make}</h2>
-				<div class="text-lg md:text-2xl grid grid-cols-1 sm:grid-cols-2 gap-4">
+				<div class="text-lg md:text-xl grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div><span class="font-medium">Model:</span> {_vehicle.model ?? 'Unspecified'}</div>
 
 					<div><span class="font-medium">Type:</span> {_vehicle.type ?? 'Unspecified'}</div>
@@ -193,7 +193,7 @@
 						<span class="capitalize">{colorName ?? 'Unspecified'}</span>
 					</div>
 
-					<div class="sm:col-span-2">
+					<div class="sm:col-span-2 text-center">
 						<span class="font-medium">For Sale:</span>
 						{_vehicle.forSale ? 'Yes' : 'No'}
 					</div>
