@@ -46,6 +46,9 @@ const app = new Elysia({
   },
   normalize: "typebox",
 })
+  .state({
+    isProd: ENV === "production",
+  })
   .use(
     cors({
       origin:
@@ -191,10 +194,10 @@ const app = new Elysia({
     async ({ body, status, ip, session }) => {
       const { to, subject, html } = body;
 
-    const cleanHtml: string = escapeHtml(html);
+      const cleanHtml: string = escapeHtml(html);
 
-    // Job Queue
-    await addEmailJob({ to, subject, html: cleanHtml });
+      // Job Queue
+      await addEmailJob({ to, subject, html: cleanHtml });
 
       // Audit Log
       await audit.log({
@@ -208,15 +211,20 @@ const app = new Elysia({
         method: "POST",
       });
 
-    return status(200, { success: true, message: "Clean Email sent successfully" });
-  }, {
-    auth: true,
-    body: t.Object({
-      to: t.String(),
-      subject: t.String({ default: 'Test Email from Backend Server'}),
-      html: t.String()
-    })
-  })
+      return status(200, {
+        success: true,
+        message: "Clean Email sent successfully",
+      });
+    },
+    {
+      auth: true,
+      body: t.Object({
+        to: t.String(),
+        subject: t.String({ default: "Test Email from Backend Server" }),
+        html: t.String(),
+      }),
+    },
+  )
 
   .get("/health", ({ status }: Context) => {
     const info = {
