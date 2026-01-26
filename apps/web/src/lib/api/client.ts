@@ -1,12 +1,11 @@
-import { PUBLIC_API_BASE_URL } from '$env/static/public'
+import { PUBLIC_API_BASE_URL } from '$env/static/public';
 
 // Response shape expected from *all* Elysia endpoints
 export interface ApiResponse<T = unknown> {
 	data: T;
 	message: string; // always present — success or error reason
 	code?: number; // e.g. 200, 201
-	// code: string;           // e.g. 'SUCCESS', 'VALIDATION_ERROR', 'NOT_FOUND'
-	status?: 'success' | 'error';
+	// status?: 'success' | 'error';
 	success?: boolean;
 }
 
@@ -22,7 +21,7 @@ export class ApiError extends Error {
 	constructor(
 		public readonly message: string,
 		public readonly code: number,
-		public readonly status: 'error',
+		// public readonly status: 'error',
 		public readonly originalError?: unknown
 	) {
 		super(message);
@@ -30,125 +29,171 @@ export class ApiError extends Error {
 	}
 }
 
-// Timeout helper
-function timeoutPromise<T>(promise: Promise<T>, ms: number): Promise<T> {
-	const timeout = new Promise<never>((_, reject) =>
-		setTimeout(() => reject(new Error(`Request timed out after ${ms}ms`)), ms)
-	);
-	return Promise.race([promise, timeout]);
+function sleep(ms: number) {
+	return new Promise((r) => setTimeout(r, ms));
 }
 
-// Core request function
-async function request<T>(
-	method: string,
-	path: string,
-	options: { body?: unknown } & RequestOptions = {}
-): Promise<ApiResponse<T>> {
-	const { timeout = 10_000, retries = 2, headers = {}, body } = options;
+function isAbortError(err: unknown) {
+	return err instanceof DOMException && err.name === 'AbortError';
+}
 
-	const url = new URL(path, PUBLIC_API_BASE_URL).href;
-	const isFormData = body instanceof FormData;
+/**
+ * Hard timeout: aborts the underlying fetch, not just Promise.race.
+ * Also supports a caller-provided AbortSignal (e.g., SvelteKit event signal).
+ */
+async function fetchWithTimeout(
+	fetchFn: typeof fetch,
+	url: string,
+	init: RequestInit,
+	timeoutMs: number
+): Promise<Response> {
+	const controller = new AbortController();
 
-	const baseHeaders: HeadersInit = {
-	  ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
-		credentials: 'include',
-		...headers
-	};
+	// If caller provided a signal, abort our controller when caller aborts too.
+	const upstream = init.signal;
+	const onUpstreamAbort = () => controller.abort();
 
-	for (let attempt = 0; attempt <= retries; attempt++) {
-		try {
-		  const fetchOptions: RequestInit = {
-        method,
-        headers: baseHeaders,
-        credentials: 'include', // ✅ This belongs here
-      };
-
-			if (isFormData) {
-        fetchOptions.body = body as FormData;
-      } else if (body) {
-        fetchOptions.body = JSON.stringify(body);
-      }
-
-      const fetchPromise = fetch(url, fetchOptions);
-
-			const response = await timeoutPromise(fetchPromise, timeout);
-
-			let responseBody: ApiResponse<T>;
-			try {
-				responseBody = await response.json();
-			} catch (e) {
-			  console.error(e)
-				throw new Error(`Invalid JSON response from ${url}`);
-			}
-
-			// ✅ Always use `.message` for UX (success or error)
-			if (responseBody.status === 'error' || responseBody.success === false) {
-				throw new ApiError(
-					responseBody.message || 'An unknown error occurred',
-					responseBody.code || 500,
-					'error'
-				);
-			}
-
-			return responseBody;
-		} catch (err) {
-			const isFinalAttempt = attempt === retries;
-
-			if (isFinalAttempt) {
-				// Final error — expose `.message`
-				if (err instanceof ApiError) throw err;
-				if (err instanceof Error) {
-					throw new ApiError(err.message || 'Network request failed', 500, 'error', err);
-				}
-				throw new ApiError('Request failed', 500, 'error');
-			}
-
-			// Exponential backoff
-			await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
-		}
+	if (upstream) {
+		if (upstream.aborted) controller.abort();
+		else upstream.addEventListener('abort', onUpstreamAbort, { once: true });
 	}
 
-	throw new Error('Unreachable');
+	const id = setTimeout(() => controller.abort(), timeoutMs);
+
+	try {
+		return await fetchFn(url, { ...init, signal: controller.signal });
+	} finally {
+		clearTimeout(id);
+		if (upstream) upstream.removeEventListener('abort', onUpstreamAbort);
+	}
 }
 
-// ✅ NEW: raw fetch passthrough (returns Response)
-async function raw(input: string | URL | Request, init?: RequestInit): Promise<Response> {
-	const url =
-		input instanceof Request
-			? input.url
-			: input instanceof URL
-				? input.href
-				: new URL(input, PUBLIC_API_BASE_URL).href;
+/**
+ * Factory so you can inject SvelteKit's event-scoped fetch:
+ * - in +page.server.ts / +page.ts: createApi(event.fetch)
+ * - elsewhere (client-only): createApi(fetch)
+ */
+export function createApi(fetchFn: typeof fetch) {
+	async function request<T>(
+		method: string,
+		path: string,
+		options: { body?: unknown; signal?: AbortSignal } & RequestOptions = {}
+	): Promise<ApiResponse<T>> {
+		const { timeout = 10_000, retries = 2, headers = {}, body, signal } = options;
 
-	const baseInit: RequestInit = {
-		headers: {
-			'Content-Type': 'application/json',
-			credentials: 'include',
-			...init?.headers
-		},
-		...init
+		const url = new URL(path, PUBLIC_API_BASE_URL).href;
+		const isFormData = body instanceof FormData;
+
+		const baseHeaders: HeadersInit = {
+			...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+			...headers
+		};
+
+		for (let attempt = 0; attempt <= retries; attempt++) {
+			try {
+				const fetchOptions: RequestInit = {
+					method,
+					headers: baseHeaders,
+					credentials: 'include', // ✅ This belongs here
+					signal // optional: allows callers (and SvelteKit) to abort too
+				};
+
+				if (isFormData) {
+					fetchOptions.body = body as FormData;
+				} else if (body !== undefined) {
+					fetchOptions.body = JSON.stringify(body);
+				}
+
+				const response = await fetchWithTimeout(fetchFn, url, fetchOptions, timeout);
+
+				let responseBody: ApiResponse<T>;
+				try {
+					responseBody = await response.json();
+				} catch (e) {
+					// console.error(e)
+					throw new ApiError(`Invalid JSON response from ${url}`, response.status || 500);
+				}
+
+				// ✅ Always use `.message` for UX (success or error)
+				if (responseBody.success === false) {
+					throw new ApiError(
+						responseBody.message || 'An unknown error occurred',
+						responseBody.code || 500,
+						'error'
+					);
+				}
+
+				return responseBody;
+			} catch (err) {
+				const isFinalAttempt = attempt === retries;
+
+				// If aborted (timeout or upstream abort), do not retry unless you explicitly want that.
+				if (isAbortError(err)) {
+					throw new ApiError(`Request timed out after ${timeout}ms`, 408, 'error');
+				}
+
+				if (isFinalAttempt) {
+					// Final error — expose `.message`
+					if (err instanceof ApiError) throw err;
+					if (err instanceof Error) {
+						throw new ApiError(err.message || 'Network request failed', 500, 'error');
+					}
+					throw new ApiError('Request failed', 500, 'error');
+				}
+
+				// Exponential backoff
+				await sleep(500 * Math.pow(2, attempt));
+			}
+		}
+
+		throw new Error('Unreachable');
+	}
+
+	// ✅ NEW: raw fetch passthrough (returns Response)
+	async function raw(
+		input: string | URL | Request,
+		init: RequestInit & { timeout?: number } = {}
+	): Promise<Response> {
+		const url =
+			input instanceof Request
+				? input.url
+				: input instanceof URL
+					? input.href
+					: new URL(input, PUBLIC_API_BASE_URL).href;
+
+		const { timeout = 10_000, ...rest } = init;
+
+		// ✅ do NOT inject 'Content-Type' blindly (breaks FormData/GET/etc).
+		const fetchInit: RequestInit = {
+			...rest,
+			credentials: 'include'
+		};
+
+		return fetchWithTimeout(fetchFn, url, fetchInit, timeout);
+	}
+
+	// ✅ Fluent API
+	return {
+		get: <T>(path: string, options?: Omit<RequestOptions, 'body'> & { signal?: AbortSignal }) =>
+			request<T>('GET', path, options),
+
+		post: <T>(
+			path: string,
+			body: unknown,
+			options?: Omit<RequestOptions, 'body'> & { signal?: AbortSignal }
+		) => request<T>('POST', path, { ...options, body }),
+
+		put: <T>(
+			path: string,
+			body: unknown,
+			options?: Omit<RequestOptions, 'body'> & { signal?: AbortSignal }
+		) => request<T>('PUT', path, { ...options, body }),
+
+		delete: <T>(path: string, options?: Omit<RequestOptions, 'body'> & { signal?: AbortSignal }) =>
+			request<T>('DELETE', path, options),
+
+		raw
 	};
-
-	const res = await fetch(url, baseInit);
-
-	// Still enforce uniform { data, message, code, status } for JSON endpoints,
-	// but for HEAD/asset checks, caller handles raw Response.
-	return res;
 }
 
-// ✅ Fluent API
-export const api = {
-	get: <T>(path: string, options?: Omit<RequestOptions, 'body'>) =>
-		request<T>('GET', path, options),
-
-	post: <T>(path: string, body: unknown, options?: Omit<RequestOptions, 'body'>) =>
-		request<T>('POST', path, { ...options, body }),
-
-	put: <T>(path: string, body: unknown, options?: Omit<RequestOptions, 'body'>) =>
-		request<T>('PUT', path, { ...options, body }),
-
-	delete: <T>(path: string, options?: Omit<RequestOptions, 'body'>) =>
-		request<T>('DELETE', path, options),
-
-	raw
-};
+export const api = createApi(fetch);

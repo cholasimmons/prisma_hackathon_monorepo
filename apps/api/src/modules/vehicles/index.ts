@@ -78,7 +78,7 @@ const vehiclesController = new Elysia({
   // Get final vehicles
   .get(
     "/",
-    async ({ status, query }) => {
+    async ({ set, status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
         make: query.make,
         year: query.year ? query.year : undefined,
@@ -89,10 +89,10 @@ const vehiclesController = new Elysia({
       });
 
       if (!vehicles) {
-        return status(404, "No vehicles found");
+        throw status(404, "No vehicles found");
       }
 
-      // status(200);
+      set.status = 200;
       return status(200, {
         data: vehicles,
         message: `Successfully retrieved ${vehicles.length} vehicles`,
@@ -132,7 +132,7 @@ const vehiclesController = new Elysia({
         );
 
       if (!submissions) {
-        return status(404, "No Vehicle submissions found");
+        throw status(404, "No Vehicle submissions found");
       }
 
       return status(200, { data: submissions });
@@ -186,7 +186,7 @@ const vehiclesController = new Elysia({
   // Search final vehicles
   .get(
     "/search",
-    async ({ status, query }) => {
+    async ({ set, status, query }) => {
       const vehicles = await VehicleService.searchVehicles({
         plate: query.plate,
         // make: query.make,
@@ -199,9 +199,10 @@ const vehiclesController = new Elysia({
       });
 
       if (!vehicles) {
-        return status(404, "No vehicles found");
+        throw status(404, "No vehicles found");
       }
 
+      // set.status = 200;
       return status(200, {
         data: vehicles,
         message: `Found ${vehicles.length} vehicles`,

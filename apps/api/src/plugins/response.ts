@@ -1,142 +1,120 @@
 import { Elysia } from "elysia";
 
-interface SingleResponse {
-  data: any;
-  success: boolean;
-  code: number;
-  message: string;
+const RESERVED = new Set([
+  "success",
+  "code",
+  "message",
+  "data",
+  "meta",
+  "errors",
+]);
+
+function isRecord(v: unknown): v is Record<string, any> {
+  return !!v && typeof v === "object";
 }
 
-interface PaginatedResponse extends SingleResponse {
-  data: any[];
-  limit?: number;
-  page?: number;
-  total?: number;
-  totalPages?: number;
+function unwrapStatusShape(v: unknown): unknown {
+  if (!isRecord(v)) return v;
+
+  // Elysia status() wrappers usually expose these keys
+  const maybeCode = (v as any).code ?? (v as any).status;
+  const maybeResponse = (v as any).response;
+
+  if (typeof maybeCode === "number" && maybeResponse !== undefined) {
+    return maybeResponse;
+  }
+
+  return v;
 }
 
-export const responsePlugin = new Elysia({ name: "response-transformer" })
-  .mapResponse({ as: "global" }, ({ responseValue, set, status }: any) => {
-    // Skip transformation for static files and streams
-    if (
-      responseValue instanceof Blob ||
-      responseValue instanceof ArrayBuffer ||
-      responseValue instanceof ReadableStream ||
-      (typeof File !== "undefined" && responseValue instanceof File)
-    ) {
-      return responseValue;
+export const responseEnvelope = new Elysia({
+  name: "response-envelope",
+}).mapResponse(({ responseValue, set }) => {
+  // console.log("responseEnvelope", responseValue, set);
+
+  const status = Number(set.status) ?? 200;
+  const success = status >= 200 && status < 300;
+
+  // If handler returned a Response object, don't touch it.
+  // (e.g. streaming, file download)
+  // if (responseValue instanceof Response) return responseValue;
+  responseValue = unwrapStatusShape(responseValue);
+
+  // Default envelope
+  let message = success ? "OK" : "Error";
+  let meta: any = undefined;
+  let errors: any = undefined;
+  let data: any = null;
+
+  if (isRecord(responseValue)) {
+    // If the handler already used the envelope, normalize it
+    const hasAnyReserved = Object.keys(responseValue).some((k) =>
+      RESERVED.has(k),
+    );
+
+    if (hasAnyReserved) {
+      if (typeof responseValue.message === "string")
+        message = responseValue.message;
+      if (isRecord(responseValue.meta)) meta = responseValue.meta;
+      if ("errors" in responseValue) errors = (responseValue as any).errors;
+
+      if ("data" in responseValue) {
+        data = (responseValue as any).data ?? null;
+      } else {
+        // Move non-reserved keys into data
+        const moved: Record<string, unknown> = {};
+        for (const [k, v] of Object.entries(responseValue)) {
+          if (!RESERVED.has(k)) moved[k] = v;
+        }
+        data = Object.keys(moved).length ? moved : null;
+      }
+
+      // If they explicitly set success/code, keep them; otherwise derive
+      const finalSuccess =
+        typeof (responseValue as any).success === "boolean"
+          ? (responseValue as any).success
+          : success;
+
+      const finalCode =
+        typeof (responseValue as any).code === "number"
+          ? (responseValue as any).code
+          : status;
+
+      const payload = {
+        success: finalSuccess,
+        code: finalCode,
+        message,
+        data,
+        ...(meta ? { meta } : {}),
+        ...(errors ? { errors } : {}),
+      };
+
+      set.headers["content-type"] = "application/json; charset=utf-8";
+      return new Response(JSON.stringify(payload), { status });
     }
 
-    // Handle null/undefined responses
-    if (responseValue === null || responseValue === undefined) {
-      status(set.status || 200);
-      return {
-        data: null,
-        success: true,
-        code: set.status || 200,
-        message: "Success",
-      } as SingleResponse;
-    }
-
-    // Handle non-object responses (primitives, strings, etc.)
-    if (typeof responseValue !== "object") {
-      return {
-        data: responseValue,
-        success: true,
-        code: set.status || 200,
-        message: "Success",
-      } as SingleResponse;
-    }
-
-    // Check if response already has the expected structure
-    const hasData = "data" in responseValue;
-    const hasSuccess = "success" in responseValue;
-    const hasCode = "code" in responseValue;
-    const hasMessage = "message" in responseValue;
-
-    // If it's already a proper API response, maintain it
-    if (hasData && hasSuccess && hasCode && hasMessage) {
-      return responseValue;
-    }
-
-    // Handle Error objects
-    if (responseValue instanceof Error) {
-      return {
-        data: null,
-        success: false,
-        code: set.status || 500,
-        message: responseValue.message,
-      } as SingleResponse;
-    }
-
-    // Extract existing properties
-    const existingCode: number = hasCode
-      ? Number(responseValue.code)
-      : Number(set.status || 200);
-    const existingSuccess = hasSuccess
-      ? responseValue.success
-      : existingCode >= 200 && existingCode < 300;
-    const existingMessage = hasMessage
-      ? responseValue.message
-      : existingSuccess
-        ? "Success"
-        : "Error";
-
-    // Check if response is an array
-    if (Array.isArray(responseValue)) {
-      return {
-        data: responseValue,
-        success: existingSuccess,
-        code: existingCode,
-        message: existingMessage,
-        limit: undefined,
-        page: undefined,
-        total: responseValue.length,
-        totalPages: undefined,
-      } as PaginatedResponse;
-    }
-
-    function isPaginated(v: any): v is PaginatedResponse {
-      return v && Array.isArray(v.data) && ("limit" in v || "page" in v);
-    }
-
-    // Check if the data property is an array (paginated response)
-    if (hasData && isPaginated(responseValue)) {
-      return {
-        data: responseValue.data,
-        success: existingSuccess,
-        code: existingCode,
-        message: existingMessage,
-        limit: responseValue.limit,
-        page: responseValue.page,
-        total: responseValue.total ?? responseValue.data.length,
-        totalPages: responseValue.totalPages,
-      } as PaginatedResponse;
-    }
-
-    // Single object response
-    const data: any = hasData ? responseValue.data : responseValue;
-
-    // Remove the extracted properties from data if they exist
-    const cleanData = { ...data };
-    if (!hasData) {
-      delete cleanData.success;
-      delete cleanData.code;
-      delete cleanData.message;
-    }
-
-    return {
-      data: cleanData,
-      success: existingSuccess,
-      code: existingCode,
-      message: existingMessage,
-    } as SingleResponse;
-  })
-  .onError(({ code, status, set }) => {
-    return {
-      success: false,
-      data: null,
-      message: "An Error occurred",
-      code: set.status || 500,
+    // Plain object with no reserved keys -> treat whole object as data
+    // primitives/arrays/etc
+    const payload = {
+      success,
+      code: status,
+      message,
+      data: responseValue ?? null,
     };
-  });
+
+    set.headers["content-type"] = "application/json; charset=utf-8";
+    return new Response(JSON.stringify(payload), { status });
+  }
+
+  // Non-object (string, number, array, null, etc.) becomes data directly
+  // primitives/arrays/etc
+  const payload = {
+    success,
+    code: status,
+    message,
+    data: responseValue ?? null,
+  };
+
+  set.headers["content-type"] = "application/json; charset=utf-8";
+  return new Response(JSON.stringify(payload), { status });
+});

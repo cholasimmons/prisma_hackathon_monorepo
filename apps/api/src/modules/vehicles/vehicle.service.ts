@@ -32,10 +32,9 @@ import {
   computeOverallConfidence,
 } from "~utils/vehicles/majorityResolver";
 
-const MIN_SUBMISSIONS_FOR_PUBLIC = Number(
-  process.env.MIN_SUBMISSIONS_FOR_PUBLIC ?? 2,
-);
-const MIN_FIELD_CONFIDENCE = Number(process.env.MIN_FIELD_CONFIDENCE ?? 0.6);
+const MIN_SUBMISSIONS_FOR_PUBLIC =
+  Number(process.env.MIN_SUBMISSIONS_FOR_PUBLIC) ?? 2;
+const MIN_FIELD_CONFIDENCE = Number(process.env.MIN_FIELD_CONFIDENCE) ?? 0.6;
 
 abstract class VehicleService {
   static async searchVehicles(
@@ -64,7 +63,7 @@ abstract class VehicleService {
     if (typeof forSale === "boolean") where.forSale = forSale;
     if (plate?.trim())
       where.plate = { contains: plate.trim(), mode: "insensitive" };
-    where.submissionCount = { gte: MIN_SUBMISSIONS_FOR_PUBLIC };
+    where.submissionCount = { not: 0, gte: MIN_SUBMISSIONS_FOR_PUBLIC };
 
     if (!isAdmin) {
       where.isActive = true;
@@ -704,7 +703,8 @@ abstract class VehicleService {
 
     // const consensus = computeConsensus(submissions);
 
-    const isPublic = consensus.totalSubmissions >= MIN_SUBMISSIONS_FOR_PUBLIC;
+    const isPublic =
+      consensus.totalSubmissions >= Number(MIN_SUBMISSIONS_FOR_PUBLIC);
 
     const vehicleData: Partial<Vehicle> = {
       plate,
@@ -714,11 +714,11 @@ abstract class VehicleService {
         "make",
       ),
       model:
-        consensus.fields.model.confidence >= MIN_FIELD_CONFIDENCE
+        consensus.fields.model.confidence >= Number(MIN_FIELD_CONFIDENCE)
           ? consensus.fields.model.value
           : null,
       year:
-        consensus.fields.year.confidence >= MIN_FIELD_CONFIDENCE
+        consensus.fields.year.confidence >= Number(MIN_FIELD_CONFIDENCE)
           ? consensus.fields.year.value
           : null,
       color: resolveRequired<string>(
@@ -727,11 +727,11 @@ abstract class VehicleService {
         "color",
       ),
       type:
-        consensus.fields.type.confidence >= MIN_FIELD_CONFIDENCE
+        consensus.fields.type.confidence >= Number(MIN_FIELD_CONFIDENCE)
           ? consensus.fields.type.value
           : null,
       forSale:
-        consensus.fields.forSale.confidence >= MIN_FIELD_CONFIDENCE
+        consensus.fields.forSale.confidence >= Number(MIN_FIELD_CONFIDENCE)
           ? consensus.fields.forSale.value
           : null,
       confidence: computeOverallConfidence(consensus.fields),

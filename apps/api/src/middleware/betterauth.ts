@@ -17,6 +17,6 @@ const betterAuth = new Elysia({ name: "better-auth" }).macro({
       };
     },
   },
-}).as('global');
+});
 
 export { betterAuth };

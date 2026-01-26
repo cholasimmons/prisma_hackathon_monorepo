@@ -1,70 +1,39 @@
+import { createApi, type ApiResponse } from '$lib/api/client';
 import { API_BASE_URL } from '$lib/env';
+import type { SessionPayload } from '$lib/models/auth.model';
 
 export async function handle({ event, resolve }) {
-	const controller = new AbortController();
-	setTimeout(() => controller.abort(), 3000);
+	const api = createApi(event.fetch);
 
-	let response: Response;
+	let response: ApiResponse<SessionPayload>;
 
 	const cookie = event.request.headers.get('cookie');
 
 	try {
-		if (cookie) {
-			response = await fetch(`${API_BASE_URL}/auth/get-session`, {
-				headers: {
-					cookie: cookie ?? ''
-				},
-				method: 'GET',
-				signal: controller.signal,
-				credentials: 'include'
-			});
-
-			const data = await response.json();
-			event.locals.user = data?.user ?? null;
-			event.locals.session = data?.session ?? null;
-			event.locals.apiDown = false; // API reachable, just unauthenticated
-
-			// console.log('Session User:', event.locals.user);
-			// console.log('Session:', event.locals.session);
-		} else {
+		if (!cookie) {
 			event.locals.user = null;
 			event.locals.session = null;
 			event.locals.apiDown = false; // API reachable
+			return resolve(event);
 		}
+
+		response = await api.get<SessionPayload>('/auth/get-session', {
+			headers: { cookie },
+			timeout: 5000,
+			signal: event.request.signal
+		});
+
+		event.locals.user = response.data?.user ?? null;
+		event.locals.session = response.data?.session ?? null;
+		event.locals.apiDown = false; // API reachable, just unauthenticated
+
+		// console.log('Session User:', event.locals.user);
+		// console.log('Session:', event.locals.session);
 	} catch (error) {
 		event.locals.user = null;
 		event.locals.session = null;
 		event.locals.apiDown = true; // API unreachable
 	} finally {
-		controller.abort();
 		return resolve(event);
 	}
 }
-
-// const handle: Handle = async ({ event, resolve }) => {
-//   const headers = event.request.headers;
-//   // const session = await auth.api.getSession({headers});
-//   //
-//   const res = await fetch(`${API_BASE_URL}/auth/get-session`, {
-//     headers, credentials: 'include'
-//   });
-
-//   console.log(res)
-
-// 	if (!res.ok) {
-// 	  event.locals.user = null;
-// 	  event.locals.session = null;
-// 		return resolve(event)
-// 	}
-
-//   const session = await res.json();
-//   console.log(session)
-
-// 	event.locals.session = session?.session ?? null;
-// 	event.locals.user = session?.user ?? null;
-
-// 	console.log('[hooks] session', event.locals.session);
-// 	console.log('[hooks] user', event.locals.user);
-
-// 	return resolve(event);
-// };

@@ -27,6 +27,7 @@ import mono_config from "@config";
 import UserService from "~modules/users/users.service";
 import { elysiaXSS } from "elysia-xss";
 import { escapeHtml } from "~utils/email/render";
+import { responseEnvelope } from "./plugins/response";
 
 // Useful constants
 const PORT = Number(process.env.PORT || 3000);
@@ -116,7 +117,8 @@ const app = new Elysia({
     }),
   )
   .use(staticPlugin({ indexHTML: false }))
-  .use(betterAuth)
+  .use(responseEnvelope.as("global"))
+  .use(betterAuth.as("global"))
   .use(authController)
   .use(usersController)
   .use(vehiclesController)
