@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaClient, VehicleSubmission, VehicleType } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -61,6 +61,25 @@ async function main() {
     skipDuplicates: true,
   });
   console.log(`✅ Created ${vehicles.length} vehicles`);
+
+  // Create vehicle submissions
+  const vehicleSubmissions: Partial<VehicleSubmission>[] | null = await db.vehicleSubmission.createManyAndReturn({
+    data: [
+      {
+        plate: "GRZ 1 Z",
+        make: "Toyota",
+        model: "Corolla",
+        type: VehicleType.hatchback,
+        color: "#342",
+        year: 2020,
+        forSale: false,
+        submittedById: '3w2Ke6bpmcx4jEXgWun3SI9luneIRAjD'
+      }
+    ],
+    select: { id: true },
+    skipDuplicates: true,
+  });
+  console.log(`✅ Created ${vehicleSubmissions?.length ?? 0} submissions`);
 
   // Demo logos
   const logos = await db.logo.createManyAndReturn({

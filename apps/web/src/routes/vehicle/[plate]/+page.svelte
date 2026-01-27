@@ -180,7 +180,7 @@
 
 			<!-- Vehicle Info Card -->
 			<div class="bg-gray-100 dark:bg-gray-900/50 text-gray-700 dark:text-gray-200 p-6">
-				<h2 class="text-lg font-semibold mb-6">{_vehicle.make}</h2>
+				<h2 class="text-2xl font-semibold mb-6">{_vehicle.make}</h2>
 				<div class="text-lg md:text-xl grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div><span class="font-medium">Model:</span> {_vehicle.model ?? 'Unspecified'}</div>
 
